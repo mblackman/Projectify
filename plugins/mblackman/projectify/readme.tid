@@ -1,0 +1,16 @@
+title: $:/plugins/mblackman/projectify/readme
+type: text/vnd.tiddlywiki
+
+! Projectify
+
+Simple and beautiful project management for TiddlyWiki (`>=5.4.0`), maintained by Matt Blackman (forked from Nicolas Petton).
+
+Projectify brings GTD-inspired project and task management to TiddlyWiki, inspired by tools like Todoist and Basecamp.
+
+!! Key Features
+
+* ''Inbox & Quick Capture'': Capture thoughts into your Inbox or directly into any project using the Quick Capture shortcut (''Alt+C'') or inline smart tokens (`!1`–`!3`, `@today`, `@tomorrow`, `~nextweek`, `#Project`, `@context`).
+* ''Rich Task Lifecycle'': Track tasks across multi-stage statuses (''To Do'', ''In Progress'', ''Waiting'', ''Someday / Maybe'', ''Done'', ''Cancelled''), set separate ''Due'' (deadline) and ''Start'' (scheduled) dates, configure recurring tasks (`daily`, `weekdays`, `weekly`, `monthly`, `yearly`), and define task dependencies (`blocked-by`).
+* ''Projects, Kanban Boards, Sections & Sub-Tasks'': View any project as a List or drag-and-drop Kanban Board, organize tasks under project Sections, choose between Parallel and Sequential project modes, expand inline sub-tasks, and track recursive progress rollups with live pie charts.
+* ''Flexible Dashboards & Workflows'': Switch between Projects, Today (with one-click overdue rescheduling), Upcoming, Next Actions (with `@context` filtering), Eisenhower Matrix, and Weekly Review & Completed Logbook tabs—or apply one-click Workflow Presets (Minimal, GTD Power, Kanban & Agile, Full Suite).
+* ''TiddlyWiki 5.4+ Modernization'': Modernized with CSS Grid, Flexbox, and `--tpc-*` palette variables for seamless light and dark theme contrast.
