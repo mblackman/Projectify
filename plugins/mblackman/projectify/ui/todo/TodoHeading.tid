@@ -42,7 +42,7 @@ type: text/vnd.tiddlywiki
         <hr/>
         <div class="py-dependency-picker tc-popup-handle">
           <label class="py-label tc-popup-handle">{{$:/plugins/mblackman/projectify/images/lock}} <<lingo BlockedBy/Caption>></label>
-          <$select field="blocked-by" class="tc-popup-handle">
+          <$select field="blocked-by" default="" class="py-select-compact py-select-full tc-popup-handle">
             <option value="">—</option>
             <$list filter="[all[tiddlers]tag[todo]!has[draft.of]!tag[done]!title<currentTiddler>sort[title]]" variable="blocker">
               <option value={{{ [<blocker>format:titlelist[]] }}}><$text text=<<blocker>>/></option>
@@ -55,4 +55,55 @@ type: text/vnd.tiddlywiki
       </$reveal>
     </$let>
   </div>
+
+  <%if [function[py.has-open-blocker]] [function[py.blocking-todos]limit[1]] %>
+    <div class="py-dependency-banners">
+      <%if [function[py.has-open-blocker]] %>
+        <div class="py-dependency-banner py-banner-blocked">
+          <span class="py-dependency-banner-label">
+            {{$:/plugins/mblackman/projectify/images/lock}} <<lingo BlockedBy/Caption>>:
+          </span>
+          <div class="py-dependency-banner-items">
+            <$list filter="[function[py.open-blockers]]" variable="blocker">
+              <span class="py-dependency-chip">
+                <$let currentTiddler=<<blocker>>>
+                  <$button class="tc-btn-invisible py-todo-check-btn">
+                    <$action-py-toggle-todo $tiddler=<<blocker>>/>
+                    {{||$:/plugins/mblackman/projectify/ui/buttons/Checkbox}}
+                  </$button>
+                  <$link to=<<blocker>>>{{||$:/plugins/mblackman/projectify/ui/todo/TodoCaption}}</$link>
+                </$let>
+              </span>
+            </$list>
+          </div>
+          <$button
+            class="tc-btn-invisible py-dependency-clear"
+            tooltip={{$:/language/projectify/ClearBlocker/Hint}}
+            aria-label={{$:/language/projectify/ClearBlocker/Hint}}
+          >
+            {{$:/core/images/close-button}}
+            <$action-deletefield $field="blocked-by"/>
+            <$action-sendmessage $message="tm-auto-save-wiki"/>
+          </$button>
+        </div>
+      <%endif%>
+
+      <%if [function[py.blocking-todos]limit[1]] %>
+        <div class="py-dependency-banner py-banner-blocking">
+          <span class="py-dependency-banner-label">
+            {{$:/plugins/mblackman/projectify/images/lock}} <<lingo Blocking/Caption>>:
+          </span>
+          <div class="py-dependency-banner-items">
+            <$list filter="[function[py.blocking-todos]]" variable="dependent">
+              <span class="py-dependency-chip">
+                <$let currentTiddler=<<dependent>>>
+                  <$link to=<<dependent>>>{{||$:/plugins/mblackman/projectify/ui/todo/TodoCaption}}</$link>
+                </$let>
+              </span>
+            </$list>
+          </div>
+        </div>
+      <%endif%>
+    </div>
+  <%endif%>
 <%endif%>

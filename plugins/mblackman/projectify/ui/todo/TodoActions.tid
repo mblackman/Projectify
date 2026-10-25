@@ -5,10 +5,26 @@ title: $:/plugins/mblackman/projectify/ui/todo/TodoActions
 type: text/vnd.tiddlywiki
 
 <span class="py-todo-actions">
-  <%if [function[py.has-open-blocker]] %>
-    <span class="py-badge py-badge-blocked" title={{$:/language/projectify/Status/Blocked}}>
+  <$list filter="[function[py.open-blockers]]" variable="blocker">
+    <$link
+      to=<<blocker>>
+      overrideClass="py-badge py-badge-blocked"
+      tooltip={{{ [[$:/language/projectify/BlockedBy/Caption]get[text]addsuffix[: ]] [<blocker>get[caption]!is[blank]else<blocker>] +[join[]] }}}
+    >
       {{$:/plugins/mblackman/projectify/images/lock}}
-    </span>
+      <span class="py-badge-blocked-text"><$text text={{{ [<blocker>get[caption]!is[blank]else<blocker>] }}}/></span>
+    </$link>
+  </$list>
+
+  <%if [function[py.blocking-todos]limit[1]] %>
+    <$let blockedList={{{ [function[py.blocking-todos]] +[join[, ]] }}}>
+      <span
+        class="py-badge py-badge-blocking"
+        title={{{ [[$:/language/projectify/Blocking/Caption]get[text]addsuffix[: ]] [<blockedList>] +[join[]] }}}
+      >
+        {{$:/plugins/mblackman/projectify/images/lock}} <$count filter="[function[py.blocking-todos]]"/>
+      </span>
+    </$let>
   <%endif%>
 
   <%if [{!!recur}!is[blank]] %>

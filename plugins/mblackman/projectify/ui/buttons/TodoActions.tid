@@ -35,6 +35,23 @@ type: text/vnd.tiddlywiki
         {{||$:/plugins/mblackman/projectify/ui/forms/TodoContext}}
       <%endif%>
       <hr/>
+      <div class="py-recur-inline py-blocker-inline tc-popup-handle">
+        <label class="py-inline-label tc-popup-handle">
+          {{$:/plugins/mblackman/projectify/images/lock}} <<lingo BlockedBy/Caption>>
+        </label>
+        <$let
+          parentProj={{{ [all[current]tags[]tag[Project]limit[1]] [all[current]tags[]tag[SubProject]limit[1]] }}}
+          candidateFilter="[all[tiddlers]tag<parentProj>tag[todo]!has[draft.of]!tag[done]!title<currentTiddler>sort[title]] [all[tiddlers]tag[todo]!has[draft.of]!tag[done]!title<currentTiddler>sort[title]] +[unique[]]"
+        >
+          <$select field="blocked-by" default="" class="py-select-compact py-select-blocker tc-popup-handle">
+            <option value="">—</option>
+            <$list filter=<<candidateFilter>> variable="blocker">
+              <option value={{{ [<blocker>format:titlelist[]] }}}><$text text={{{ [<blocker>get[caption]!is[blank]else<blocker>] }}}/></option>
+            </$list>
+          </$select>
+        </$let>
+      </div>
+      <hr/>
       <div class="py-menu-actions-grid">
         <$button class="tc-btn-invisible">
           {{$:/plugins/mblackman/projectify/images/checklist}} <<lingo AddSubTasks/Caption>>

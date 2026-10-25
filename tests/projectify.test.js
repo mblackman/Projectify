@@ -441,6 +441,22 @@ describe("Projectify Plugin ($:/plugins/mblackman/projectify)", () => {
     const reviewHtml = renderWithGlobals("{{$:/plugins/mblackman/projectify/ui/dashboard/Review}}");
     expect(reviewHtml).toContain("py-review-dashboard");
     expect(reviewHtml).toContain("BlockedTask");
+    expect(reviewHtml).toContain("Subtask 2Open");
+
+    // TodoHeading renders blocked-by and blocking banners clearly
+    const blockedHeadingHtml = renderWithGlobals(
+      "{{||$:/plugins/mblackman/projectify/ui/todo/TodoHeading}}",
+      "BlockedTask"
+    );
+    expect(blockedHeadingHtml).toContain("py-banner-blocked");
+    expect(blockedHeadingHtml).toContain("Subtask 2Open");
+
+    const blockerHeadingHtml = renderWithGlobals(
+      "{{||$:/plugins/mblackman/projectify/ui/todo/TodoHeading}}",
+      "Subtask 2Open"
+    );
+    expect(blockerHeadingHtml).toContain("py-banner-blocking");
+    expect(blockerHeadingHtml).toContain("BlockedTask");
 
     $tw.wiki.deleteTiddler("TestScaleProject");
     $tw.wiki.deleteTiddler("Phase 1 Subproject");

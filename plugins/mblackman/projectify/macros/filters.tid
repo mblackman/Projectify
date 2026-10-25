@@ -21,8 +21,16 @@ type: text/vnd.tiddlywiki
 [function[py.descendant-todos],<root>tag[done]]
 \end
 
+\function py.open-blockers()
+[all[current]get[blocked-by]enlist-input[]!tag[done]]
+\end
+
 \function py.has-open-blocker()
-[all[current]get[blocked-by]enlist-input[]!tag[done]limit[1]]
+[function[py.open-blockers]limit[1]]
+\end
+
+\function py.blocking-todos()
+[all[tiddlers]tag[todo]!has[draft.of]!tag[done]] :filter[get[blocked-by]enlist-input[]match<..currentTiddler>]
 \end
 
 \function py.is-not-future-scheduled()

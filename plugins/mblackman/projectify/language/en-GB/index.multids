@@ -17,6 +17,8 @@ Archive: Archive
 ArchiveProject/Caption: Archive project
 ArchiveProject/Hint: Remove this project from the active project list
 BlockedBy/Caption: Blocked by
+Blocking/Caption: Blocking
+ClearBlocker/Hint: Remove dependency
 Cancel/Caption: Cancel
 CardOptions/Hint: Card options
 Clear: Clear

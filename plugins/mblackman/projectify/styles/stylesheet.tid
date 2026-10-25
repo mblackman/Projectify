@@ -560,9 +560,125 @@ type: text/vnd.tiddlywiki
   white-space: nowrap;
 }
 
-.py-badge-blocked {
+.py-badge-blocked,
+a.py-badge-blocked {
   color: #e73939;
-  background: color-mix(in srgb, #e73939 15%, transparent);
+  fill: #e73939;
+  background: color-mix(in srgb, #e73939 14%, transparent);
+  border: 1px solid color-mix(in srgb, #e73939 28%, transparent);
+  text-decoration: none;
+  max-width: 155px;
+}
+
+a.py-badge-blocked:hover {
+  background: color-mix(in srgb, #e73939 22%, transparent);
+  text-decoration: none;
+}
+
+.py-badge-blocked-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: {{$:/themes/tiddlywiki/vanilla/metrics/sidebarbreakpoint}}) {
+  .py-badge-blocked,
+  a.py-badge-blocked {
+    max-width: 110px;
+  }
+}
+
+.py-badge-blocking {
+  color: #e77a39;
+  fill: #e77a39;
+  background: color-mix(in srgb, #e77a39 14%, transparent);
+}
+
+.py-select-blocker {
+  max-width: 135px;
+  text-overflow: ellipsis;
+}
+
+.py-select-full {
+  width: 100%;
+  max-width: 220px;
+}
+
+/* Dependency Banners in TodoHeading */
+.py-dependency-banners {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.py-dependency-banner {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 0.9em;
+}
+
+.py-banner-blocked {
+  background: color-mix(in srgb, #e73939 10%, var(--tpc-tiddler-background, <<colour tiddler-background>>));
+  border: 1px solid color-mix(in srgb, #e73939 30%, transparent);
+}
+
+.py-banner-blocking {
+  background: color-mix(in srgb, #e77a39 10%, var(--tpc-tiddler-background, <<colour tiddler-background>>));
+  border: 1px solid color-mix(in srgb, #e77a39 30%, transparent);
+}
+
+.py-dependency-banner-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 600;
+}
+
+.py-banner-blocked .py-dependency-banner-label {
+  color: #e73939;
+  fill: #e73939;
+}
+
+.py-banner-blocking .py-dependency-banner-label {
+  color: #e77a39;
+  fill: #e77a39;
+}
+
+.py-dependency-banner-items {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  flex: 1 1 auto;
+}
+
+.py-dependency-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--tpc-tiddler-background, <<colour tiddler-background>>);
+  border: 1px solid color-mix(in srgb, var(--tpc-muted-foreground, <<colour muted-foreground>>) 28%, transparent);
+  font-weight: 500;
+}
+
+.py-dependency-clear {
+  color: var(--tpc-muted-foreground, <<colour muted-foreground>>);
+  fill: currentColor;
+  padding: 2px 4px;
+  border-radius: 4px;
+  cursor: pointer;
+  opacity: 0.7;
+}
+
+.py-dependency-clear:hover {
+  opacity: 1;
 }
 
 .py-context-pill {
