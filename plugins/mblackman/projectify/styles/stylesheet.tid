@@ -825,3 +825,35 @@ input.py-input.py-inline-input {
   background: var(--tpc-tiddler-background, <<colour tiddler-background>>);
   color: var(--tpc-foreground, <<colour foreground>>);
 }
+
+/* Modern Help & Reference Documentation Grid */
+.py-doc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 14px;
+  margin: 12px 0 20px 0;
+}
+
+.py-doc-card {
+  background: color-mix(in srgb, var(--tpc-muted-foreground, <<colour muted-foreground>>) 7%, var(--tpc-tiddler-background, <<colour tiddler-background>>));
+  border: 1px solid color-mix(in srgb, var(--tpc-muted-foreground, <<colour muted-foreground>>) 22%, transparent);
+  border-radius: 8px;
+  padding: 12px 14px;
+}
+
+.py-doc-card h4 {
+  margin: 0 0 6px 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.95em;
+  color: var(--tpc-tiddler-title-foreground, <<colour tiddler-title-foreground>>);
+  fill: var(--tpc-primary, <<colour primary>>);
+}
+
+.py-doc-card p {
+  margin: 0;
+  font-size: 0.85em;
+  color: var(--tpc-muted-foreground, <<colour muted-foreground>>);
+  line-height: 1.4;
+}

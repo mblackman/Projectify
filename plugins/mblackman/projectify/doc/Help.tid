@@ -12,13 +12,34 @@ type: text/vnd.tiddlywiki
   <$list filter="[all[tiddlers+shadows]tag[$:/plugins/mblackman/projectify/tags/help-card]!has[draft.of]] [all[tiddlers+shadows]tag[$:/plugins/nico/projectify/tags/help-card]!has[draft.of]]">
     <span class="py-card-wrapper">
       <$link overrideClass="py-card" to={{!!title}}>
-	<div class="py-card-head">
-	  <h3>{{!!caption}}</h3>
-	</div>
-	<div class="py-description">
-	  {{!!description}}
-	</div>
+        <div class="py-card-head">
+          <h3>{{!!caption}}</h3>
+        </div>
+        <div class="py-description">
+          {{!!description}}
+        </div>
       </$link>
     </span>
   </$list>
+</div>
+
+!! Guide & Reference Topics
+
+<div class="py-doc-grid">
+  <div class="py-doc-card">
+    <h4>{{$:/plugins/mblackman/projectify/images/collection}} [[Dashboard & Views|$:/plugins/mblackman/projectify/doc/Dashboard]]</h4>
+    <p>Projects, Today, Upcoming, Next Actions, Eisenhower Matrix, and Weekly Review.</p>
+  </div>
+  <div class="py-doc-card">
+    <h4>{{$:/plugins/mblackman/projectify/images/checkbox-checked}} [[Tasks & Lifecycle|$:/plugins/mblackman/projectify/doc/Todos]]</h4>
+    <p>Statuses, priorities, `@contexts`, inline sub-tasks, recurrence, and dependencies.</p>
+  </div>
+  <div class="py-doc-card">
+    <h4>{{$:/plugins/mblackman/projectify/images/board}} [[Projects & Boards|$:/plugins/mblackman/projectify/doc/Projects]]</h4>
+    <p>List vs. Kanban Board views, sections, parallel/sequential modes, and sub-project rollups.</p>
+  </div>
+  <div class="py-doc-card">
+    <h4>{{$:/plugins/mblackman/projectify/images/quick-capture}} [[Smart Quick Capture|$:/plugins/mblackman/projectify/doc/QuickCapture]]</h4>
+    <p>Capture anywhere with inline smart tokens (`@today`, `!1`–`!3`, `#Project`, `@context`).</p>
+  </div>
 </div>

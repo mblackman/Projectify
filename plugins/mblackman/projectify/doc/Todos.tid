@@ -4,10 +4,28 @@ tags: [[Projectify documentation]]
 title: $:/plugins/mblackman/projectify/doc/Todos
 type: text/vnd.tiddlywiki
 
-Todos represent single units of work -- or tasks -- within [[Projects|$:/plugins/mblackman/projectify/doc/Projects]] or the [[Inbox|$:/plugins/mblackman/projectify/doc/Inbox]].
+Todos represent single units of work—or tasks—within [[Projects|$:/plugins/mblackman/projectify/doc/Projects]] or the [[Inbox|$:/plugins/mblackman/projectify/doc/Inbox]]. Any tiddler with the <<tag todo>> tag is recognized as a todo.
 
-Any tiddler with the <<tag todo>> tag will be recognized as a todo.
+!! Task Lifecycle & Statuses
 
-Todos can be marked as done by checking their check box in the view toolbar. They can also be [[Scheduled|$:/plugins/mblackman/projectify/doc/Schedule]].
+Beyond simple open/done checkboxes, each task can have a `status` field (chosen from the task's {{$:/plugins/mblackman/projectify/images/dots}} menu or its tiddler header):
+
+* {{$:/plugins/mblackman/projectify/images/checkbox}} ''To Do'' (`todo`) — Open and actionable.
+* {{$:/plugins/mblackman/projectify/images/status-in-progress}} ''In Progress'' (`in-progress`) — Actively being worked on.
+* {{$:/plugins/mblackman/projectify/images/status-waiting}} ''Waiting'' (`waiting`) — Waiting on an external person or event (hidden from *Next Actions*, surfaced in *Review*).
+* {{$:/plugins/mblackman/projectify/images/status-someday}} ''Someday / Maybe'' (`someday`) — Deferred for future consideration.
+* {{$:/plugins/mblackman/projectify/images/checkbox-checked-solid}} ''Done'' (`done`) — Completed (automatically records a `completed` timestamp for the **Completed Logbook**).
+* {{$:/plugins/mblackman/projectify/images/status-cancelled}} ''Cancelled'' (`cancelled`) — Dropped or no longer needed.
+
+!! Priorities & `@Contexts`
+
+* ''Priority'': Assign High (`3`), Medium (`2`), or Low (`1`) priority using the {{$:/plugins/mblackman/projectify/images/flag}} button or inline tokens (`!1`–`!3`).
+* ''`@Contexts`'': Tag tasks with one or more GTD contexts (such as `@work`, `@home`, `@computer`, `@errands`, `@calls`) from the {{$:/plugins/mblackman/projectify/images/dots}} menu or inline (`@work`). Filter by context in the **Next** and **Filter** dashboard tabs.
+
+!! Inline Sub-Tasks & Renaming
+
+* ''Sub-tasks'': Choose **Add sub-tasks** from a task's {{$:/plugins/mblackman/projectify/images/dots}} menu to turn it into a `SubProject` and expand its sub-tasks directly inline—complete with an inline quick-add input and recursive progress pie chart.
+* ''Rename inline'': Choose **Rename task** in the {{$:/plugins/mblackman/projectify/images/dots}} menu to edit the task's display caption inline without opening the tiddler.
+* ''Dependencies'': Inside a task tiddler's **More** menu, set **Blocked by** (`blocked-by`) to another open task. Blocked tasks display a {{$:/plugins/mblackman/projectify/images/lock}} badge and wait until their blocker is completed.
 
 <<py-tip "To customize how todos are displayed, you can override the shadow tiddler [[$:/plugins/mblackman/projectify/ui/todo/TodoCaption]].">>

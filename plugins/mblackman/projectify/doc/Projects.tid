@@ -6,31 +6,37 @@ type: text/vnd.tiddlywiki
 
 !! When to use projects
 
-Projects structure [[Todos|$:/plugins/mblackman/projectify/doc/Todos]] together into
-separate todo lists. If you're working on something that requires more than one
-task, create a project to structure your work.
+Projects structure [[Todos|$:/plugins/mblackman/projectify/doc/Todos]] together into cohesive outcomes. Whenever a goal requires more than one step, create a project to organize its tasks, sections, and sub-projects.
 
-!! How to create projects
+!! Creating & displaying projects
 
-You can create projects from the
-[[Dashboard|$:/plugins/mblackman/projectify/doc/Dashboard]], or by adding the
-<<tag Project>> tag to an existing tiddler.
+You can create projects from the [[Dashboard|$:/plugins/mblackman/projectify/doc/Dashboard]], by adding the <<tag Project>> tag to any tiddler, or by converting an existing task into a project from its {{$:/plugins/mblackman/projectify/images/dots}} menu.
 
-Clicking the {{$:/plugins/mblackman/projectify/ui/buttons/ProjectListSettings}}
-button in the projects section of the
-[[Dashboard|$:/plugins/mblackman/projectify/doc/Dashboard]] let you change how
-projects are displayed and reorder them.
+Clicking the {{$:/plugins/mblackman/projectify/ui/buttons/ProjectListSettings}} button in the Projects dashboard tab lets you switch between **Card** and **List** views or reorder projects via drag & drop.
 
-!! Adding tasks to projects
-  
-The input at the bottom of a project tiddler lets you quickly add
-[[Todos|$:/plugins/mblackman/projectify/doc/Todos]] directly to that project.
+!! List vs. Kanban Board View
+
+Inside any project tiddler, use the toolbar switcher to toggle between:
+
+* ''{{$:/plugins/mblackman/projectify/images/checklist}} List view'' — Traditional checklist with scheduled items, sections, and expandable inline sub-tasks.
+* ''{{$:/plugins/mblackman/projectify/images/board}} Board view'' — A drag-and-drop **Kanban board** with columns for *To Do*, *In Progress*, *Waiting*, and *Done*. Dragging a task card into a column automatically updates its status and completion state.
+
+!! Project Sections & Modes
+
+Click the {{$:/plugins/mblackman/projectify/images/sliders}} options button in a project's toolbar to configure:
+
+* ''Project Mode'':
+** ''{{$:/plugins/mblackman/projectify/images/stack}} Parallel'' (default) — All unblocked open tasks are considered actionable in the [[Next Actions|$:/plugins/mblackman/projectify/doc/NextActions]] tab.
+** ''{{$:/plugins/mblackman/projectify/images/checklist}} Sequential'' — Only the first unblocked open task is surfaced in Next Actions until completed.
+* ''Sections'': Add named sections (e.g. *Planning*, *Implementation*, *Launch*) to group tasks within a project, and drag tasks between section headers.
+
+!! Adding tasks & Sub-Projects
+
+The input at the bottom of a project tiddler lets you quickly add [[Todos|$:/plugins/mblackman/projectify/doc/Todos]] and supports smart inline tokens (`@today`, `~tomorrow`, `!1`–`!3`, `@context`).
+
+Project progress indicators ({{$:/plugins/mblackman/projectify/images/pie}}) and open task counts automatically roll up all nested [[Sub-Projects|$:/plugins/mblackman/projectify/doc/Todos]] (`SubProject`).
 
 !! Archiving projects
-  
-The {{$:/plugins/mblackman/projectify/ui/buttons/ArchiveProject}} button lets you
-archive a project.
 
-Archived projects are hidden by default from the main project list in the
-[[Dashboard|$:/plugins/mblackman/projectify/doc/Dashboard]].
+The {{$:/plugins/mblackman/projectify/ui/buttons/ArchiveProject}} button archives a project (adding the <<tag done>> tag) so it is hidden from active lists while remaining accessible under *Show archived*.
 

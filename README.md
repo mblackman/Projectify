@@ -15,11 +15,11 @@ Projectify brings GTD-inspired project and task management to TiddlyWiki, inspir
 
 ## Features
 
-* 📥 **Inbox & Quick Capture**: Capture thoughts into your Inbox from anywhere using the Quick Capture keyboard shortcut (`Alt+C` by default).
-* 🗂️ **Projects, Sub-Projects & Categories**: Organize tasks into projects, group projects by color-coded categories, view projects as cards or lists, and track progress with live pie charts.
-* 📅 **Scheduling & Priority**: Schedule due dates with an interactive calendar picker (`Today`, `Tomorrow`, `Next week`, or any date), assign priorities, and review tasks in the **Today**, **Upcoming**, and **Next Actions** views.
-* 🔀 **Drag & Drop Refiling**: Drag and drop any tiddler into a project to add it as a task, or drag tasks between the Inbox and projects.
-* 🎨 **Modern TiddlyWiki 5.4+ Integration**: Built with TiddlyWiki 5.4+ procedures, conditional syntax, and `--tpc-*` palette variables for seamless light and dark theme support.
+* 📥 **Inbox & Smart Quick Capture**: Capture thoughts into your Inbox or directly into any project from anywhere using the Quick Capture keyboard shortcut (`Alt+C` by default) or inline smart tokens (`!1`–`!3`, `@today`, `@tomorrow`, `~nextweek`, `#Project`, `@context`).
+* 🔄 **Rich Task Lifecycle**: Track tasks across multi-stage statuses (`To Do`, `In Progress`, `Waiting`, `Someday / Maybe`, `Done`, `Cancelled`), set separate **Due (Deadline)** and **Start (Scheduled)** dates, configure **recurring tasks** (`daily`, `weekdays`, `weekly`, `monthly`, `yearly`), and define task dependencies (`blocked-by`).
+* 🗂️ **Projects, Kanban Boards, Sections & Sub-Tasks**: View any project as a **List** or drag-and-drop **Kanban Board**, organize tasks under project **Sections**, choose between **Parallel** and **Sequential** project modes, expand **inline sub-tasks**, and track recursive progress rollups with live pie charts.
+* 🧭 **Flexible Dashboards & Workflows**: Switch between **Projects**, **Today** (with one-click overdue rescheduling), **Upcoming**, **Next Actions** (with `@context` filtering), **Eisenhower Matrix**, and **Weekly Review & Completed Logbook** tabs—or apply one-click **Workflow Presets** (*Minimal*, *GTD Power*, *Kanban & Agile*, *Full Suite*).
+* 🎨 **Modern TiddlyWiki 5.4+ Integration**: Built with TiddlyWiki 5.4+ `\procedure`, `\function`, `<%if%>`, and `--tpc-*` palette variables for seamless light and dark theme support.
 
 ---
 

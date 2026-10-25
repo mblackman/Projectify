@@ -5,6 +5,10 @@ title: $:/plugins/mblackman/projectify/doc/Refiling
 type: text/vnd.tiddlywiki
 
 
-* To move a [[Todo|$:/plugins/mblackman/projectify/doc/Todos]] from the [[Inbox|$:/plugins/mblackman/projectify/doc/Inbox]], just drag & drop the todo using the {{$:/plugins/mblackman/projectify/images/drag-handle}} handle into one of the projects below the inbox.
+Projectify supports drag-and-drop organization across projects, sections, and Kanban boards:
 
-* To move [[Todos|$:/plugins/mblackman/projectify/doc/Todos]] between [[Projects|$:/plugins/mblackman/projectify/doc/Projects]], drag & drop the todo using the {{$:/plugins/mblackman/projectify/images/drag-handle}} handle from one project into another. 
+* ''Inbox to Project'': Drag any task from the [[Inbox|$:/plugins/mblackman/projectify/doc/Inbox]] using its {{$:/plugins/mblackman/projectify/images/drag-handle}} handle and drop it onto any project card or list item below the Inbox.
+* ''Between Projects'': Drag a task using its {{$:/plugins/mblackman/projectify/images/drag-handle}} handle and drop it into another open project tiddler or project card.
+* ''Between Project Sections'': Inside a project with sections, drag tasks onto a section header or into a section's list to move them between sections.
+* ''Kanban Board Columns'': In a project's **Board** view, drag task cards between *To Do*, *In Progress*, *Waiting*, and *Done* columns to update their status automatically.
+* ''Any Tiddler as a Task'': Drag any tiddler link from your wiki and drop it into a project's task list to add that tiddler as a task. 

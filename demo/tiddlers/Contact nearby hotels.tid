@@ -1,5 +1,7 @@
+context: @home @calls
 created: 20210108193852945
-modified: 20210108194549690
+modified: 20261025120000000
+status: waiting
 tags: [[Book vacation trip]] todo
 title: Contact nearby hotels
 type: text/vnd.tiddlywiki

@@ -4,12 +4,13 @@ tags: [[Projectify documentation]]
 title: $:/plugins/mblackman/projectify/doc/TranscludingUIElements
 type: text/vnd.tiddlywiki
 
-Projectify can be used without using the [[dashboard|$:/plugins/mblackman/projectify/doc/Dashboard]].
+Projectify can be used without the main [[Dashboard|$:/plugins/mblackman/projectify/doc/Dashboard]]. All UI views can be linked or transcluded into any tiddler, daily note, or custom layout:
 
-The various UI elements provided by Projectify can be linked or transcluded in
-any way that suits your workflow. For instance:
-
-* Tiddlers can be used as projects by adding the <<tag Project>> tag. The todo-list will be displayed automatically.
-* The Inbox can be displayed by transcluding [[$:/plugins/mblackman/projectify/ui/inbox/Inbox]].
-* Upcoming tasks can be displayed by transcluding [[$:/plugins/mblackman/projectify/ui/dashboard/Upcoming]].
-* The full list of projects can be displayed by transcluding [[$:/plugins/mblackman/projectify/ui/dashboard/Projects]].
+* ''Projects'': Add the <<tag Project>> tag to any tiddler to automatically display its task list or Kanban board.
+* ''Inbox'': `{{$:/plugins/mblackman/projectify/ui/inbox/Inbox}}`
+* ''Active Projects'': `{{$:/plugins/mblackman/projectify/ui/dashboard/Projects}}`
+* ''Today & Overdue'': `{{$:/plugins/mblackman/projectify/ui/dashboard/Today}}`
+* ''Upcoming Schedule'': `{{$:/plugins/mblackman/projectify/ui/dashboard/Upcoming}}`
+* ''Next Actions'': `{{$:/plugins/mblackman/projectify/ui/dashboard/NextActions}}`
+* ''Eisenhower Matrix'': `{{$:/plugins/mblackman/projectify/ui/dashboard/Matrix}}`
+* ''Weekly Review & Logbook'': `{{$:/plugins/mblackman/projectify/ui/dashboard/Review}}`

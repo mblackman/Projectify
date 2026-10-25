@@ -7,13 +7,14 @@ list-after: $:/plugins/mblackman/projectify/doc/GettingStarted
 title: $:/plugins/mblackman/projectify/doc/CoreConcepts
 type: text/vnd.tiddlywiki
 
-The following tiddlers will help you learn the basics of Projectify.
+The following guides walk through the building blocks and workflows of Projectify:
 
-* [[Dashboard|$:/plugins/mblackman/projectify/doc/Dashboard]]
-* [[Inbox|$:/plugins/mblackman/projectify/doc/Inbox]]
-* [[Todos|$:/plugins/mblackman/projectify/doc/Todos]]
-* [[Projects|$:/plugins/mblackman/projectify/doc/Projects]]
-* [[Categories|$:/plugins/mblackman/projectify/doc/Categories]]
-* [[Refiling|$:/plugins/mblackman/projectify/doc/Refiling]]
-* [[Schedule|$:/plugins/mblackman/projectify/doc/Schedule]]
-* [[Customizing Projectify|$:/plugins/mblackman/projectify/doc/Customizing]]
+* [[Dashboard|$:/plugins/mblackman/projectify/doc/Dashboard]] — Projects, Today, Upcoming, Next Actions, Eisenhower Matrix, Review, and Filter tabs
+* [[Inbox|$:/plugins/mblackman/projectify/doc/Inbox]] & [[Quick Capture|$:/plugins/mblackman/projectify/doc/QuickCapture]] — Fast capture and smart inline tokens (`@today`, `!1`–`!3`, `#Project`, `@context`)
+* [[Todos|$:/plugins/mblackman/projectify/doc/Todos]] — Multi-status lifecycle, priorities, `@contexts`, inline sub-tasks, and dependencies
+* [[Projects|$:/plugins/mblackman/projectify/doc/Projects]] — List vs. Kanban Board views, sections, parallel/sequential modes, and recursive sub-projects
+* [[Schedule|$:/plugins/mblackman/projectify/doc/Schedule]] — Due dates, Start (Scheduled) dates, recurring tasks, and overdue rescheduling
+* [[Next Actions|$:/plugins/mblackman/projectify/doc/NextActions]] — Actionable focus across projects and `@context` filtering
+* [[Categories|$:/plugins/mblackman/projectify/doc/Categories]] — Color-coded project areas and filtering
+* [[Refiling|$:/plugins/mblackman/projectify/doc/Refiling]] — Drag-and-drop organization across projects, sections, and board columns
+* [[Customizing Projectify|$:/plugins/mblackman/projectify/doc/Customizing]] — Workflow presets, custom dashboard tabs, and UI transclusions

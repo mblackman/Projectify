@@ -8,6 +8,6 @@ type: text/vnd.tiddlywiki
   <div class="py-welcome">
     <div class="icon">{{$:/plugins/mblackman/projectify/images/waving-hand}}</div>
     <h3>Help & documentation</h3>
-    <p>Getting started, guides, customization, etc.</p>
+    <p>Getting started, workflow presets, smart capture tokens, Kanban boards, and GTD guides.</p>
   </div>
 <%endif%>

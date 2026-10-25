@@ -6,19 +6,11 @@ tags: [[Projectify documentation]] $:/plugins/mblackman/projectify/tags/help-car
 title: $:/plugins/mblackman/projectify/doc/GettingStarted
 type: text/vnd.tiddlywiki
 
-Projectify is a [[TiddlyWiki|https://tiddlywiki.com]] plugin for managing
-projects & todo lists, inspired by projects such as
-[[Todoist|https://todoist.com]] and [[Basecamp|https://basecamp.com]]. It is
-released under the [[MIT license|$:/plugins/mblackman/projectify/LICENSE]].
+Projectify is a modern, flexible project and task management plugin for [[TiddlyWiki|https://tiddlywiki.com]] (`>=5.4.0`), inspired by tools like [[Todoist|https://todoist.com]], [[Things|https://culturedcode.com/things/]], and [[Basecamp|https://basecamp.com]]. It adapts to your workflow—whether you prefer lightweight checklists, **Getting Things Done (GTD)**, **Kanban boards**, or the **Eisenhower Matrix**—and is released under the [[MIT license|$:/plugins/mblackman/projectify/LICENSE]].
 
-* See [[installation instructions|$:/plugins/mblackman/projectify/doc/Installation]] for help on installing Projectify in an existing wiki.
+* ''Install'': See [[installation instructions|$:/plugins/mblackman/projectify/doc/Installation]] for adding Projectify to an existing wiki.
+* ''Open the Dashboard'': [[Transclude|https://tiddlywiki.com/#Transclusion]] the [[Dashboard|$:/plugins/mblackman/projectify/doc/Dashboard]] (`{{$:/plugins/mblackman/projectify/ui/dashboard/Dashboard}}`) into any tiddler.
+* ''Pick a Workflow Preset'': Open the ''Projectify'' tab in the [[Control Panel|$:/ControlPanel]] (or [[Projectify Basics|$:/plugins/mblackman/projectify/ui/config/Basics]]) to switch between **Minimal / Classic**, **GTD Power**, **Kanban & Agile**, or **Full Suite** with one click.
+* ''Learn the Concepts'': Explore the [[core concepts|$:/plugins/mblackman/projectify/doc/CoreConcepts]] to get the most out of smart capture tokens, sub-tasks, sections, and views.
 
-* To start using Projectify, [[transclude|https://tiddlywiki.com/#Transclusion]] the [[Dashboard|$:/plugins/mblackman/projectify/doc/Dashboard]] into another tiddler.
-
-* Configure Projectify from the ''Projectify'' tab of the  [[Control panel|$:/ControlPanel]].
-
-* Read the documentation about the [[core concepts|$:/plugins/mblackman/projectify/doc/CoreConcepts]] of Projectify.
-
-
-For all changes in the latest {{$:/plugins/mblackman/projectify!!version}} release,
-see [[ChangeLog|$:/plugins/mblackman/projectify/changelog]].
+For all changes in the latest {{$:/plugins/mblackman/projectify!!version}} release, see the [[ChangeLog|$:/plugins/mblackman/projectify/changelog]].

@@ -4,7 +4,21 @@ tags: [[Projectify documentation]]
 title: $:/plugins/mblackman/projectify/doc/Schedule
 type: text/vnd.tiddlywiki
 
-[[Todos|$:/plugins/mblackman/projectify/doc/Todos]] with a due date will appear in
-the [[Upcoming|$:/plugins/mblackman/projectify/ui/dashboard/Upcoming]] or
-[[Today|$:/plugins/mblackman/projectify/ui/dashboard/Today]] tab of the
-[[Dashboard|$:/plugins/mblackman/projectify/doc/Dashboard]].
+Projectify supports both **Due (Deadline)** dates and **Start (Scheduled)** dates, as well as **Recurring Tasks**:
+
+!! Due Dates vs. Start (Scheduled) Dates
+
+* ''Due Date (`due`)'': The deadline by which a task must be completed. Overdue tasks are highlighted in red and surfaced at the top of the [[Today|$:/plugins/mblackman/projectify/ui/dashboard/Today]] tab.
+* ''Start / Scheduled Date (`scheduled`)'': The date you intend to begin working on a task (GTD "tickler" / defer date). Tasks with a future Start Date stay out of [[Next Actions|$:/plugins/mblackman/projectify/doc/NextActions]] until their start date arrives, and then automatically appear in **Today** and **Next Actions**.
+
+Switch between **Due (Deadline)** and **Start (Scheduled)** at the top of any date picker, or use inline smart tokens when adding a task (`@today`, `@tomorrow`, `@nextweek`, `@YYYY-MM-DD` for due dates; `~today`, `~tomorrow`, `~YYYY-MM-DD` for start dates).
+
+!! Recurring Tasks
+
+In the date picker's **Repeat** selector, you can set a task to repeat `daily`, `weekdays`, `weekly`, `monthly`, or `yearly` (or set the `recur` field to custom intervals like `+3d`, `+2w`, `+6m`, `+1y`).
+
+When you check off a recurring task, Projectify automatically advances its due/scheduled date to the next occurrence and records the completion in `last-completed` instead of closing the task permanently.
+
+!! Overdue Triage
+
+When tasks slip past their due date, use the **{{$:/plugins/mblackman/projectify/images/sun}} Reschedule all to Today** button at the top of the **Today** tab to batch-update all overdue tasks to today in a single click.
