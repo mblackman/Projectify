@@ -1,7 +1,10 @@
 category: @home
 created: 20200427203232728
-list: [[Book flights]]
-modified: 20210118092220146
+description: Plan summer itinerary, flights, and accommodations
+list: [[Book flights]] [[Contact nearby hotels]] [[Pack luggage]]
+modified: 20261025120000000
+project-mode: sequential
+project-view: board
 tags: Project
 title: Book vacation trip
 type: text/vnd.tiddlywiki

@@ -1,8 +1,9 @@
 context: @home @computer
 created: 20200427203243195
+due: 20261026235959999
 modified: 20261025120000000
 priority: 2
 status: in-progress
-tags: [[Book vacation trip]] todo
+tags: [[Book vacation trip]] todo SubProject
 title: Book flights
 type: text/vnd.tiddlywiki

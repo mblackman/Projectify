@@ -1,5 +1,6 @@
 context: @home
 created: 20200427202700859
+due: 20261025235959999
 modified: 20261025120000000
 recur: weekly
 tags: Inbox todo

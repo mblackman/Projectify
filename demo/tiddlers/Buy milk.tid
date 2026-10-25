@@ -1,6 +1,8 @@
 context: @errands
 created: 20200427202605474
+due: 20261024235959999
 modified: 20261025120000000
+priority: 2
 tags: Inbox todo
 title: Buy milk
 type: text/vnd.tiddlywiki
