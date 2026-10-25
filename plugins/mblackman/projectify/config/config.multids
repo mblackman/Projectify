@@ -12,3 +12,4 @@ EnableContexts: yes
 SmartQuickAdd: yes
 ShowMatrixTab: yes
 ShowReviewTab: yes
+EnablePushNotifications: yes

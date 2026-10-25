@@ -22,3 +22,11 @@ When you check off a recurring task, Projectify automatically advances its due/s
 !! Overdue Triage
 
 When tasks slip past their due date, use the ''{{$:/plugins/mblackman/projectify/images/sun}} Reschedule all to Today'' button at the top of the ''Today'' tab to batch-update all overdue tasks to today in a single click.
+
+!! Web Push Notifications & Focus Timers (TiddlyPWA)
+
+When running inside a [[TiddlyPWA|https://github.com/mblackman/tiddlypwa]] wiki with Web Push enabled:
+
+* ''Declarative Due & Start Date Rules (`$:/tags/NotificationRule`)'': Projectify ships with two zero-knowledge encrypted notification rules (`$:/config/projectify/notifications/TodoDueRule` and `$:/config/projectify/notifications/TodoScheduledRule`) that automatically alert your subscribed devices on the morning a task is due or scheduled to start (configurable under `$:/ControlPanel` → ''Projectify'' → ''Notifications'').
+* ''Quick Reminders & 25m Focus Timers (`tm-pwa-schedule-notification`)'': Open any task's schedule popup or `...` actions menu to schedule a one-off push reminder (`+15m`, `+1h`, `+3h`), start a ''🍅 25m'' Pomodoro focus timer, or schedule a ''Weekly Review'' reminder from the Review tab.
+* ''Interactive Notification Actions (`th-pwa-notification-action`)'': Click ''Mark Done'' directly on a push notification to complete the task (or advance a recurring task to its next occurrence), or click ''Snooze 1h'' to reschedule the reminder.

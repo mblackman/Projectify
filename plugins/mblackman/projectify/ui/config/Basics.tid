@@ -15,13 +15,14 @@ caption: {{$:/language/ControlPanel/Basics/Caption}}
 </$select>
 \end
 
-\procedure apply-preset(multiStatus, scheduledDates, boardView, contexts, matrixTab, reviewTab)
+\procedure apply-preset(multiStatus, scheduledDates, boardView, contexts, matrixTab, reviewTab, pushNotifications:"yes")
 <$action-setfield $tiddler="$:/config/projectify/EnableMultiStatus" text=<<multiStatus>>/>
 <$action-setfield $tiddler="$:/config/projectify/EnableScheduledDates" text=<<scheduledDates>>/>
 <$action-setfield $tiddler="$:/config/projectify/EnableBoardView" text=<<boardView>>/>
 <$action-setfield $tiddler="$:/config/projectify/EnableContexts" text=<<contexts>>/>
 <$action-setfield $tiddler="$:/config/projectify/ShowMatrixTab" text=<<matrixTab>>/>
 <$action-setfield $tiddler="$:/config/projectify/ShowReviewTab" text=<<reviewTab>>/>
+<$action-setfield $tiddler="$:/config/projectify/EnablePushNotifications" text=<<pushNotifications>>/>
 <$action-sendmessage $message="tm-auto-save-wiki"/>
 \end
 
@@ -29,7 +30,7 @@ caption: {{$:/language/ControlPanel/Basics/Caption}}
   <strong><<lingo WorkflowPreset/Label>>: </strong>
   <$button class="py-btn btn-small">
     <<lingo WorkflowPreset/Minimal>>
-    <$transclude $variable="apply-preset" multiStatus="no" scheduledDates="no" boardView="no" contexts="no" matrixTab="no" reviewTab="no"/>
+    <$transclude $variable="apply-preset" multiStatus="no" scheduledDates="no" boardView="no" contexts="no" matrixTab="no" reviewTab="no" pushNotifications="no"/>
   </$button>
   <$button class="py-btn btn-small">
     <<lingo WorkflowPreset/GTD>>
@@ -54,3 +55,4 @@ caption: {{$:/language/ControlPanel/Basics/Caption}}
 |<<lingo Config/SmartQuickAdd>> |<$transclude $variable="select-yes-no" configTiddler="$:/config/projectify/SmartQuickAdd"/> |
 |<<lingo Config/ShowMatrixTab>> |<$transclude $variable="select-yes-no" configTiddler="$:/config/projectify/ShowMatrixTab"/> |
 |<<lingo Config/ShowReviewTab>> |<$transclude $variable="select-yes-no" configTiddler="$:/config/projectify/ShowReviewTab"/> |
+|<<lingo Config/EnablePushNotifications>> |<$transclude $variable="select-yes-no" configTiddler="$:/config/projectify/EnablePushNotifications"/> |

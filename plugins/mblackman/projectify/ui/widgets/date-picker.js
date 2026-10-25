@@ -433,6 +433,16 @@ class ActionToggleTodoWidget extends Widget {
 					this.wiki.getModificationFields()
 				)
 			);
+			if((targetStatus === "done" || targetStatus === "cancelled") && $tw.rootWidget) {
+				$tw.rootWidget.dispatchEvent({
+					type: "tm-pwa-cancel-notification",
+					paramObject: {id: `projectify-remind:${title}`}
+				});
+				$tw.rootWidget.dispatchEvent({
+					type: "tm-pwa-cancel-notification",
+					paramObject: {id: `projectify-focus:${title}`}
+				});
+			}
 			$tw.rootWidget.dispatchEvent({type: "tm-auto-save-wiki"});
 			return true;
 		}
@@ -490,6 +500,17 @@ class ActionToggleTodoWidget extends Widget {
 					this.wiki.getModificationFields()
 				)
 			);
+		}
+
+		if(!isCurrentlyDone && $tw.rootWidget) {
+			$tw.rootWidget.dispatchEvent({
+				type: "tm-pwa-cancel-notification",
+				paramObject: {id: `projectify-remind:${title}`}
+			});
+			$tw.rootWidget.dispatchEvent({
+				type: "tm-pwa-cancel-notification",
+				paramObject: {id: `projectify-focus:${title}`}
+			});
 		}
 
 		$tw.rootWidget.dispatchEvent({type: "tm-auto-save-wiki"});
@@ -1013,6 +1034,75 @@ class QuickInputWidget extends Widget {
 	}
 }
 
+function handleNotificationActionEvent(event) {
+	if(!event || !$tw.wiki) {
+		return;
+	}
+	const action = event.action || "default";
+	const data = event.data || {};
+	const hookData = event.hookData || data.hookData || {};
+	const targetTitle = hookData.tiddler || data.tiddlerTitle || data.navigateTo || event.navigateTo || "";
+
+	if((action === "py-complete-todo" || action === "complete") && targetTitle) {
+		const existing = $tw.wiki.getTiddler(targetTitle);
+		if(!existing) {
+			return;
+		}
+		const currentTags = (existing.fields.tags || []).slice();
+		const isCurrentlyDone = currentTags.includes("done");
+		if(!isCurrentlyDone) {
+			const toggleWidget = new ActionToggleTodoWidget(
+				{
+					type: "action-py-toggle-todo",
+					attributes: {
+						$tiddler: {type: "string", value: targetTitle}
+					}
+				},
+				{wiki: $tw.wiki}
+			);
+			toggleWidget.invokeAction();
+		}
+		return;
+	}
+
+	if((action === "py-snooze-1h" || action === "snooze-1h") && targetTitle) {
+		const existing = $tw.wiki.getTiddler(targetTitle);
+		const caption = (existing && existing.getFieldString("caption").trim()) || targetTitle;
+		if($tw.rootWidget) {
+			$tw.rootWidget.dispatchEvent({
+				type: "tm-pwa-schedule-notification",
+				paramObject: {
+					id: `projectify-remind:${targetTitle}`,
+					delaySeconds: "3600",
+					title: `🔔 ${caption}`,
+					body: $tw.wiki.getTiddlerText("$:/language/projectify/Reminder/SnoozedBody", "Snoozed 1-hour reminder"),
+					navigateTo: targetTitle,
+					scope: "all",
+					actions: JSON.stringify([
+						{action: "py-complete-todo", title: "Mark Done"},
+						{action: "py-snooze-1h", title: "Snooze 1h"}
+					])
+				}
+			});
+		}
+		return;
+	}
+
+	if(action === "py-open-review") {
+		$tw.wiki.addTiddler(
+			new $tw.Tiddler({
+				title: "$:/state/projects-and-schedule",
+				text: "$:/plugins/mblackman/projectify/ui/dashboard/Review"
+			})
+		);
+	}
+}
+
+if($tw.hooks && typeof $tw.hooks.addHook === "function" && !$tw._projectifyPushHookRegistered) {
+	$tw._projectifyPushHookRegistered = true;
+	$tw.hooks.addHook("th-pwa-notification-action", handleNotificationActionEvent);
+}
+
 exports["py-date-today"] = createQuickDateWidget(getToday, "py-date-today");
 exports["py-date-tomorrow"] = createQuickDateWidget(getTomorrow, "py-date-tomorrow");
 exports["py-date-next-week"] = createQuickDateWidget(getNextMonday, "py-date-next-week");
@@ -1022,5 +1112,6 @@ exports["py-quick-input"] = QuickInputWidget;
 exports["action-py-toggle-todo"] = ActionToggleTodoWidget;
 exports["action-py-quick-add"] = ActionQuickAddTodoWidget;
 exports["action-py-reschedule-overdue"] = ActionRescheduleOverdueWidget;
+exports["handleNotificationActionEvent"] = handleNotificationActionEvent;
 
 })();

@@ -1,0 +1,17 @@
+created: 20261025120000000
+modified: 20261025120000000
+tags: $:/tags/NotificationRule
+title: $:/config/projectify/notifications/TodoScheduledRule
+rule-id: projectify.todo-scheduled
+enabled: yes
+filter: [all[tiddlers]tag[todo]!has[draft.of]!tag[done]!status[someday]has[scheduled]!has[due]]
+date-field: scheduled
+default-time: 23:59
+offset-minutes: -899
+title-template: ☀️ Start Today: <$text text={{{ [{!!caption}!is[blank]else{!!title}] }}}/>
+body-template: <$list filter="[all[current]tags[]tag[Project]limit[1]] [all[current]tags[]tag[SubProject]limit[1]] [all[current]tag[Inbox]then[Inbox]] +[limit[1]]" variable="proj"><$text text=<<proj>>/> · </$list>Scheduled for <$view field="scheduled" format="date" template="YYYY-0MM-0DD"/>
+navigate-to: {{!!title}}
+actions-json: [{"action":"py-complete-todo","title":"Mark Done"},{"action":"py-snooze-1h","title":"Snooze 1h"}]
+type: text/vnd.tiddlywiki
+
+Declarative Tier 2 notification rule for Projectify tasks with a Start (Scheduled) date.

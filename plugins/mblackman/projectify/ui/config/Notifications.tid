@@ -1,0 +1,59 @@
+created: 20261025120000000
+modified: 20261025120000000
+tags: $:/plugins/mblackman/projectify/tags/Config
+title: $:/plugins/mblackman/projectify/ui/config/Notifications
+list-after: $:/plugins/mblackman/projectify/ui/config/Calendar
+type: text/vnd.tiddlywiki
+caption: {{$:/plugins/mblackman/projectify/images/bell}} {{$:/language/projectify/Notifications}}
+
+\procedure lingo-base() $:/language/projectify/
+
+\procedure select-rule-enabled(ruleTiddler)
+<$select tiddler=<<ruleTiddler>> field="enabled" default="yes">
+  <option value="yes">{{$:/language/Yes}}</option>
+  <option value="no">{{$:/language/No}}</option>
+</$select>
+\end
+
+\procedure select-rule-time(ruleTiddler)
+<$select tiddler=<<ruleTiddler>> field="offset-minutes" default="-899">
+  <option value="-1019">07:00</option>
+  <option value="-959">08:00</option>
+  <option value="-899">09:00</option>
+  <option value="-839">10:00</option>
+  <option value="-719">12:00</option>
+  <option value="-599">14:00</option>
+  <option value="-419">17:00</option>
+  <option value="0">23:59 (End of day)</option>
+</$select>
+\end
+
+<div class="py-tip">
+  <span class="py-tip-icon">{{$:/plugins/mblackman/projectify/images/bell}}</span>
+  <<lingo Notifications/Intro>>
+</div>
+
+<%if [{$:/status/TiddlyPWAPushSubscribed}match[yes]] %>
+  <div class="py-banner py-push-status-active">
+    <strong>✅ <<lingo Notifications/DeviceActive>></strong>
+  </div>
+<%elseif [{$:/plugins/mblackman/tiddlypwa/config-push}is[tiddler]] [{$:/plugins/mblackman/tiddlypwa/config-push}is[shadow]] %>
+  <div class="py-banner">
+    <<lingo Notifications/EnableDeviceHint>>
+    <$button class="py-btn btn-small">
+      <<lingo Notifications/OpenTiddlyPWAPush>>
+      <$action-navigate $to="$:/plugins/mblackman/tiddlypwa/config-push"/>
+    </$button>
+  </div>
+<%endif%>
+
+<%if [{$:/status/TiddlyPWAPushResult}!is[blank]] %>
+  <p class="py-label"><em>{{$:/status/TiddlyPWAPushResult}}</em></p>
+<%endif%>
+
+<h3><<lingo Notifications/DueDateRules/Heading>></h3>
+<p class="py-label"><<lingo Notifications/DueDateRules/Hint>></p>
+
+|<<lingo Notifications/Rule/TodoDue>> |<$transclude $variable="select-rule-enabled" ruleTiddler="$:/config/projectify/notifications/TodoDueRule"/> |<<lingo Notifications/Rule/NotifyTime>>: <$transclude $variable="select-rule-time" ruleTiddler="$:/config/projectify/notifications/TodoDueRule"/> |
+|<<lingo Notifications/Rule/TodoScheduled>> |<$transclude $variable="select-rule-enabled" ruleTiddler="$:/config/projectify/notifications/TodoScheduledRule"/> |<<lingo Notifications/Rule/NotifyTime>>: <$transclude $variable="select-rule-time" ruleTiddler="$:/config/projectify/notifications/TodoScheduledRule"/> |
+|<<lingo Config/EnablePushNotifications>> |<$select tiddler="$:/config/projectify/EnablePushNotifications" default="yes"><option value="yes">{{$:/language/Yes}}</option><option value="no">{{$:/language/No}}</option></$select> |<<lingo Notifications/QuickReminders/Hint>> |

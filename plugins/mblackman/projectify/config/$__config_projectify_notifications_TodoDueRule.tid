@@ -1,0 +1,17 @@
+created: 20261025120000000
+modified: 20261025120000000
+tags: $:/tags/NotificationRule
+title: $:/config/projectify/notifications/TodoDueRule
+rule-id: projectify.todo-due
+enabled: yes
+filter: [all[tiddlers]tag[todo]!has[draft.of]!tag[done]!status[someday]has[due]]
+date-field: due
+default-time: 23:59
+offset-minutes: -899
+title-template: 📋 <$text text={{{ [{!!caption}!is[blank]else{!!title}] }}}/>
+body-template: <$list filter="[all[current]tags[]tag[Project]limit[1]] [all[current]tags[]tag[SubProject]limit[1]] [all[current]tag[Inbox]then[Inbox]] +[limit[1]]" variable="proj"><$text text=<<proj>>/> · </$list>Due <$view field="due" format="date" template="YYYY-0MM-0DD"/><$list filter="[all[current]has[priority]]"> (P{{!!priority}})</$list>
+navigate-to: {{!!title}}
+actions-json: [{"action":"py-complete-todo","title":"Mark Done"},{"action":"py-snooze-1h","title":"Snooze 1h"}]
+type: text/vnd.tiddlywiki
+
+Declarative Tier 2 notification rule for Projectify tasks with a Due (Deadline) date.

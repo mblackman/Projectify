@@ -1,0 +1,92 @@
+created: 20261025120000000
+modified: 20261025120000000
+tags:
+title: $:/plugins/mblackman/projectify/ui/forms/TodoReminder
+type: text/vnd.tiddlywiki
+
+\procedure lingo-base() $:/language/projectify/
+
+<%if [{$:/config/projectify/EnablePushNotifications}!match[no]] %>
+  <%if [all[current]is[tiddler]] %>
+    <$let
+      taskTitle=<<currentTiddler>>
+      taskCaption={{{ [{!!caption}!is[blank]else{!!title}] }}}
+      remindTitle={{{ [[🔔 ]] [<taskCaption>] +[join[]] }}}
+      remindId={{{ [[projectify-remind:]] [<taskTitle>] +[join[]] }}}
+      focusTitle={{{ [[🎯 Focus Complete: ]] [<taskCaption>] +[join[]] }}}
+      focusId={{{ [[projectify-focus:]] [<taskTitle>] +[join[]] }}}
+      actionsJson="""[{"action":"py-complete-todo","title":"Mark Done"},{"action":"py-snooze-1h","title":"Snooze 1h"}]"""
+    >
+      <div class="py-reminder-section tc-popup-handle">
+        <div class="py-reminder-header tc-popup-handle">
+          <span class="py-inline-label tc-popup-handle">
+            {{$:/plugins/mblackman/projectify/images/bell}} <<lingo Reminder/Label>>
+          </span>
+          <$button
+            class="tc-btn-invisible py-reminder-cancel"
+            tooltip={{$:/language/projectify/Reminder/Cancel/Hint}}
+            aria-label={{$:/language/projectify/Reminder/Cancel/Hint}}
+          >
+            {{$:/plugins/mblackman/projectify/images/slash-circle}} <<lingo Clear>>
+            <$action-sendmessage $message="tm-pwa-cancel-notification" id=<<remindId>>/>
+            <$action-sendmessage $message="tm-pwa-cancel-notification" id=<<focusId>>/>
+          </$button>
+        </div>
+        <div class="py-reminder-chips">
+          <$button class="tc-btn-invisible py-reminder-chip" tooltip={{$:/language/projectify/Reminder/In15m/Hint}}>
+            +15m
+            <$action-sendmessage
+              $message="tm-pwa-schedule-notification"
+              id=<<remindId>>
+              delay-seconds="900"
+              title=<<remindTitle>>
+              body={{$:/language/projectify/Reminder/Body}}
+              navigate-to=<<taskTitle>>
+              scope="all"
+              actions=<<actionsJson>>
+            />
+          </$button>
+          <$button class="tc-btn-invisible py-reminder-chip" tooltip={{$:/language/projectify/Reminder/In1h/Hint}}>
+            +1h
+            <$action-sendmessage
+              $message="tm-pwa-schedule-notification"
+              id=<<remindId>>
+              delay-seconds="3600"
+              title=<<remindTitle>>
+              body={{$:/language/projectify/Reminder/Body}}
+              navigate-to=<<taskTitle>>
+              scope="all"
+              actions=<<actionsJson>>
+            />
+          </$button>
+          <$button class="tc-btn-invisible py-reminder-chip" tooltip={{$:/language/projectify/Reminder/In3h/Hint}}>
+            +3h
+            <$action-sendmessage
+              $message="tm-pwa-schedule-notification"
+              id=<<remindId>>
+              delay-seconds="10800"
+              title=<<remindTitle>>
+              body={{$:/language/projectify/Reminder/Body}}
+              navigate-to=<<taskTitle>>
+              scope="all"
+              actions=<<actionsJson>>
+            />
+          </$button>
+          <$button class="tc-btn-invisible py-reminder-chip py-focus-chip" tooltip={{$:/language/projectify/Reminder/Focus25m/Hint}}>
+            🍅 25m
+            <$action-sendmessage
+              $message="tm-pwa-schedule-notification"
+              id=<<focusId>>
+              delay-seconds="1500"
+              title=<<focusTitle>>
+              body={{$:/language/projectify/Reminder/FocusBody}}
+              navigate-to=<<taskTitle>>
+              scope="device"
+              actions=<<actionsJson>>
+            />
+          </$button>
+        </div>
+      </div>
+    </$let>
+  <%endif%>
+<%endif%>

@@ -69,5 +69,9 @@ type: text/vnd.tiddlywiki
         <option value="yearly">yearly</option>
       </$select>
     </div>
+    <%if [{$:/config/projectify/EnablePushNotifications}!match[no]] %>
+      <hr/>
+      {{||$:/plugins/mblackman/projectify/ui/forms/TodoReminder}}
+    <%endif%>
   <%endif%>
 </$let>

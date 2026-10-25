@@ -27,6 +27,7 @@ Completed/Caption: Completed
 Config/EnableBoardView: Enable per-project Kanban Board view switcher
 Config/EnableContexts: Enable @context tags and filtering
 Config/EnableMultiStatus: Enable multi-stage task statuses (In Progress, Waiting, Someday, Cancelled)
+Config/EnablePushNotifications: Enable Web Push reminders & focus timers (TiddlyPWA)
 Config/EnableScheduledDates: Enable separate Start/Scheduled dates alongside Due dates
 Config/ShowMatrixTab: Show Eisenhower Matrix tab in Dashboard
 Config/ShowReviewTab: Show Weekly Review & Logbook tab in Dashboard
@@ -68,6 +69,17 @@ NewProjectDescription: Description (optional)
 NewProjectTitle: Title
 Next: Next
 NextWeek: Next week
+Notifications: Notifications
+Notifications/DeviceActive: Web Push notifications are active on this device.
+Notifications/DueDateRules/Heading: Automatic Due & Start Date Rules
+Notifications/DueDateRules/Hint: Zero-knowledge client-encrypted notifications synced automatically to your TiddlyPWA server whenever tasks change.
+Notifications/EnableDeviceHint: Enable Web Push on this device in the TiddlyPWA Control Panel to receive background reminders.
+Notifications/Intro: Projectify integrates with TiddlyPWA Web Push to deliver end-to-end encrypted due-date alerts, start-date reminders, and focus timers.
+Notifications/OpenTiddlyPWAPush: Open TiddlyPWA Push Settings
+Notifications/QuickReminders/Hint: Show quick snooze (+15m, +1h, +3h) and 25m Pomodoro focus timer buttons in task schedule popups
+Notifications/Rule/NotifyTime: Notify at
+Notifications/Rule/TodoDue: Task Due Date reminders
+Notifications/Rule/TodoScheduled: Task Start (Scheduled) Date reminders
 OpenTasks: open tasks
 Options/Hint: Options
 Or: or
@@ -81,6 +93,15 @@ ProjectMode/Sequential: Sequential (first action only)
 Projects: Projects
 QuickAddTodo: Quick add todo
 QuickCapture/Hint: Press <kbd>⏎</kbd> to capture. Supports `@today`, `!1`–`!3`, `#Project`, `@context`.
+Reminder/Body: Scheduled Projectify task reminder
+Reminder/Cancel/Hint: Cancel pending push reminder or timer for this task
+Reminder/Focus25m/Hint: Start a 25-minute Pomodoro focus timer for this task on this device
+Reminder/FocusBody: 25-minute focus session complete — mark done or take a short break!
+Reminder/In15m/Hint: Send a push reminder in 15 minutes
+Reminder/In1h/Hint: Send a push reminder in 1 hour
+Reminder/In3h/Hint: Send a push reminder in 3 hours
+Reminder/Label: Push Reminder / Timer
+Reminder/SnoozedBody: Snoozed 1-hour task reminder
 RenameTodo/Caption: Rename task
 ReorderProjects/Hint: Drag & drop items in the list to reorder projects
 ReorderProjects/Caption: Reorder projects
@@ -91,6 +112,12 @@ RestoreProject: Restore project
 Review: Review
 Review/Logbook: Completed Logbook
 Review/Logbook/Hint: Recently completed tasks across all projects
+Review/RemindIn7d/Caption: Remind in 7 days
+Review/RemindIn7d/Hint: Schedule a Web Push reminder for your next Weekly Review in 7 days
+Review/RemindTomorrow/Caption: Remind tomorrow
+Review/RemindTomorrow/Hint: Schedule a Web Push reminder for your Weekly Review in 24 hours
+Review/ReminderBody: Time for your GTD Weekly Review — check stalled projects, waiting tasks, and someday items.
+Review/ReminderTitle: 📋 Weekly Review Reminder
 Review/Someday: Someday / Maybe
 Review/Someday/Hint: Tasks deferred for future consideration
 Review/StalledProjects: Stalled Projects

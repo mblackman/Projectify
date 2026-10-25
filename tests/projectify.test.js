@@ -65,6 +65,10 @@ describe("Projectify Plugin ($:/plugins/mblackman/projectify)", () => {
       "$:/plugins/mblackman/projectify/ui/project/ProjectBoard",
       "$:/plugins/mblackman/projectify/ui/forms/TodoStatus",
       "$:/plugins/mblackman/projectify/ui/forms/TodoContext",
+      "$:/plugins/mblackman/projectify/ui/forms/TodoReminder",
+      "$:/plugins/mblackman/projectify/ui/config/Notifications",
+      "$:/config/projectify/notifications/TodoDueRule",
+      "$:/config/projectify/notifications/TodoScheduledRule",
       "$:/plugins/mblackman/projectify/ui/todo/TodoItem",
       "$:/plugins/mblackman/projectify/ui/widgets/date-picker.js",
       "$:/plugins/mblackman/projectify/lib/pikaday.js",
@@ -465,5 +469,108 @@ describe("Projectify Plugin ($:/plugins/mblackman/projectify)", () => {
     $tw.wiki.deleteTiddler("BlockedTask");
     $tw.wiki.deleteTiddler("FutureScheduledTask");
     $tw.wiki.deleteTiddler("PastScheduledTask");
+  });
+
+  test("integrates TiddlyPWA Web Push notification rules (Tier 2), reminders/timers (Tier 3), and action hooks", () => {
+    // 1. Verify Tier 2 $:/tags/NotificationRule tiddlers
+    const rules = $tw.wiki.filterTiddlers("[all[tiddlers+shadows]tag[$:/tags/NotificationRule]!has[draft.of]]");
+    expect(rules).toContain("$:/config/projectify/notifications/TodoDueRule");
+    expect(rules).toContain("$:/config/projectify/notifications/TodoScheduledRule");
+
+    const dueRule = $tw.wiki.getTiddler("$:/config/projectify/notifications/TodoDueRule");
+    expect(dueRule.fields["rule-id"]).toBe("projectify.todo-due");
+    expect(dueRule.fields["date-field"]).toBe("due");
+    expect(dueRule.fields["offset-minutes"]).toBe("-899");
+    expect(dueRule.fields.enabled).toBe("yes");
+
+    const matchedDueTodos = $tw.wiki.filterTiddlers(dueRule.fields.filter);
+    expect(matchedDueTodos).toContain("Schedule meeting with John");
+    expect(matchedDueTodos).toContain("Book flights");
+    expect(matchedDueTodos).not.toContain("Design first prototype");
+
+    const renderedDueTitle = $tw.wiki
+      .renderText("text/plain", "text/vnd.tiddlywiki", dueRule.fields["title-template"], {
+        variables: { currentTiddler: "Schedule meeting with John" },
+      })
+      .trim();
+    expect(renderedDueTitle).toBe("📋 Schedule meeting with John");
+
+    const renderedDueBody = $tw.wiki
+      .renderText("text/plain", "text/vnd.tiddlywiki", dueRule.fields["body-template"], {
+        variables: { currentTiddler: "Schedule meeting with John" },
+      })
+      .trim();
+    expect(renderedDueBody).toContain("Product roadmap");
+    expect(renderedDueBody).toContain("(P3)");
+
+    // 2. Verify Tier 3 UI in TodoDueDate / TodoReminder and Notifications Config
+    const dueFormOnExistingHtml = renderWithGlobals(
+      "{{||$:/plugins/mblackman/projectify/ui/forms/TodoDueDate}}",
+      "Schedule meeting with John"
+    );
+    expect(dueFormOnExistingHtml).toContain("py-reminder-section");
+    expect(dueFormOnExistingHtml).toContain("+15m");
+    expect(dueFormOnExistingHtml).toContain("🍅 25m");
+
+    const notifConfigHtml = renderWithGlobals(
+      "{{$:/plugins/mblackman/projectify/ui/config/Notifications}}"
+    );
+    expect(notifConfigHtml).toContain("Automatic Due &amp; Start Date Rules");
+    expect(notifConfigHtml).toContain("09:00");
+
+    // 3. Verify th-pwa-notification-action hook handler (Mark Done, Snooze 1h, Open Review)
+    const dispatchedEvents = [];
+    const origDispatch = $tw.rootWidget.dispatchEvent.bind($tw.rootWidget);
+    $tw.rootWidget.dispatchEvent = (evt) => {
+      dispatchedEvents.push(evt);
+      return origDispatch(evt);
+    };
+
+    try {
+      $tw.wiki.addTiddler({
+        title: "TestPushActionTask",
+        tags: ["Inbox", "todo"],
+        caption: "Call Dentist",
+      });
+
+      // Test snooze-1h action
+      $tw.hooks.invokeHook("th-pwa-notification-action", {
+        action: "py-snooze-1h",
+        data: { tiddlerTitle: "TestPushActionTask" },
+      });
+      const snoozeEvt = dispatchedEvents.find(e => e.type === "tm-pwa-schedule-notification");
+      expect(snoozeEvt).toBeDefined();
+      expect(snoozeEvt.paramObject.id).toBe("projectify-remind:TestPushActionTask");
+      expect(snoozeEvt.paramObject.delaySeconds).toBe("3600");
+      expect(snoozeEvt.paramObject.title).toBe("🔔 Call Dentist");
+
+      // Test complete action (also cancels pending reminders/timers)
+      dispatchedEvents.length = 0;
+      $tw.hooks.invokeHook("th-pwa-notification-action", {
+        action: "py-complete-todo",
+        data: { tiddlerTitle: "TestPushActionTask" },
+      });
+      const completedTid = $tw.wiki.getTiddler("TestPushActionTask");
+      expect(completedTid.fields.tags).toContain("done");
+      expect(completedTid.fields.status).toBe("done");
+      expect(
+        dispatchedEvents.some(
+          e => e.type === "tm-pwa-cancel-notification" && e.paramObject?.id === "projectify-remind:TestPushActionTask"
+        )
+      ).toBe(true);
+
+      // Test open-review action
+      $tw.hooks.invokeHook("th-pwa-notification-action", {
+        action: "py-open-review",
+        data: { navigateTo: "Dashboard" },
+      });
+      expect($tw.wiki.getTiddlerText("$:/state/projects-and-schedule")).toBe(
+        "$:/plugins/mblackman/projectify/ui/dashboard/Review"
+      );
+    } finally {
+      $tw.rootWidget.dispatchEvent = origDispatch;
+      $tw.wiki.deleteTiddler("TestPushActionTask");
+      $tw.wiki.deleteTiddler("$:/state/projects-and-schedule");
+    }
   });
 });

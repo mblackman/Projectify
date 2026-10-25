@@ -8,8 +8,44 @@ type: text/vnd.tiddlywiki
 
 \procedure lingo-base() $:/language/projectify/
 
-<$let showProjectLinks="yes">
+<$let
+  showProjectLinks="yes"
+  dashboardTarget={{{ [[Dashboard]is[tiddler]then[Dashboard]else<currentTiddler>!is[blank]else[$:/plugins/mblackman/projectify/ui/dashboard/Dashboard]] }}}
+>
   <div class="py-review-dashboard">
+    <%if [{$:/config/projectify/EnablePushNotifications}!match[no]] %>
+      <div class="py-review-toolbar">
+        <%if [{$:/status/TiddlyPWAPushResult}!is[blank]] %>
+          <span class="py-label"><$text text={{$:/status/TiddlyPWAPushResult}}/></span>
+        <%endif%>
+        <$button class="py-btn btn-small" tooltip={{$:/language/projectify/Review/RemindIn7d/Hint}}>
+          {{$:/plugins/mblackman/projectify/images/bell}} <<lingo Review/RemindIn7d/Caption>>
+          <$action-sendmessage
+            $message="tm-pwa-schedule-notification"
+            id="projectify-weekly-review"
+            delay-seconds="604800"
+            title={{$:/language/projectify/Review/ReminderTitle}}
+            body={{$:/language/projectify/Review/ReminderBody}}
+            navigate-to=<<dashboardTarget>>
+            scope="all"
+            actions="""[{"action":"py-open-review","title":"Open Review"}]"""
+          />
+        </$button>
+        <$button class="py-btn btn-small" tooltip={{$:/language/projectify/Review/RemindTomorrow/Hint}}>
+          {{$:/plugins/mblackman/projectify/images/sun}} <<lingo Review/RemindTomorrow/Caption>>
+          <$action-sendmessage
+            $message="tm-pwa-schedule-notification"
+            id="projectify-weekly-review"
+            delay-seconds="86400"
+            title={{$:/language/projectify/Review/ReminderTitle}}
+            body={{$:/language/projectify/Review/ReminderBody}}
+            navigate-to=<<dashboardTarget>>
+            scope="all"
+            actions="""[{"action":"py-open-review","title":"Open Review"}]"""
+          />
+        </$button>
+      </div>
+    <%endif%>
     <div class="py-review-grid">
       <div class="py-review-panel">
         <h3><<lingo Review/StalledProjects>> <span class="py-count"><$count filter=<<py-stalled-projects>>/></span></h3>
