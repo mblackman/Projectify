@@ -660,11 +660,365 @@ class ActionRescheduleOverdueWidget extends Widget {
 	}
 }
 
+class QuickInputWidget extends Widget {
+	render(parent, nextSibling) {
+		this.parentDomNode = parent;
+		this.computeAttributes();
+		this.execute();
+
+		this.wrapperNode = this.document.createElement("div");
+		this.wrapperNode.className = "py-quick-input-wrapper";
+
+		this.inputNode = this.document.createElement("input");
+		this.inputNode.setAttribute("type", "text");
+		this.inputNode.setAttribute("autocomplete", "off");
+		this.inputNode.className = this.inputClass;
+		if(this.placeholder) {
+			this.inputNode.setAttribute("placeholder", this.placeholder);
+		}
+		this.inputNode.value = this.getFieldValue();
+
+		this.menuNode = this.document.createElement("div");
+		this.menuNode.className = "py-autocomplete-menu";
+		this.menuNode.setAttribute("role", "listbox");
+		this.menuNode.hidden = true;
+
+		this.suggestions = [];
+		this.activeIndex = 0;
+		this.activeTokenInfo = null;
+
+		this.inputNode.addEventListener("input", () => {
+			this.saveFieldValue(this.inputNode.value);
+			this.updateSuggestions();
+		});
+		this.inputNode.addEventListener("click", () => {
+			this.updateSuggestions();
+		});
+		this.inputNode.addEventListener("keydown", (event) => {
+			this.handleKeyDown(event);
+		});
+		this.inputNode.addEventListener("blur", () => {
+			setTimeout(() => {
+				this.closeMenu();
+			}, 150);
+		});
+
+		this.wrapperNode.appendChild(this.inputNode);
+		this.wrapperNode.appendChild(this.menuNode);
+		parent.insertBefore(this.wrapperNode, nextSibling);
+		this.domNodes.push(this.wrapperNode);
+
+		if(this.autoFocus === "true" || this.autoFocus === "yes") {
+			setTimeout(() => {
+				if(this.inputNode && this.inputNode.focus) {
+					this.inputNode.focus();
+				}
+			}, 20);
+		}
+	}
+
+	execute() {
+		this.stateTiddler = this.getAttribute("tiddler", this.getVariable("currentTiddler"));
+		this.fieldAttr = this.getAttribute("field", "todo-name");
+		this.placeholder = this.getAttribute("placeholder", "");
+		this.inputClass = this.getAttribute("class", "py-input");
+		this.autoFocus = this.getAttribute("focus", "false");
+		this.submitActions = this.getAttribute("actions", "");
+	}
+
+	refresh(changedTiddlers) {
+		const changedAttributes = this.computeAttributes();
+		if(
+			changedAttributes.tiddler ||
+			changedAttributes.field ||
+			changedAttributes.placeholder ||
+			changedAttributes["class"]
+		) {
+			this.refreshSelf();
+			return true;
+		}
+		if(this.stateTiddler && changedTiddlers[this.stateTiddler] && this.inputNode) {
+			const newVal = this.getFieldValue();
+			if(this.inputNode.value !== newVal) {
+				this.inputNode.value = newVal;
+				if(!newVal) {
+					this.closeMenu();
+				}
+			}
+		}
+		return this.refreshChildren(changedTiddlers);
+	}
+
+	getFieldValue() {
+		if(!this.stateTiddler) return "";
+		const tid = this.wiki.getTiddler(this.stateTiddler);
+		return tid ? tid.getFieldString(this.fieldAttr) : "";
+	}
+
+	saveFieldValue(val) {
+		if(!this.stateTiddler) return;
+		this.wiki.setText(this.stateTiddler, this.fieldAttr, undefined, val);
+	}
+
+	detectActiveToken() {
+		if(!this.inputNode) return null;
+		const enabled = this.wiki.getTiddlerText("$:/config/projectify/SmartQuickAdd", "yes") !== "no";
+		if(!enabled) return null;
+
+		const val = this.inputNode.value || "";
+		const cursor = typeof this.inputNode.selectionStart === "number" ? this.inputNode.selectionStart : val.length;
+		const before = val.slice(0, cursor);
+
+		// 1. Bracketed project token: #[Partial Project
+		const bracketMatch = before.match(/(?:^|\s)(#\[([^\]]*))$/);
+		if(bracketMatch) {
+			return {
+				trigger: "#",
+				query: bracketMatch[2],
+				start: cursor - bracketMatch[1].length,
+				end: cursor
+			};
+		}
+
+		// 2. Standard token at cursor: #proj, @ctx/date, ~date, !prio
+		const tokenMatch = before.match(/(?:^|\s)([#@~!])([^\s#@~!]*)$/);
+		if(tokenMatch) {
+			const fullToken = tokenMatch[1] + tokenMatch[2];
+			return {
+				trigger: tokenMatch[1],
+				query: tokenMatch[2],
+				start: cursor - fullToken.length,
+				end: cursor
+			};
+		}
+		return null;
+	}
+
+	getSuggestionsForToken(tokenInfo) {
+		const q = (tokenInfo.query || "").toLowerCase();
+		const items = [];
+
+		if(tokenInfo.trigger === "#") {
+			const projects = this.wiki.filterTiddlers("[all[tiddlers]tag[Project]!has[draft.of]!title[Inbox]!tag[done]sort[title]] [all[tiddlers]tag[SubProject]!has[draft.of]!tag[done]sort[title]] +[unique[]]");
+			projects.forEach(proj => {
+				const tid = this.wiki.getTiddler(proj);
+				const isSub = tid && tid.hasTag("SubProject");
+				const cat = tid ? tid.getFieldString("category") : "";
+				const tokenStr = /\s/.test(proj) ? `#[${proj}]` : `#${proj}`;
+				if(!q || proj.toLowerCase().includes(q)) {
+					items.push({
+						label: proj,
+						badge: isSub ? "Sub-project" : (cat || "Project"),
+						token: tokenStr,
+						prefix: "#"
+					});
+				}
+			});
+		} else if(tokenInfo.trigger === "@") {
+			const dateSuggestions = [
+				{label: "@today", badge: "Due today", token: "@today", prefix: "@"},
+				{label: "@tomorrow", badge: "Due tomorrow", token: "@tomorrow", prefix: "@"},
+				{label: "@nextweek", badge: "Due next Monday", token: "@nextweek", prefix: "@"}
+			];
+			dateSuggestions.forEach(d => {
+				if(!q || d.label.slice(1).includes(q) || d.badge.toLowerCase().includes(q)) {
+					items.push(d);
+				}
+			});
+
+			if(this.wiki.getTiddlerText("$:/config/projectify/EnableContexts", "yes") !== "no") {
+				const contexts = this.wiki.filterTiddlers("[{$:/config/projectify/DefaultContexts}enlist-input[]] [all[tiddlers]tag[todo]!has[draft.of]get[context]enlist-input[]] +[unique[]sort[title]]");
+				contexts.forEach(ctx => {
+					const cleanCtx = ctx.startsWith("@") ? ctx : `@${ctx}`;
+					if(!q || cleanCtx.slice(1).toLowerCase().includes(q)) {
+						items.push({
+							label: cleanCtx,
+							badge: "Context",
+							token: cleanCtx,
+							prefix: "@"
+						});
+					}
+				});
+			}
+		} else if(tokenInfo.trigger === "~") {
+			const schedSuggestions = [
+				{label: "~today", badge: "Start today", token: "~today", prefix: "~"},
+				{label: "~tomorrow", badge: "Start tomorrow", token: "~tomorrow", prefix: "~"},
+				{label: "~nextweek", badge: "Start next Monday", token: "~nextweek", prefix: "~"}
+			];
+			schedSuggestions.forEach(s => {
+				if(!q || s.label.slice(1).includes(q) || s.badge.toLowerCase().includes(q)) {
+					items.push(s);
+				}
+			});
+		} else if(tokenInfo.trigger === "!") {
+			const prioSuggestions = [
+				{label: "!3", badge: "High priority", token: "!3", prefix: "!"},
+				{label: "!2", badge: "Medium priority", token: "!2", prefix: "!"},
+				{label: "!1", badge: "Low priority", token: "!1", prefix: "!"}
+			];
+			prioSuggestions.forEach(p => {
+				if(!q || p.label.slice(1).includes(q) || p.badge.toLowerCase().includes(q)) {
+					items.push(p);
+				}
+			});
+		}
+
+		return items.slice(0, 20);
+	}
+
+	updateSuggestions() {
+		const tokenInfo = this.detectActiveToken();
+		if(!tokenInfo) {
+			this.closeMenu();
+			return;
+		}
+		const matches = this.getSuggestionsForToken(tokenInfo);
+		if(matches.length === 0) {
+			this.closeMenu();
+			return;
+		}
+		this.activeTokenInfo = tokenInfo;
+		this.suggestions = matches;
+		if(this.activeIndex >= matches.length) {
+			this.activeIndex = 0;
+		}
+		this.renderMenu();
+	}
+
+	renderMenu() {
+		if(!this.menuNode) return;
+		while(this.menuNode.firstChild) {
+			this.menuNode.removeChild(this.menuNode.firstChild);
+		}
+		let activeEl = null;
+		this.suggestions.forEach((item, idx) => {
+			const btn = this.document.createElement("button");
+			btn.setAttribute("type", "button");
+			btn.setAttribute("role", "option");
+			btn.className = "tc-btn-invisible py-autocomplete-item tc-popup-handle" + (idx === this.activeIndex ? " py-active" : "");
+			if(idx === this.activeIndex) {
+				activeEl = btn;
+			}
+
+			const mainSpan = this.document.createElement("span");
+			mainSpan.className = "py-autocomplete-label";
+
+			const prefixSpan = this.document.createElement("span");
+			prefixSpan.className = "py-autocomplete-prefix";
+			prefixSpan.textContent = item.prefix;
+			mainSpan.appendChild(prefixSpan);
+
+			const textSpan = this.document.createElement("span");
+			textSpan.textContent = item.label.startsWith(item.prefix) ? item.label.slice(item.prefix.length) : item.label;
+			mainSpan.appendChild(textSpan);
+
+			const badgeSpan = this.document.createElement("span");
+			badgeSpan.className = "py-autocomplete-badge";
+			badgeSpan.textContent = item.badge;
+
+			btn.appendChild(mainSpan);
+			btn.appendChild(badgeSpan);
+
+			btn.addEventListener("mousedown", (e) => {
+				// Prevent input blur before selection completes
+				e.preventDefault();
+				this.applySuggestion(item);
+			});
+			this.menuNode.appendChild(btn);
+		});
+		this.menuNode.hidden = false;
+		if(activeEl) {
+			if(typeof activeEl.scrollIntoView === "function") {
+				activeEl.scrollIntoView({block: "nearest"});
+			} else {
+				const itemTop = activeEl.offsetTop;
+				const itemBottom = itemTop + activeEl.offsetHeight;
+				if(itemTop < this.menuNode.scrollTop) {
+					this.menuNode.scrollTop = itemTop;
+				} else if(itemBottom > this.menuNode.scrollTop + this.menuNode.clientHeight) {
+					this.menuNode.scrollTop = itemBottom - this.menuNode.clientHeight;
+				}
+			}
+		}
+	}
+
+	closeMenu() {
+		this.suggestions = [];
+		this.activeTokenInfo = null;
+		this.activeIndex = 0;
+		if(this.menuNode) {
+			this.menuNode.hidden = true;
+		}
+	}
+
+	applySuggestion(item) {
+		if(!this.inputNode || !this.activeTokenInfo) return;
+		const val = this.inputNode.value || "";
+		const before = val.slice(0, this.activeTokenInfo.start);
+		const after = val.slice(this.activeTokenInfo.end);
+		const needsLeadingSpace = before.length > 0 && !/\s$/.test(before);
+		const replacement = (needsLeadingSpace ? " " : "") + item.token + " ";
+		const nextVal = before + replacement + after.replace(/^\s+/, "");
+		const nextCursor = (before + replacement).length;
+
+		this.inputNode.value = nextVal;
+		this.saveFieldValue(nextVal);
+		this.closeMenu();
+		this.inputNode.focus();
+		if(this.inputNode.setSelectionRange) {
+			this.inputNode.setSelectionRange(nextCursor, nextCursor);
+		}
+	}
+
+	handleKeyDown(event) {
+		const isMenuOpen = this.menuNode && !this.menuNode.hidden && this.suggestions.length > 0;
+		if(isMenuOpen) {
+			if(event.key === "ArrowDown") {
+				event.preventDefault();
+				event.stopPropagation();
+				this.activeIndex = (this.activeIndex + 1) % this.suggestions.length;
+				this.renderMenu();
+				return;
+			}
+			if(event.key === "ArrowUp") {
+				event.preventDefault();
+				event.stopPropagation();
+				this.activeIndex = (this.activeIndex - 1 + this.suggestions.length) % this.suggestions.length;
+				this.renderMenu();
+				return;
+			}
+			if(event.key === "Enter" || event.key === "Tab") {
+				event.preventDefault();
+				event.stopPropagation();
+				const chosen = this.suggestions[this.activeIndex] || this.suggestions[0];
+				if(chosen) {
+					this.applySuggestion(chosen);
+				}
+				return;
+			}
+			if(event.key === "Escape") {
+				event.preventDefault();
+				event.stopPropagation();
+				this.closeMenu();
+				return;
+			}
+		}
+
+		if(event.key === "Enter" && this.submitActions) {
+			event.preventDefault();
+			event.stopPropagation();
+			this.invokeActionString(this.submitActions, this, event);
+		}
+	}
+}
+
 exports["py-date-today"] = createQuickDateWidget(getToday, "py-date-today");
 exports["py-date-tomorrow"] = createQuickDateWidget(getTomorrow, "py-date-tomorrow");
 exports["py-date-next-week"] = createQuickDateWidget(getNextMonday, "py-date-next-week");
 exports["py-date-clear"] = createQuickDateWidget(function() { return undefined; }, "py-date-clear");
 exports["py-date-calendar"] = CalendarWidget;
+exports["py-quick-input"] = QuickInputWidget;
 exports["action-py-toggle-todo"] = ActionToggleTodoWidget;
 exports["action-py-quick-add"] = ActionQuickAddTodoWidget;
 exports["action-py-reschedule-overdue"] = ActionRescheduleOverdueWidget;

@@ -857,3 +857,82 @@ input.py-input.py-inline-input {
   color: var(--tpc-muted-foreground, <<colour muted-foreground>>);
   line-height: 1.4;
 }
+
+/* Smart Quick-Add Autocomplete Menu */
+.py-quick-input-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.py-inline-subtask-form .py-quick-input-wrapper {
+  width: auto;
+}
+
+.py-autocomplete-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  z-index: 1200;
+  min-width: 240px;
+  max-width: min(360px, calc(100vw - 32px));
+  max-height: 220px;
+  overflow-y: auto;
+  background: var(--tpc-tiddler-background, <<colour tiddler-background>>);
+  color: var(--tpc-foreground, <<colour foreground>>);
+  border: 1px solid color-mix(in srgb, var(--tpc-muted-foreground, <<colour muted-foreground>>) 30%, transparent);
+  border-radius: 8px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.22);
+  padding: 4px;
+}
+
+.py-autocomplete-menu[hidden] {
+  display: none !important;
+}
+
+.py-autocomplete-menu .tc-btn-invisible.py-autocomplete-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 5px 8px;
+  border-radius: 5px;
+  font-size: 13px;
+  line-height: 1.4;
+  text-align: left;
+  color: var(--tpc-foreground, <<colour foreground>>);
+  cursor: pointer;
+}
+
+.py-autocomplete-menu .tc-btn-invisible.py-autocomplete-item:hover,
+.py-autocomplete-menu .tc-btn-invisible.py-autocomplete-item.py-active {
+  background: color-mix(in srgb, var(--tpc-primary, <<colour primary>>) 15%, transparent);
+  color: var(--tpc-primary, <<colour primary>>);
+}
+
+.py-autocomplete-label {
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 500;
+}
+
+.py-autocomplete-prefix {
+  color: var(--tpc-primary, <<colour primary>>);
+  font-weight: 700;
+  margin-right: 1px;
+}
+
+.py-autocomplete-badge {
+  font-size: 11px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--tpc-muted-foreground, <<colour muted-foreground>>) 14%, transparent);
+  color: var(--tpc-muted-foreground, <<colour muted-foreground>>);
+  white-space: nowrap;
+  flex-shrink: 0;
+}

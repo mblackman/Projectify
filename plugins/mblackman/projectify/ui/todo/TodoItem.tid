@@ -110,14 +110,13 @@ type: text/vnd.tiddlywiki
         <$list filter="[all[tiddlers]tag<currentTiddler>tag[todo]!has[draft.of]!tag[done]]" template="$:/plugins/mblackman/projectify/ui/todo/TodoItem"/>
         <$list filter="[all[tiddlers]tag<currentTiddler>tag[todo]!has[draft.of]tag[done]]" template="$:/plugins/mblackman/projectify/ui/todo/TodoItem"/>
         <div class="py-inline-subtask-form">
-          <$keyboard key="enter" actions=<<add-inline-subtask-actions>>>
-            <$edit-text
-              class="py-input py-subtask-input"
-              tiddler=<<subtaskAddState>>
-              field="todo-name"
-              placeholder={{$:/language/projectify/AddTodoToProject/Placeholder}}
-            />
-          </$keyboard>
+          <$py-quick-input
+            class="py-input py-subtask-input"
+            tiddler=<<subtaskAddState>>
+            field="todo-name"
+            placeholder={{$:/language/projectify/AddTodoToProject/Placeholder}}
+            actions=<<add-inline-subtask-actions>>
+          />
           <$button class="py-btn btn-small" actions=<<add-inline-subtask-actions>>>
             <<lingo AddTodo/Caption>>
           </$button>

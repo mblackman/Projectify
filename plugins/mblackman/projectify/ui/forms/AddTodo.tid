@@ -15,14 +15,13 @@ type: text/vnd.tiddlywiki
 
 <$let stateTiddler=<<qualify "$:/temp/projectify/add-todo-form">>>
   <div class="py-composite-input">
-    <$keyboard key="enter" actions=<<add-todo-actions>>>
-      <$edit-text
-        class="py-input"
-        tiddler=<<stateTiddler>>
-        field="todo-name"
-        placeholder=<<placeholder>>
-      />
-    </$keyboard>
+    <$py-quick-input
+      class="py-input"
+      tiddler=<<stateTiddler>>
+      field="todo-name"
+      placeholder=<<placeholder>>
+      actions=<<add-todo-actions>>
+    />
 
     <div class="py-todo-actions">
       <$let currentTiddler=<<stateTiddler>>>

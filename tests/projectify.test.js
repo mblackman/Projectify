@@ -321,6 +321,44 @@ describe("Projectify Plugin ($:/plugins/mblackman/projectify)", () => {
     $tw.wiki.deleteTiddler("Draft Q4 Architecture Spec");
   });
 
+  test("py-quick-input provides live autocomplete suggestions for #, @, ~, and ! tokens", () => {
+    const QuickInputWidget = $tw.modules.applyMethods("widget")["py-quick-input"];
+    expect(QuickInputWidget).toBeDefined();
+
+    const widget = new QuickInputWidget(
+      {
+        type: "py-quick-input",
+        attributes: {
+          tiddler: { type: "string", value: "$:/temp/projectify/test-autocomplete" },
+          field: { type: "string", value: "todo-name" }
+        }
+      },
+      { wiki: $tw.wiki }
+    );
+    widget.computeAttributes();
+    widget.execute();
+
+    // 1. Project suggestions on #
+    const projSuggestions = widget.getSuggestionsForToken({ trigger: "#", query: "prod" });
+    expect(projSuggestions.length).toBeGreaterThan(0);
+    expect(projSuggestions[0].label).toBe("Product roadmap");
+    expect(projSuggestions[0].token).toBe("#[Product roadmap]");
+
+    // 2. Date & Context suggestions on @
+    const atSuggestions = widget.getSuggestionsForToken({ trigger: "@", query: "" });
+    expect(atSuggestions.some(s => s.token === "@today")).toBe(true);
+    expect(atSuggestions.some(s => s.token === "@work")).toBe(true);
+
+    // 3. Start date suggestions on ~
+    const tildeSuggestions = widget.getSuggestionsForToken({ trigger: "~", query: "tom" });
+    expect(tildeSuggestions.length).toBe(1);
+    expect(tildeSuggestions[0].token).toBe("~tomorrow");
+
+    // 4. Priority suggestions on !
+    const prioSuggestions = widget.getSuggestionsForToken({ trigger: "!", query: "" });
+    expect(prioSuggestions.map(s => s.token)).toEqual(["!3", "!2", "!1"]);
+  });
+
   test("supports recursive sub-project rollups, dependencies (blocked-by), and Kanban / Matrix / Review views", () => {
     // Set up a parent project with a sub-project and a blocked task
     $tw.wiki.addTiddler({ title: "TestScaleProject", tags: ["Project"] });

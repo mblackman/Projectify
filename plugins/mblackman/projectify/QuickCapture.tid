@@ -22,15 +22,14 @@ type: text/vnd.tiddlywiki
 !! {{$:/plugins/mblackman/projectify/images/quick-capture}} <<lingo QuickAddTodo>>
 
 <div class="py-composite-input py-quick-capture-box">
-  <$keyboard key="enter" actions=<<quick-capture-actions>>>
-    <$edit-text
-      class="py-input input-large"
-      tiddler="$:/temp/projectify/QuickCapture"
-      field="todo_name"
-      placeholder={{$:/language/projectify/AddToInbox/Placeholder}}
-      focus="true"
-    />
-  </$keyboard>
+  <$py-quick-input
+    class="py-input input-large"
+    tiddler="$:/temp/projectify/QuickCapture"
+    field="todo_name"
+    placeholder={{$:/language/projectify/AddToInbox/Placeholder}}
+    focus="true"
+    actions=<<quick-capture-actions>>
+  />
 
   <div class="py-todo-actions py-quick-capture-toolbar">
     <$select tiddler="$:/temp/projectify/QuickCapture" field="project" default="Inbox" class="py-select-compact">
