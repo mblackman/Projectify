@@ -1,9 +1,15 @@
 caption: ChangeLog
 created: 20201208093546936
-modified: 20261025120000000
+modified: 20261025174500000
 tags:
 title: $:/plugins/mblackman/projectify/changelog
 type: text/vnd.tiddlywiki
+
+! Release 0.16.1
+
+!! Documentation & Formatting
+
+* Fixed formatting, headers, and list markup across documentation and changelog tiddlers
 
 ! Release 0.16.0
 

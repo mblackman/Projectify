@@ -3,7 +3,7 @@
     "name": "Projectify",
     "description": "Simple and Beautiful project management in TiddlyWiki",
     "author": "Matt Blackman (forked from Nicolas Petton)",
-    "version": "0.16.0",
+    "version": "0.16.1",
     "core-version": ">=5.4.0",
     "source": "https://github.com/mblackman/Projectify",
     "list": "readme doc/Help changelog LICENSE",
