@@ -3,7 +3,7 @@
 	"plugins": [
         "tiddlywiki/tiddlyweb",
         "tiddlywiki/filesystem",
-		"nico/projectify"
+		"mblackman/projectify"
     ],
     "themes": [
         "tiddlywiki/vanilla",
@@ -18,6 +18,13 @@
         ],
 		"readme": [
 			"--rendertiddler","Readme","README.md","text/html"
+		],
+		"plugin": [
+			"--rendertiddler",
+			"$:/plugins/mblackman/projectify",
+			"projectify.json",
+			"text/plain",
+			"$:/core/templates/json-tiddler"
 		]
     }
 }

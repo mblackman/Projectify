@@ -7,7 +7,7 @@ list: LICENSE changelog
 modified: 20210203201618013
 name: Notebook theme
 plugin-type: theme
-source: https://github.com/thaddeusjiang/Notebook
+source: https://github.com/NicolasPetton/Notebook
 title: $:/themes/nico/notebook
 type: application/json
 version: 1.4.1

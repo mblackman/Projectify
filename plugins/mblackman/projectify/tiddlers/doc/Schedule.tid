@@ -1,0 +1,10 @@
+created: 20200427152938733
+modified: 20210117205436104
+tags: [[Projectify documentation]]
+title: $:/plugins/mblackman/projectify/doc/Schedule
+type: text/vnd.tiddlywiki
+
+[[Todos|$:/plugins/mblackman/projectify/doc/Todos]] with a due date will appear in
+the [[Upcoming|$:/plugins/mblackman/projectify/ui/dashbaord/Upcoming]] or
+[[Today|$:/plugins/mblackman/projectify/ui/dashbaord/Today]] tab of the
+[[Dashboard|$:/plugins/mblackman/projectify/doc/Dashboard]].

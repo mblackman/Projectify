@@ -1,5 +1,6 @@
 {
   "name": "projectify",
+  "version": "0.15.0",
   "description": "Projectify development environment",
   "scripts": {
     "dev": "cross-env TIDDLYWIKI_PLUGIN_PATH=./plugins npx nodemon -e tid,multids,js,info --watch plugins ./node_modules/tiddlywiki/tiddlywiki.js . --listen",
@@ -7,12 +8,13 @@
     "dev-empty": "cross-env TIDDLYWIKI_PLUGIN_PATH=./plugins npx tiddlywiki editions/empty/ --listen",
     "build-demo": "cross-env TIDDLYWIKI_PLUGIN_PATH=./plugins npx tiddlywiki editions/demo/ --output docs --build index",
     "build-empty": "cross-env TIDDLYWIKI_PLUGIN_PATH=./plugins npx tiddlywiki editions/empty/ --output docs --build index",
+    "build-plugin": "cross-env TIDDLYWIKI_PLUGIN_PATH=./plugins npx tiddlywiki editions/demo/ --output docs --build plugin",
     "build-readme": "cross-env TIDDLYWIKI_PLUGIN_PATH=./plugins npx tiddlywiki editions/demo/ --output . --build readme",
-    "build": "npm run build-demo; npm run build-empty; npm run build-readme"
+    "build": "npm run build-demo; npm run build-empty; npm run build-plugin; npm run build-readme"
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/thaddeusjiang/projectify.git"
+    "url": "git+https://github.com/mblackman/Projectify.git"
   },
   "keywords": [
     "TiddlyWiki",
@@ -20,12 +22,12 @@
     "project-management",
     "todo-list"
   ],
-  "author": "Nicolas Petton",
+  "author": "Matt Blackman (forked from Nicolas Petton)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/thaddeusjiang/projectify/issues"
+    "url": "https://github.com/mblackman/Projectify/issues"
   },
-  "homepage": "https://github.com/thaddeusjiang/projectify#readme",
+  "homepage": "https://github.com/mblackman/Projectify#readme",
   "dependencies": {
     "tiddlywiki": "^5.1.23"
   },

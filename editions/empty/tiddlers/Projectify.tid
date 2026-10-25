@@ -3,4 +3,4 @@ modified: 20201219112017003
 title: Projectify
 type: text/vnd.tiddlywiki
 
-{{$:/plugins/nico/projectify/ui/dashboard/Dashboard}}
+{{$:/plugins/mblackman/projectify/ui/dashboard/Dashboard}}

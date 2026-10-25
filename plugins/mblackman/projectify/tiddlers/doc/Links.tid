@@ -1,0 +1,14 @@
+caption: External links
+description: Useful links to online resources
+created: 20201228214411502
+modified: 20261025120000000
+tags: [[Projectify documentation]] $:/plugins/mblackman/projectify/tags/help-card
+list-after: $:/plugins/mblackman/projectify/doc/CoreConcepts
+title: $:/plugins/mblackman/projectify/doc/Links
+type: text/vnd.tiddlywiki
+
+!! External links
+
+* [[Online website|https://mblackman.github.io/Projectify]]
+* [[GitHub repository|https://github.com/mblackman/Projectify]]
+* [[Original Projectify by Nicolas Petton|https://github.com/NicolasPetton/Projectify]]

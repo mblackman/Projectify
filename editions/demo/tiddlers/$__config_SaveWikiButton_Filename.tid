@@ -3,4 +3,4 @@ modified: 20210109044020375
 tags: 
 title: $:/config/SaveWikiButton/Filename
 
-Projectify {{$:/plugins/nico/projectify!!version}}.html
+Projectify {{$:/plugins/mblackman/projectify!!version}}.html

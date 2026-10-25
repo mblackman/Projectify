@@ -1,40 +1,42 @@
 created: 20210112221205605
-modified: 20210201212652356
+modified: 20261025120000000
 tags:
 title: Readme
 type: text/vnd.tiddlywiki
 
-\define tv-wikilink-template() https://thaddeusjiang.github.io/Projectify/demo.html#$uri_encoded$
+\define tv-wikilink-template() https://mblackman.github.io/Projectify/demo.html#$uri_encoded$
 
 ! Projectify
 
 Projectify is a project management app for [[TiddlyWiki|https://tiddlywiki.com]], inspired by products like [[Todoist|https://todoist.com]] and [[Basecamp|https://basecamp.com]].
 
-[[TiddlyWiki|https://tiddlywiki.com]] is an excellent note-taking & knowledge-base app with [[unique features|https://tiddlywiki.com/#TiddlyWiki]]. Projectify brings project management to ~TiddlyWiki, extending it to let you [[capture thoughts|$:/plugins/nico/projectify/doc/Inbox]], [[plan projects|$:/plugins/nico/projectify/doc/Projects]] and [[schedule tasks|$:/plugins/nico/projectify/doc/Schedule]].
+This is a maintained fork by [[Matt Blackman|https://github.com/mblackman]] published as `$:/plugins/mblackman/projectify`, forked from the original project by [[Nicolas Petton|https://nicolas.petton.fr]].
 
-Projectify is carefully crafted, with an intuitive interface that integrates seamlessy with the core of ~TiddlyWiki. [[Drag and drop |https://tiddlywiki.com/#Drag%20and%20Drop]] any tiddler into a project to add it as a todo, [[transclude|https://tiddlywiki.com/#Transclusion]] and [[link|https://tiddlywiki.com/#Linking%20in%20WikiText]] other tiddlers into projects or tasks.
+[[TiddlyWiki|https://tiddlywiki.com]] is an excellent note-taking & knowledge-base app with [[unique features|https://tiddlywiki.com/#TiddlyWiki]]. Projectify brings project management to ~TiddlyWiki, extending it to let you [[capture thoughts|$:/plugins/mblackman/projectify/doc/Inbox]], [[plan projects|$:/plugins/mblackman/projectify/doc/Projects]] and [[schedule tasks|$:/plugins/mblackman/projectify/doc/Schedule]].
 
-For all changes in the latest {{$:/plugins/nico/projectify!!version}} release, see [[ChangeLog|$:/plugins/nico/projectify/changelog]].
+Projectify is carefully crafted, with an intuitive interface that integrates seamlessly with the core of ~TiddlyWiki. [[Drag and drop|https://tiddlywiki.com/#Drag%20and%20Drop]] any tiddler into a project to add it as a todo, [[transclude|https://tiddlywiki.com/#Transclusion]] and [[link|https://tiddlywiki.com/#Linking%20in%20WikiText]] other tiddlers into projects or tasks.
+
+For all changes in the latest {{$:/plugins/mblackman/projectify!!version}} release, see [[ChangeLog|$:/plugins/mblackman/projectify/changelog]].
 
 !! Demo
 
-A demo is available at [[thaddeusjiang.github.io/Projectify|https://thaddeusjiang.github.io/Projectify]].
+A demo is available at [[mblackman.github.io/Projectify|https://mblackman.github.io/Projectify]].
 
 !! Download
 
 Download a pre-configured empty wiki:
 
-<a class="py-btn btn-primary download-link" href="https://thaddeusjiang.github.io/Projectify/empty.html" download="empty.html">
+<a class="py-btn btn-primary download-link" href="https://mblackman.github.io/Projectify/empty.html" download="empty.html">
   Get Projectify {{$:/core/images/save-button}}
 </a>
 
-Alternatively, see [[Installation|$:/plugins/nico/projectify/doc/Installation]] for installation instructions in an existing wiki.
+Alternatively, see [[Installation|$:/plugins/mblackman/projectify/doc/Installation]] for installation instructions in an existing wiki.
 
 !! Documentation
 
 * If you are new to ''~TiddlyWiki'', we strongly encourage you to read the [[Getting started|https://tiddlywiki.com/#GettingStarted]] documentation.
 
-* The ''Projectify documentation'' is available [[online|$:/plugins/nico/projectify/doc/Help]] as well as locally when the plugin is installed.
+* The ''Projectify documentation'' is available [[online|$:/plugins/mblackman/projectify/doc/Help]] as well as locally when the plugin is installed.
 
 !! Development setup
 
@@ -45,7 +47,9 @@ Alternatively, see [[Installation|$:/plugins/nico/projectify/doc/Installation]] 
 * To write empty page, run `npm run dev-empty`. The empty page is available at http://localhost:8080.
 * To build HTML files for all editions, run `npm run build`
 
-!! Contributors
+!! Upstream & Contributors
+
+Originally created by [[Nicolas Petton|https://nicolas.petton.fr]] ([[upstream repo|https://github.com/NicolasPetton/Projectify]]).
 
 Many thanks to the following people who have contributed to Projectify:
 

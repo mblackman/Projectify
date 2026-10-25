@@ -6,8 +6,8 @@ type: text/vnd.tiddlywiki
 
 {{Projectify Intro}}
 
-<$link to="$:/plugins/nico/projectify/LICENSE"><<shield label:License status:MIT>></$link>
-<$link to="$:/plugins/nico/projectify"><<shield label:Release status:{{$:/plugins/nico/projectify!!version}} colour:purple>></$link>
+<$link to="$:/plugins/mblackman/projectify/LICENSE"><<shield label:License status:MIT>></$link>
+<$link to="$:/plugins/mblackman/projectify"><<shield label:Release status:{{$:/plugins/mblackman/projectify!!version}} colour:purple>></$link>
 <a href="https://tiddlywiki.com"><<shield label:~TiddlyWiki status:5.1.22+ colour:blue>></a>
 
 {{Readme}}

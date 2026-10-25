@@ -4,4 +4,4 @@ tags:
 title: Demo
 type: text/vnd.tiddlywiki
 
-{{$:/plugins/nico/projectify/ui/dashboard/Dashboard}}
+{{$:/plugins/mblackman/projectify/ui/dashboard/Dashboard}}

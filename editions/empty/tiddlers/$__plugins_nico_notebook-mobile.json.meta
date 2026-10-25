@@ -7,7 +7,7 @@ list:
 modified: 20201219111632312
 name: Mobile support for the Notebook theme
 plugin-type: plugin
-source: https://github.com/thaddeusjiang/Notebook
+source: https://github.com/NicolasPetton/Notebook
 title: $:/plugins/nico/notebook-mobile
 type: application/json
 version: 1.0.0

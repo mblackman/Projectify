@@ -1,0 +1,19 @@
+caption: Core concepts
+description: Learn the basics of Projectify
+created: 20200427133943777
+modified: 20210206204400292
+tags: [[Projectify documentation]] $:/plugins/mblackman/projectify/tags/help-card
+list-after: $:/plugins/mblackman/projectify/doc/GettingStarted
+title: $:/plugins/mblackman/projectify/doc/CoreConcepts
+type: text/vnd.tiddlywiki
+
+The following tiddlers will help you learn the basics of Projectify.
+
+* [[Dashboard|$:/plugins/mblackman/projectify/doc/Dashboard]]
+* [[Inbox|$:/plugins/mblackman/projectify/doc/Inbox]]
+* [[Todos|$:/plugins/mblackman/projectify/doc/Todos]]
+* [[Projects|$:/plugins/mblackman/projectify/doc/Projects]]
+* [[Categories|$:/plugins/mblackman/projectify/doc/Categories]]
+* [[Refiling|$:/plugins/mblackman/projectify/doc/Refiling]]
+* [[Schedule|$:/plugins/mblackman/projectify/doc/Schedule]]
+* [[Customizing Projectify|$:/plugins/mblackman/projectify/doc/Customizing]]

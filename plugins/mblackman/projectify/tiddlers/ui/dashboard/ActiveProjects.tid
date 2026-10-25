@@ -1,0 +1,19 @@
+created: 20210116214213972
+modified: 20210118092251921
+tags:
+title: $:/plugins/mblackman/projectify/ui/dashboard/ActiveProjects
+type: text/vnd.tiddlywiki
+
+<$list
+  filter=<<py-has-projects>>
+  emptyMessage={{$:/plugins/mblackman/projectify/ui/welcome/EmptyProjects}}
+  >
+  <$vars category={{$:/state/projectify/project-category-filter}}>
+    <$reveal type="match" state="$:/config/projectify/projects-view" text="list">
+      {{$:/plugins/mblackman/projectify/ui/dashboard/ProjectList}}
+    </$reveal>
+    <$reveal type="nomatch" state="$:/config/projectify/projects-view" text="list">
+      {{$:/plugins/mblackman/projectify/ui/dashboard/ProjectCards}}
+    </$reveal>
+  </$vars>
+</$list>

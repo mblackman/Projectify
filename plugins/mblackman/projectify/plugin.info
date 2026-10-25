@@ -1,0 +1,12 @@
+{
+    "title": "$:/plugins/mblackman/projectify",
+    "name": "Projectify",
+    "description": "Simple and Beautiful project management in TiddlyWiki",
+    "author": "Matt Blackman (forked from Nicolas Petton)",
+    "version": "0.15.0",
+    "core-version": ">=5.1.22",
+    "source": "https://github.com/mblackman/Projectify",
+    "list": "doc/Help changelog LICENSE",
+    "dependents": "",
+    "plugin-type": "plugin"
+}
