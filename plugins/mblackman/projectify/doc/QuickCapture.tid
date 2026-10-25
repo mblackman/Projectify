@@ -4,17 +4,17 @@ tags: [[Projectify documentation]]
 title: $:/plugins/mblackman/projectify/doc/QuickCapture
 type: text/vnd.tiddlywiki
 
-Press <kbd>{{$:/config/shortcuts/py-quick-capture}}</kbd> from anywhere in your wiki to open the **Quick Capture** modal (you can customize this shortcut in [[Control Panel > Keyboard Shortcuts|$:/core/ui/ControlPanel/KeyboardShortcuts]]).
+Press <kbd>{{$:/config/shortcuts/py-quick-capture}}</kbd> from anywhere in your wiki to open the ''Quick Capture'' modal (you can customize this shortcut in [[Control Panel > Keyboard Shortcuts|$:/core/ui/ControlPanel/KeyboardShortcuts]]).
 
 !! Smart Inline Tokens
 
-All task inputs in Projectify—including Quick Capture, the Inbox input, Project task forms, and inline sub-task inputs—support natural inline tokens when **Smart Quick Add** is enabled:
+All task inputs in Projectify—including Quick Capture, the Inbox input, Project task forms, and inline sub-task inputs—support natural inline tokens when ''Smart Quick Add'' is enabled:
 
 |!Token |!Effect |!Example |
 |`!1`, `!2`, `!3` or `p1`–`p3` |Sets task priority (`1` = Low, `2` = Medium, `3` = High) |`Fix login bug !3` |
-|`@today`, `@tomorrow`, `@nextweek`, `@YYYY-MM-DD` |Sets the **Due Date** (`due`) |`Submit tax forms @2026-04-15` |
-|`~today`, `~tomorrow`, `~nextweek`, `~YYYY-MM-DD` |Sets the **Start / Scheduled Date** (`scheduled`) |`Draft proposal ~tomorrow` |
+|`@today`, `@tomorrow`, `@nextweek`, `@YYYY-MM-DD` |Sets the ''Due Date'' (`due`) |`Submit tax forms @2026-04-15` |
+|`~today`, `~tomorrow`, `~nextweek`, `~YYYY-MM-DD` |Sets the ''Start / Scheduled Date'' (`scheduled`) |`Draft proposal ~tomorrow` |
 |`#Project` or `#[Project Name]` |Files the task directly into an existing project (instead of Inbox) |`Buy plane tickets #[Book vacation trip]` |
 |`@context` (e.g. `@work`, `@home`, `@calls`) |Adds one or more `@context` tags to the task |`Call dentist @calls @errands` |
 
-You can also use the **Project dropdown**, **Schedule**, and **Priority** pickers directly inside the Quick Capture modal.
+You can also use the ''Project dropdown'', ''Schedule'', and ''Priority'' pickers directly inside the Quick Capture modal.

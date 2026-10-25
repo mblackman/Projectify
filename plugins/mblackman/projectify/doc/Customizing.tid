@@ -4,9 +4,9 @@ tags: [[Projectify documentation]]
 title: $:/plugins/mblackman/projectify/doc/Customizing
 type: text/vnd.tiddlywiki
 
-Projectify is designed around **progressive disclosure** so you can tailor the interface to your exact workflow:
+Projectify is designed around ''progressive disclosure'' so you can tailor the interface to your exact workflow:
 
-* ''Workflow Presets & Feature Toggles'': Open [[Control Panel > Projectify|$:/plugins/mblackman/projectify/ui/config/Basics]] to switch between **Minimal / Classic**, **GTD Power**, **Kanban & Agile**, and **Full Suite** presets, or toggle individual features (multi-status, scheduled dates, board view, `@contexts`, Matrix tab, Review tab, smart quick-add tokens).
+* ''Workflow Presets & Feature Toggles'': Open [[Control Panel > Projectify|$:/plugins/mblackman/projectify/ui/config/Basics]] to switch between ''Minimal / Classic'', ''GTD Power'', ''Kanban & Agile'', and ''Full Suite'' presets, or toggle individual features (multi-status, scheduled dates, board view, `@contexts`, Matrix tab, Review tab, smart quick-add tokens).
 * ''Custom Dashboard Tabs'': [[Add your own tabs to the dashboard|$:/plugins/mblackman/projectify/doc/DashboardCustomTabs]] or [[display the Inbox in a separate tab|$:/plugins/mblackman/projectify/doc/DashboardInboxSeparateTab]].
 * ''Embed UI Elements Anywhere'': [[Transclude individual Projectify views|$:/plugins/mblackman/projectify/doc/TranscludingUIElements]] into your own tiddlers, journals, or layout templates.
 * ''Customizing Task Rendering'': [[Override the TodoCaption shadow tiddler|$:/plugins/mblackman/projectify/doc/Todos]] to customize how tasks appear in lists.

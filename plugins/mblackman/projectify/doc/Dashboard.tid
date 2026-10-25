@@ -4,14 +4,14 @@ tags: [[Projectify documentation]]
 title: $:/plugins/mblackman/projectify/doc/Dashboard
 type: text/vnd.tiddlywiki
 
-The main entry point of Projectify is the **Dashboard**. It provides a unified workspace across your projects and tasks:
+The main entry point of Projectify is the ''Dashboard''. It provides a unified workspace across your projects and tasks:
 
 * ''{{$:/plugins/mblackman/projectify/images/collection}} Projects'' — Your [[Inbox|$:/plugins/mblackman/projectify/doc/Inbox]] and active [[Projects|$:/plugins/mblackman/projectify/doc/Projects]] (viewed as cards or a list, filterable by [[Category|$:/plugins/mblackman/projectify/doc/Categories]]).
-* ''{{$:/plugins/mblackman/projectify/images/sun}} Today'' — Tasks due or scheduled for today and any overdue items, including a one-click **Reschedule all to Today** button.
+* ''{{$:/plugins/mblackman/projectify/images/sun}} Today'' — Tasks due or scheduled for today and any overdue items, including a one-click ''Reschedule all to Today'' button.
 * ''{{$:/plugins/mblackman/projectify/images/calendar-checked}} Upcoming'' — A chronological view of all future scheduled tasks.
 * ''{{$:/plugins/mblackman/projectify/images/stack}} Next'' — Actionable [[Next actions|$:/plugins/mblackman/projectify/doc/NextActions]] across your active projects, with an `@context` filter bar.
-* ''{{$:/plugins/mblackman/projectify/images/matrix}} Matrix'' — An **Eisenhower Matrix** grouping actionable tasks into four quadrants: *Urgent & Important (Do First)*, *Important, Not Urgent (Schedule)*, *Urgent, Less Important (Delegate)*, and *Backlog*.
-* ''{{$:/plugins/mblackman/projectify/images/review}} Review'' — A **GTD Weekly Review & Completed Logbook** showing *Stalled Projects*, *Waiting & Blocked* tasks, *Someday / Maybe* items, and your recently completed tasks.
+* ''{{$:/plugins/mblackman/projectify/images/matrix}} Matrix'' — An ''Eisenhower Matrix'' grouping actionable tasks into four quadrants: //Urgent & Important (Do First)//, //Important, Not Urgent (Schedule)//, //Urgent, Less Important (Delegate)//, and //Backlog//.
+* ''{{$:/plugins/mblackman/projectify/images/review}} Review'' — A ''GTD Weekly Review & Completed Logbook'' showing //Stalled Projects//, //Waiting & Blocked// tasks, //Someday / Maybe// items, and your recently completed tasks.
 * ''{{$:/plugins/mblackman/projectify/images/funnel}} Filter'' — Search and filter open tasks by priority, status, `@context`, or title.
 
 <<py-tip "[[You do not have to use the dashboard|$:/plugins/mblackman/projectify/doc/TranscludingUIElements]] to use Projectify, and individual tabs can be toggled in [[Control Panel > Projectify|$:/plugins/mblackman/projectify/ui/config/Basics]].">>

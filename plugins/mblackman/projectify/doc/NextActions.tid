@@ -6,8 +6,8 @@ type: text/vnd.tiddlywiki
 
 The [[Next actions|$:/plugins/mblackman/projectify/ui/dashboard/NextActions]] tab of the [[Dashboard|$:/plugins/mblackman/projectify/doc/Dashboard]] gives you a focused, high-signal view of what you can act on right now across all active [[Projects|$:/plugins/mblackman/projectify/doc/Projects]].
 
-* ''Actionable Filtering'': Tasks that are marked *Waiting* (`waiting`), *Someday / Maybe* (`someday`), blocked by an incomplete dependency (`blocked-by`), or deferred to a future Start Date (`scheduled`) are automatically filtered out until they become actionable.
+* ''Actionable Filtering'': Tasks that are marked //Waiting// (`waiting`), //Someday / Maybe// (`someday`), blocked by an incomplete dependency (`blocked-by`), or deferred to a future Start Date (`scheduled`) are automatically filtered out until they become actionable.
 * ''Parallel vs. Sequential Projects'':
-** In **Parallel** projects (default), all actionable open tasks are shown.
-** In **Sequential** projects (`project-mode: sequential`), only the first actionable open task is shown so you can focus on one step at a time.
+** In ''Parallel'' projects (default), all actionable open tasks are shown.
+** In ''Sequential'' projects (`project-mode: sequential`), only the first actionable open task is shown so you can focus on one step at a time.
 * ''`@Context` Filter Bar'': Filter next actions by `@work`, `@home`, `@computer`, `@errands`, `@calls`, or any custom context pill at the top of the tab.

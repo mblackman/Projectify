@@ -12,14 +12,14 @@ Projects structure [[Todos|$:/plugins/mblackman/projectify/doc/Todos]] together 
 
 You can create projects from the [[Dashboard|$:/plugins/mblackman/projectify/doc/Dashboard]], by adding the <<tag Project>> tag to any tiddler, or by converting an existing task into a project from its {{$:/plugins/mblackman/projectify/images/dots}} menu.
 
-Clicking the {{$:/plugins/mblackman/projectify/ui/buttons/ProjectListSettings}} button in the Projects dashboard tab lets you switch between **Card** and **List** views or reorder projects via drag & drop.
+Clicking the {{$:/plugins/mblackman/projectify/ui/buttons/ProjectListSettings}} button in the Projects dashboard tab lets you switch between ''Card'' and ''List'' views or reorder projects via drag & drop.
 
 !! List vs. Kanban Board View
 
 Inside any project tiddler, use the toolbar switcher to toggle between:
 
 * ''{{$:/plugins/mblackman/projectify/images/checklist}} List view'' — Traditional checklist with scheduled items, sections, and expandable inline sub-tasks.
-* ''{{$:/plugins/mblackman/projectify/images/board}} Board view'' — A drag-and-drop **Kanban board** with columns for *To Do*, *In Progress*, *Waiting*, and *Done*. Dragging a task card into a column automatically updates its status and completion state.
+* ''{{$:/plugins/mblackman/projectify/images/board}} Board view'' — A drag-and-drop ''Kanban board'' with columns for //To Do//, //In Progress//, //Waiting//, and //Done//. Dragging a task card into a column automatically updates its status and completion state.
 
 !! Project Sections & Modes
 
@@ -28,7 +28,7 @@ Click the {{$:/plugins/mblackman/projectify/images/sliders}} options button in a
 * ''Project Mode'':
 ** ''{{$:/plugins/mblackman/projectify/images/stack}} Parallel'' (default) — All unblocked open tasks are considered actionable in the [[Next Actions|$:/plugins/mblackman/projectify/doc/NextActions]] tab.
 ** ''{{$:/plugins/mblackman/projectify/images/checklist}} Sequential'' — Only the first unblocked open task is surfaced in Next Actions until completed.
-* ''Sections'': Add named sections (e.g. *Planning*, *Implementation*, *Launch*) to group tasks within a project, and drag tasks between section headers.
+* ''Sections'': Add named sections (e.g. //Planning//, //Implementation//, //Launch//) to group tasks within a project, and drag tasks between section headers.
 
 !! Adding tasks & Sub-Projects
 
@@ -38,5 +38,5 @@ Project progress indicators ({{$:/plugins/mblackman/projectify/images/pie}}) and
 
 !! Archiving projects
 
-The {{$:/plugins/mblackman/projectify/ui/buttons/ArchiveProject}} button archives a project (adding the <<tag done>> tag) so it is hidden from active lists while remaining accessible under *Show archived*.
+The {{$:/plugins/mblackman/projectify/ui/buttons/ArchiveProject}} button archives a project (adding the <<tag done>> tag) so it is hidden from active lists while remaining accessible under //Show archived//.
 

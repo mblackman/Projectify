@@ -11,24 +11,24 @@ type: text/vnd.tiddlywiki
 
 * ''Richer Task Lifecycle'':
 ** Added multi-stage task statuses: `todo`, `in-progress`, `waiting`, `someday`, `done`, and `cancelled`, with custom SVG icons and quick status switching in the task actions dropdown and task header
-** Added separate **Start / Scheduled** (`scheduled`) dates alongside **Due (Deadline)** (`due`) dates, hiding future-scheduled tasks from *Next Actions* until their start date arrives
-** Added **Recurring tasks** (`recur`: `daily`, `weekdays`, `weekly`, `monthly`, `yearly`, or `+Nd`/`+Nw`/`+Nm`/`+Ny`) that automatically advance to the next occurrence when checked off
+** Added separate ''Start / Scheduled'' (`scheduled`) dates alongside ''Due (Deadline)'' (`due`) dates, hiding future-scheduled tasks from //Next Actions// until their start date arrives
+** Added ''Recurring tasks'' (`recur`: `daily`, `weekdays`, `weekly`, `monthly`, `yearly`, or `+Nd`/`+Nw`/`+Nm`/`+Ny`) that automatically advance to the next occurrence when checked off
 ** Recorded `completed` and `last-completed` UTC timestamps when tasks are completed
 * ''Project Scaling & Hierarchy'':
-** Added **Inline Sub-Tasks** (`SubProject`) that expand and collapse directly inside parent task lists with an inline quick-add input
+** Added ''Inline Sub-Tasks'' (`SubProject`) that expand and collapse directly inside parent task lists with an inline quick-add input
 ** Upgraded project progress pie charts and open task counts to recursively roll up all nested sub-projects using TiddlyWiki 5.4 `\function` definitions
-** Added **Project Sections** (`sections` / `section` fields) with drag-and-drop refiling between sections
-** Added **Parallel vs. Sequential** project modes (`project-mode: parallel | sequential`) and task dependencies (`blocked-by`) with lock badges
+** Added ''Project Sections'' (`sections` / `section` fields) with drag-and-drop refiling between sections
+** Added ''Parallel vs. Sequential'' project modes (`project-mode: parallel | sequential`) and task dependencies (`blocked-by`) with lock badges
 * ''Flexible Views & Dashboards'':
-** Added per-project **List vs. Kanban Board** view switcher (`project-view: list | board`) with drag-and-drop status columns
-** Added `@Context` tags (`context` field) with pill badges and context filter bars in the *Next* and *Filter* tabs
-** Added **Eisenhower Matrix** (`Matrix`) dashboard tab grouping actionable tasks into four urgency/importance quadrants
-** Added **GTD Weekly Review & Completed Logbook** (`Review`) dashboard tab surfacing *Stalled Projects*, *Waiting & Blocked* tasks, *Someday / Maybe* items, and recently completed tasks
-** Added one-click **Workflow Presets** (*Minimal / Classic*, *GTD Power*, *Kanban & Agile*, *Full Suite*) in Control Panel > Projectify
+** Added per-project ''List vs. Kanban Board'' view switcher (`project-view: list | board`) with drag-and-drop status columns
+** Added `@Context` tags (`context` field) with pill badges and context filter bars in the //Next// and //Filter// tabs
+** Added ''Eisenhower Matrix'' (`Matrix`) dashboard tab grouping actionable tasks into four urgency/importance quadrants
+** Added ''GTD Weekly Review & Completed Logbook'' (`Review`) dashboard tab surfacing //Stalled Projects//, //Waiting & Blocked// tasks, //Someday / Maybe// items, and recently completed tasks
+** Added one-click ''Workflow Presets'' (//Minimal / Classic//, //GTD Power//, //Kanban & Agile//, //Full Suite//) in Control Panel > Projectify
 * ''Fast Capture & Mobile UX Polish'':
-** Added **Smart Inline Tokens** (`!1`–`!3`/`p1`–`p3`, `@today`/`@tomorrow`/`@nextweek`/`@YYYY-MM-DD`, `~today`/`~tomorrow`/`~YYYY-MM-DD`, `#Project`/`#[Project Name]`, `@context`) across all task inputs
+** Added ''Smart Inline Tokens'' (`!1`–`!3`/`p1`–`p3`, `@today`/`@tomorrow`/`@nextweek`/`@YYYY-MM-DD`, `~today`/`~tomorrow`/`~YYYY-MM-DD`, `#Project`/`#[Project Name]`, `@context`) across all task inputs
 ** Upgraded Quick Capture (`Alt+C`) with target Project, Schedule, and Priority selectors
-** Added inline task renaming and a batch **Reschedule all to Today** button for overdue tasks
+** Added inline task renaming and a batch ''Reschedule all to Today'' button for overdue tasks
 ** Redesigned the task actions (`...`) dropdown menu with a compact 2-column grid and collapsible calendar for mobile screens
 
 ! Release 0.15.0
