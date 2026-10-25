@@ -6,20 +6,11 @@ type: text/vnd.tiddlywiki
 \procedure lingo-base() $:/language/projectify/
 
 \procedure add-todo-actions()
-<$let todoName={{{ [<stateTiddler>get[todo-name]trim[]] }}}>
-  <%if [<todoName>!is[blank]] %>
-    <$action-createtiddler
-      $basetitle=<<todoName>>
-      due={{{ [<stateTiddler>get[due]] }}}
-      priority={{{ [<stateTiddler>get[priority]] }}}
-    >
-      <$action-listops $tiddler=<<createTiddler-title>> $tags=<<todo-tags>>/>
-    </$action-createtiddler>
-    <$action-deletefield $tiddler=<<stateTiddler>> $field="todo-name" $field="due" $field="priority"/>
-    <$action-deletetiddler $tiddler=<<stateTiddler>>/>
-    <$action-sendmessage $message="tm-auto-save-wiki"/>
-  <%endif%>
-</$let>
+<$action-py-quick-add
+  $state=<<stateTiddler>>
+  $field="todo-name"
+  $tags=<<todo-tags>>
+/>
 \end
 
 <$let stateTiddler=<<qualify "$:/temp/projectify/add-todo-form">>>

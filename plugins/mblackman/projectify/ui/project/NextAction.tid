@@ -4,11 +4,30 @@ tags:
 title: $:/plugins/mblackman/projectify/ui/project/NextAction
 type: text/vnd.tiddlywiki
 
-<%if [subfilter<py-has-open-todos>] %>
-  <dt class="py-project">
-    <$link to={{!!title}}><$view field="title"/></$link> {{||$:/plugins/mblackman/projectify/images/pie}}
-  </dt>
-  <dd>
-    <$list filter=<<py-next-open-todo>> template="$:/plugins/mblackman/projectify/ui/todo/TodoItem"/>
-  </dd>
-<%endif%>
+<$let
+  contextFilter={{$:/state/projectify/next-actions-context}}
+  baseFilter={{{ [{!!project-mode}match[parallel]then<py-parallel-open-todos>else<py-next-open-todo>] }}}
+>
+  <%if [<contextFilter>!is[blank]] %>
+    <%if [subfilter<baseFilter> :filter[get[context]enlist-input[]match<contextFilter>] limit[1]] %>
+      <dt class="py-project">
+        <$link to={{!!title}}><$view field="title"/></$link> {{||$:/plugins/mblackman/projectify/images/pie}}
+      </dt>
+      <dd>
+        <$list filter="[subfilter<baseFilter>] :filter[get[context]enlist-input[]match<contextFilter>]" template="$:/plugins/mblackman/projectify/ui/todo/TodoItem"/>
+      </dd>
+    <%endif%>
+  <%else%>
+    <%if [subfilter<baseFilter>limit[1]] %>
+      <dt class="py-project">
+        <$link to={{!!title}}><$view field="title"/></$link> {{||$:/plugins/mblackman/projectify/images/pie}}
+        <%if [{!!project-mode}match[parallel]] %>
+          <span class="py-badge">{{$:/language/projectify/ProjectMode/Parallel}}</span>
+        <%endif%>
+      </dt>
+      <dd>
+        <$list filter=<<baseFilter>> template="$:/plugins/mblackman/projectify/ui/todo/TodoItem"/>
+      </dd>
+    <%endif%>
+  <%endif%>
+</$let>

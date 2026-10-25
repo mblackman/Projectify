@@ -5,10 +5,36 @@ title: $:/plugins/mblackman/projectify/ui/todo/TodoActions
 type: text/vnd.tiddlywiki
 
 <span class="py-todo-actions">
+  <%if [function[py.has-open-blocker]] %>
+    <span class="py-badge py-badge-blocked" title={{$:/language/projectify/Status/Blocked}}>
+      {{$:/plugins/mblackman/projectify/images/lock}}
+    </span>
+  <%endif%>
+
+  <%if [{!!recur}!is[blank]] %>
+    <span class="py-badge py-badge-recur" title={{!!recur}}>
+      {{$:/plugins/mblackman/projectify/images/repeat}} <$view field="recur"/>
+    </span>
+  <%endif%>
+
+  <%if [{$:/config/projectify/EnableContexts}!match[no]] %>
+    <$list filter="[all[current]get[context]enlist-input[]]" variable="ctx">
+      <span class="py-context-pill"><$text text=<<ctx>>/></span>
+    </$list>
+  <%endif%>
+
   <%if [<showProjectLinks>!is[blank]] %>
     <$list filter="[all[current]tags[]filter<py-all-projects-and-subprojects-filter>]">
       <$link to={{!!title}} overrideClass="py-project-link"/>
     </$list>
+  <%endif%>
+
+  <%if [subfilter<py-has-start-date>] %>
+    <%if [subfilter<py-is-not-scheduled>] %>
+      <span class="py-badge py-badge-scheduled" title={{$:/language/projectify/StartDate/Tab}}>
+        {{$:/plugins/mblackman/projectify/images/sun}} <$view field="scheduled" format="date" template={{$:/language/projectify/DateFormat}}/>
+      </span>
+    <%endif%>
   <%endif%>
 
   <%if [subfilter<py-is-scheduled>] %>

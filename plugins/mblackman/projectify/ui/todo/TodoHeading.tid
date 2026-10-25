@@ -11,6 +11,9 @@ type: text/vnd.tiddlywiki
   <div class="py-todo-heading">
     {{||$:/plugins/mblackman/projectify/ui/buttons/TodoDueDate}}
     {{||$:/plugins/mblackman/projectify/ui/buttons/TodoPriority}}
+    <%if [{$:/config/projectify/EnableMultiStatus}!match[no]] %>
+      {{||$:/plugins/mblackman/projectify/ui/forms/TodoStatus}}
+    <%endif%>
 
     <$let popupTiddler=<<qualify "$:/state/projectify/todo-heading-dropdown">>>
       <$button
@@ -31,6 +34,23 @@ type: text/vnd.tiddlywiki
           </$button>
         <%endif%>
 
+        <%if [{$:/config/projectify/EnableContexts}!match[no]] %>
+          <hr/>
+          {{||$:/plugins/mblackman/projectify/ui/forms/TodoContext}}
+        <%endif%>
+
+        <hr/>
+        <div class="py-dependency-picker tc-popup-handle">
+          <label class="py-label tc-popup-handle">{{$:/plugins/mblackman/projectify/images/lock}} <<lingo BlockedBy/Caption>></label>
+          <$select field="blocked-by" class="tc-popup-handle">
+            <option value="">—</option>
+            <$list filter="[all[tiddlers]tag[todo]!has[draft.of]!tag[done]!title<currentTiddler>sort[title]]" variable="blocker">
+              <option value={{{ [<blocker>format:titlelist[]] }}}><$text text=<<blocker>>/></option>
+            </$list>
+          </$select>
+        </div>
+
+        <hr/>
         {{||$:/plugins/mblackman/projectify/ui/forms/TodoConvert}}
       </$reveal>
     </$let>

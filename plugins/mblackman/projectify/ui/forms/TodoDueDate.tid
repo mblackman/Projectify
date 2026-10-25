@@ -6,9 +6,68 @@ type: text/vnd.tiddlywiki
 
 \procedure lingo-base() $:/language/projectify/
 
-<$py-date-today>{{$:/plugins/mblackman/projectify/images/sun}} <<lingo Today>></$py-date-today>
-<$py-date-tomorrow>{{$:/plugins/mblackman/projectify/images/calendar-event}} <<lingo Tomorrow>></$py-date-tomorrow>
-<$py-date-next-week>{{$:/plugins/mblackman/projectify/images/calendar}} <<lingo NextWeek>></$py-date-next-week>
-<$py-date-clear>{{$:/plugins/mblackman/projectify/images/slash-circle}} <<lingo Clear>></$py-date-clear>
-<hr/>
-<$py-date-calendar/>
+<$let
+  modeTiddler=<<qualify "$:/state/projectify/date-picker-mode">>
+  calendarToggleTiddler=<<qualify "$:/state/projectify/date-picker-calendar">>
+  dateField={{{ [<modeTiddler>get[text]match[scheduled]then[scheduled]else[due]] }}}
+  showCalendar={{{ [<compactCalendar>match[yes]then<calendarToggleTiddler>get[text]else[yes]] }}}
+>
+  <%if [{$:/config/projectify/EnableScheduledDates}!match[no]] %>
+    <div class="py-date-mode-tabs tc-popup-handle">
+      <$button
+        class={{{ [<dateField>match[due]then[tc-btn-invisible py-date-mode-tab py-active tc-popup-handle]else[tc-btn-invisible py-date-mode-tab tc-popup-handle]] }}}
+      >
+        <<lingo DueDate/Tab>>
+        <$action-setfield $tiddler=<<modeTiddler>> text="due"/>
+      </$button>
+      <$button
+        class={{{ [<dateField>match[scheduled]then[tc-btn-invisible py-date-mode-tab py-active tc-popup-handle]else[tc-btn-invisible py-date-mode-tab tc-popup-handle]] }}}
+      >
+        <<lingo StartDate/Tab>>
+        <$action-setfield $tiddler=<<modeTiddler>> text="scheduled"/>
+      </$button>
+    </div>
+  <%endif%>
+
+  <div class="py-quick-dates">
+    <$py-date-today field=<<dateField>>>{{$:/plugins/mblackman/projectify/images/sun}} <<lingo Today>></$py-date-today>
+    <$py-date-tomorrow field=<<dateField>>>{{$:/plugins/mblackman/projectify/images/calendar-event}} <<lingo Tomorrow>></$py-date-tomorrow>
+    <$py-date-next-week field=<<dateField>>>{{$:/plugins/mblackman/projectify/images/calendar}} <<lingo NextWeek>></$py-date-next-week>
+    <$py-date-clear field=<<dateField>>>{{$:/plugins/mblackman/projectify/images/slash-circle}} <<lingo Clear>></$py-date-clear>
+    <%if [<compactCalendar>match[yes]] %>
+      <$button
+        class={{{ [<showCalendar>match[yes]then[tc-btn-invisible py-calendar-toggle py-active tc-popup-handle]else[tc-btn-invisible py-calendar-toggle tc-popup-handle]] }}}
+        tooltip={{$:/language/projectify/Calendar}}
+        aria-label={{$:/language/projectify/Calendar}}
+      >
+        {{$:/plugins/mblackman/projectify/images/calendar}} <<lingo Calendar>>
+        <%if [<showCalendar>match[yes]] %>
+          <$action-setfield $tiddler=<<calendarToggleTiddler>> text="no"/>
+        <%else%>
+          <$action-setfield $tiddler=<<calendarToggleTiddler>> text="yes"/>
+        <%endif%>
+      </$button>
+    <%endif%>
+  </div>
+
+  <%if [<showCalendar>match[yes]] %>
+    <hr/>
+    <$py-date-calendar field=<<dateField>>/>
+  <%endif%>
+
+  <%if [all[current]is[tiddler]] %>
+    <div class="py-recur-inline tc-popup-handle">
+      <label class="py-inline-label tc-popup-handle">
+        {{$:/plugins/mblackman/projectify/images/repeat}} <<lingo Repeat>>
+      </label>
+      <$select field="recur" default="" class="py-select-compact tc-popup-handle">
+        <option value=""><<lingo Repeat/None>></option>
+        <option value="daily">daily</option>
+        <option value="weekdays">weekdays</option>
+        <option value="weekly">weekly</option>
+        <option value="monthly">monthly</option>
+        <option value="yearly">yearly</option>
+      </$select>
+    </div>
+  <%endif%>
+</$let>

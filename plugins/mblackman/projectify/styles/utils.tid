@@ -22,7 +22,14 @@ type: text/vnd.tiddlywiki
 
 .py-pie circle {
   stroke: var(--tpc-primary, <<colour primary>>);
+}
+
+.py-pie circle:first-child {
   fill: var(--tpc-background, <<colour background>>);
+}
+
+.py-pie circle:last-child {
+  fill: transparent;
 }
 
 .py-due-date svg {

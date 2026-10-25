@@ -1,0 +1,63 @@
+caption: {{$:/plugins/mblackman/projectify/images/review}} {{$:/language/projectify/Review}}
+created: 20261025120000000
+list-after: $:/plugins/mblackman/projectify/ui/dashboard/Matrix
+modified: 20261025120000000
+tags: $:/plugins/mblackman/projectify/tags/dashboard
+title: $:/plugins/mblackman/projectify/ui/dashboard/Review
+type: text/vnd.tiddlywiki
+
+\procedure lingo-base() $:/language/projectify/
+
+<$let showProjectLinks="yes">
+  <div class="py-review-dashboard">
+    <div class="py-review-grid">
+      <div class="py-review-panel">
+        <h3><<lingo Review/StalledProjects>> <span class="py-count"><$count filter=<<py-stalled-projects>>/></span></h3>
+        <p class="py-label"><<lingo Review/StalledProjects/Hint>></p>
+        <ul class="py-projects">
+          <$list
+            filter=<<py-stalled-projects>>
+            template="$:/plugins/mblackman/projectify/ui/dashboard/ProjectListItem"
+            emptyMessage="<li class='py-project'>{{$:/language/projectify/AllClear}}</li>"
+          />
+        </ul>
+      </div>
+
+      <div class="py-review-panel">
+        <h3><<lingo Review/WaitingBlocked>> <span class="py-count"><$count filter=<<py-waiting-or-blocked-todos>>/></span></h3>
+        <p class="py-label"><<lingo Review/WaitingBlocked/Hint>></p>
+        <div class="py-todos">
+          <$list
+            filter=<<py-waiting-or-blocked-todos>>
+            template="$:/plugins/mblackman/projectify/ui/todo/TodoItem"
+            emptyMessage="<div class='py-empty-quadrant'>{{$:/language/projectify/AllClear}}</div>"
+          />
+        </div>
+      </div>
+
+      <div class="py-review-panel">
+        <h3><<lingo Review/Someday>> <span class="py-count"><$count filter=<<py-someday-todos>>/></span></h3>
+        <p class="py-label"><<lingo Review/Someday/Hint>></p>
+        <div class="py-todos">
+          <$list
+            filter=<<py-someday-todos>>
+            template="$:/plugins/mblackman/projectify/ui/todo/TodoItem"
+            emptyMessage="<div class='py-empty-quadrant'>—</div>"
+          />
+        </div>
+      </div>
+
+      <div class="py-review-panel">
+        <h3><<lingo Review/Logbook>> <span class="py-count"><$count filter=<<py-recently-completed-todos>>/></span></h3>
+        <p class="py-label"><<lingo Review/Logbook/Hint>></p>
+        <div class="py-todos py-completed-todos">
+          <$list
+            filter=<<py-recently-completed-todos>>
+            template="$:/plugins/mblackman/projectify/ui/todo/TodoItem"
+            emptyMessage="<div class='py-empty-quadrant'>—</div>"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+</$let>

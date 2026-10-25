@@ -8,19 +8,49 @@ caption: {{$:/language/ControlPanel/Basics/Caption}}
 
 \procedure lingo-base() $:/language/projectify/
 
-\procedure select-show-welcome-messages()
-<$select tiddler="$:/config/projectify/ShowWelcomeMessages">
+\procedure select-yes-no(configTiddler)
+<$select tiddler=<<configTiddler>>>
   <option value="yes">{{$:/language/Yes}}</option>
   <option value="no">{{$:/language/No}}</option>
 </$select>
 \end
 
-\procedure select-show-completed-todos()
-<$select tiddler="$:/config/projectify/ShowCompletedTodos">
-  <option value="yes">{{$:/language/Yes}}</option>
-  <option value="no">{{$:/language/No}}</option>
-</$select>
+\procedure apply-preset(multiStatus, scheduledDates, boardView, contexts, matrixTab, reviewTab)
+<$action-setfield $tiddler="$:/config/projectify/EnableMultiStatus" text=<<multiStatus>>/>
+<$action-setfield $tiddler="$:/config/projectify/EnableScheduledDates" text=<<scheduledDates>>/>
+<$action-setfield $tiddler="$:/config/projectify/EnableBoardView" text=<<boardView>>/>
+<$action-setfield $tiddler="$:/config/projectify/EnableContexts" text=<<contexts>>/>
+<$action-setfield $tiddler="$:/config/projectify/ShowMatrixTab" text=<<matrixTab>>/>
+<$action-setfield $tiddler="$:/config/projectify/ShowReviewTab" text=<<reviewTab>>/>
+<$action-sendmessage $message="tm-auto-save-wiki"/>
 \end
 
-|<<lingo ShowWelcomeMessages>> |<<select-show-welcome-messages>> |
-|<<lingo ShowCompletedTodosByDefault>> |<<select-show-completed-todos>> |
+<div class="py-preset-bar">
+  <strong><<lingo WorkflowPreset/Label>>: </strong>
+  <$button class="py-btn btn-small">
+    <<lingo WorkflowPreset/Minimal>>
+    <$transclude $variable="apply-preset" multiStatus="no" scheduledDates="no" boardView="no" contexts="no" matrixTab="no" reviewTab="no"/>
+  </$button>
+  <$button class="py-btn btn-small">
+    <<lingo WorkflowPreset/GTD>>
+    <$transclude $variable="apply-preset" multiStatus="yes" scheduledDates="yes" boardView="no" contexts="yes" matrixTab="no" reviewTab="yes"/>
+  </$button>
+  <$button class="py-btn btn-small">
+    <<lingo WorkflowPreset/Kanban>>
+    <$transclude $variable="apply-preset" multiStatus="yes" scheduledDates="yes" boardView="yes" contexts="no" matrixTab="yes" reviewTab="no"/>
+  </$button>
+  <$button class="py-btn btn-small">
+    <<lingo WorkflowPreset/Full>>
+    <$transclude $variable="apply-preset" multiStatus="yes" scheduledDates="yes" boardView="yes" contexts="yes" matrixTab="yes" reviewTab="yes"/>
+  </$button>
+</div>
+
+|<<lingo ShowWelcomeMessages>> |<$transclude $variable="select-yes-no" configTiddler="$:/config/projectify/ShowWelcomeMessages"/> |
+|<<lingo ShowCompletedTodosByDefault>> |<$transclude $variable="select-yes-no" configTiddler="$:/config/projectify/ShowCompletedTodos"/> |
+|<<lingo Config/EnableMultiStatus>> |<$transclude $variable="select-yes-no" configTiddler="$:/config/projectify/EnableMultiStatus"/> |
+|<<lingo Config/EnableScheduledDates>> |<$transclude $variable="select-yes-no" configTiddler="$:/config/projectify/EnableScheduledDates"/> |
+|<<lingo Config/EnableBoardView>> |<$transclude $variable="select-yes-no" configTiddler="$:/config/projectify/EnableBoardView"/> |
+|<<lingo Config/EnableContexts>> |<$transclude $variable="select-yes-no" configTiddler="$:/config/projectify/EnableContexts"/> |
+|<<lingo Config/SmartQuickAdd>> |<$transclude $variable="select-yes-no" configTiddler="$:/config/projectify/SmartQuickAdd"/> |
+|<<lingo Config/ShowMatrixTab>> |<$transclude $variable="select-yes-no" configTiddler="$:/config/projectify/ShowMatrixTab"/> |
+|<<lingo Config/ShowReviewTab>> |<$transclude $variable="select-yes-no" configTiddler="$:/config/projectify/ShowReviewTab"/> |

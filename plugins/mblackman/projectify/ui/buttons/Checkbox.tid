@@ -4,11 +4,23 @@ tags:
 title: $:/plugins/mblackman/projectify/ui/buttons/Checkbox
 type: text/vnd.tiddlywiki
 
-<span class="py-checkbox">
+<span class={{{ [[py-checkbox py-status-]] [{!!status}!is[blank]else[todo]] +[join[]] }}}>
   <%if [subfilter<py-is-open>] %>
-    <span class="todo">{{$:/plugins/mblackman/projectify/images/checkbox}}</span>
+    <%if [{!!status}match[in-progress]] %>
+      <span class="todo py-state-in-progress">{{$:/plugins/mblackman/projectify/images/status-in-progress}}</span>
+    <%elseif [{!!status}match[waiting]] %>
+      <span class="todo py-state-waiting">{{$:/plugins/mblackman/projectify/images/status-waiting}}</span>
+    <%elseif [{!!status}match[someday]] %>
+      <span class="todo py-state-someday">{{$:/plugins/mblackman/projectify/images/status-someday}}</span>
+    <%else%>
+      <span class="todo">{{$:/plugins/mblackman/projectify/images/checkbox}}</span>
+    <%endif%>
     <span class="todo-hover">{{$:/plugins/mblackman/projectify/images/checkbox-checked}}</span>
   <%else%>
-    <span class="done">{{$:/plugins/mblackman/projectify/images/checkbox-checked-solid}}</span>
+    <%if [{!!status}match[cancelled]] [all[current]tag[cancelled]] %>
+      <span class="done py-state-cancelled">{{$:/plugins/mblackman/projectify/images/status-cancelled}}</span>
+    <%else%>
+      <span class="done">{{$:/plugins/mblackman/projectify/images/checkbox-checked-solid}}</span>
+    <%endif%>
   <%endif%>
 </span>

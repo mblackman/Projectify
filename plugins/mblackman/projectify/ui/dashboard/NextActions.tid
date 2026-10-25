@@ -6,7 +6,31 @@ tags: $:/plugins/mblackman/projectify/tags/dashboard
 title: $:/plugins/mblackman/projectify/ui/NextActions
 type: text/vnd.tiddlywiki
 
+\procedure lingo-base() $:/language/projectify/
+
 <%if [subfilter<py-has-active-projects>] %>
+  <%if [{$:/config/projectify/EnableContexts}!match[no]] %>
+    <%if [subfilter<py-all-contexts>limit[1]] %>
+      <div class="py-context-filter-bar">
+        <span class="py-label"><<lingo Context/Filter>>:</span>
+        <$button
+          class={{{ [{$:/state/projectify/next-actions-context}is[blank]then[py-btn btn-small py-active]else[py-btn btn-small]] }}}
+        >
+          <<lingo Context/All>>
+          <$action-deletetiddler $tiddler="$:/state/projectify/next-actions-context"/>
+        </$button>
+        <$list filter=<<py-all-contexts>> variable="ctx">
+          <$button
+            class={{{ [{$:/state/projectify/next-actions-context}match<ctx>then[py-btn btn-small py-active]else[py-btn btn-small]] }}}
+          >
+            <$text text=<<ctx>>/>
+            <$action-setfield $tiddler="$:/state/projectify/next-actions-context" text=<<ctx>>/>
+          </$button>
+        </$list>
+      </div>
+    <%endif%>
+  <%endif%>
+
   <dl>
     <$list
       filter=<<py-active-projects>>

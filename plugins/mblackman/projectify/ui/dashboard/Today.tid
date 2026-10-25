@@ -11,7 +11,13 @@ type: text/vnd.tiddlywiki
 <$let showProjectLinks="yes">
   <%if [subfilter<py-has-overdue-todos>] %>
     <dl>
-      <dt><<lingo Overdue>></dt>
+      <dt class="py-today-heading">
+        <span><<lingo Overdue>></span>
+        <$button class="py-btn btn-small">
+          {{$:/plugins/mblackman/projectify/images/sun}} <<lingo RescheduleOverdue/Caption>>
+          <$action-py-reschedule-overdue/>
+        </$button>
+      </dt>
       <dd><<py-schedule-overdue>></dd>
     </dl>
   <%endif%>

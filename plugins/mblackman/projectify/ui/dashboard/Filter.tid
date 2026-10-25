@@ -1,7 +1,7 @@
 created: 20210122212615059
 modified: 20261025120000000
 caption: {{$:/plugins/mblackman/projectify/images/funnel}} {{$:/language/Search/Filter/Caption}}
-list-after: $:/plugins/mblackman/projectify/ui/NextActions
+list-after: $:/plugins/mblackman/projectify/ui/dashboard/Review
 tags: $:/plugins/mblackman/projectify/tags/dashboard
 title: $:/plugins/mblackman/projectify/ui/Everything
 type: text/vnd.tiddlywiki
@@ -26,6 +26,22 @@ type: text/vnd.tiddlywiki
       <$button class="tc-btn-invisible">
         Outstanding
         <$action-setfield $tiddler=<<stateTiddler>> filter="[!tag[done]]"/>
+      </$button>
+      <$button class="tc-btn-invisible">
+        In Progress
+        <$action-setfield $tiddler=<<stateTiddler>> filter="[!tag[done]status[in-progress]]"/>
+      </$button>
+      <$button class="tc-btn-invisible">
+        Waiting
+        <$action-setfield $tiddler=<<stateTiddler>> filter="[!tag[done]status[waiting]]"/>
+      </$button>
+      <$button class="tc-btn-invisible">
+        Someday / Maybe
+        <$action-setfield $tiddler=<<stateTiddler>> filter="[!tag[done]status[someday]]"/>
+      </$button>
+      <$button class="tc-btn-invisible">
+        Recurring
+        <$action-setfield $tiddler=<<stateTiddler>> filter="[!tag[done]has[recur]]"/>
       </$button>
       <$button class="tc-btn-invisible">
         Scheduled

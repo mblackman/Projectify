@@ -7,33 +7,118 @@ type: text/vnd.tiddlywiki
 
 \procedure lingo-base() $:/language/projectify/
 
+\procedure add-section-actions()
+<$let secName={{{ [<sectionInputState>get[text]trim[]] }}}>
+  <%if [<secName>!is[blank]] %>
+    <$action-listops $field="sections" $subfilter="[<secName>]"/>
+    <$action-deletetiddler $tiddler=<<sectionInputState>>/>
+    <$action-deletetiddler $tiddler=<<morePopup>>/>
+    <$action-sendmessage $message="tm-auto-save-wiki"/>
+  <%endif%>
+</$let>
+\end
+
 <%if [subfilter<py-is-project>] %>
-  <%if [subfilter<py-is-not-subproject>] %>
-    <div class="py-category-wrapper">
-      {{||$:/plugins/mblackman/projectify/ui/buttons/SelectCategory}}
-      <%if [subfilter<py-is-open>] %>
-        {{||$:/plugins/mblackman/projectify/ui/buttons/ArchiveProject}}
-      <%endif%>
+  <$let
+    sectionInputState=<<qualify "$:/temp/projectify/add-section">>
+    projectView={{{ [{!!project-view}!is[blank]else[list]] }}}
+    projectMode={{{ [{!!project-mode}!is[blank]else[parallel]] }}}
+  >
+    <%if [subfilter<py-is-not-subproject>] %>
+      <div class="py-category-wrapper">
+        {{||$:/plugins/mblackman/projectify/ui/buttons/SelectCategory}}
+        <%if [subfilter<py-is-open>] %>
+          {{||$:/plugins/mblackman/projectify/ui/buttons/ArchiveProject}}
+        <%endif%>
+      </div>
+    <%endif%>
+
+    {{||$:/plugins/mblackman/projectify/ui/project/ArchivedProjectBanner}}
+
+    <div class="py-project-toolbar">
+      <h2><<lingo Todos>> {{||$:/plugins/mblackman/projectify/images/pie}}</h2>
+
+      <div class="py-project-toolbar-controls">
+        <%if [{$:/config/projectify/EnableBoardView}!match[no]] %>
+          <div class="py-view-switcher" role="group">
+            <$button
+              class={{{ [<projectView>match[list]then[py-btn btn-small py-active]else[py-btn btn-small]] }}}
+              tooltip={{$:/language/projectify/ViewAsList}}
+            >
+              {{$:/plugins/mblackman/projectify/images/checklist}} <<lingo View/List>>
+              <$action-setfield project-view="list"/>
+              <$action-sendmessage $message="tm-auto-save-wiki"/>
+            </$button>
+            <$button
+              class={{{ [<projectView>match[board]then[py-btn btn-small py-active]else[py-btn btn-small]] }}}
+              tooltip={{$:/language/projectify/View/Board}}
+            >
+              {{$:/plugins/mblackman/projectify/images/board}} <<lingo View/Board>>
+              <$action-setfield project-view="board"/>
+              <$action-sendmessage $message="tm-auto-save-wiki"/>
+            </$button>
+          </div>
+        <%endif%>
+
+        <$let morePopup=<<qualify "$:/state/projectify/project-options">>>
+          <$button class="py-btn btn-small" popup=<<morePopup>> tooltip={{$:/language/projectify/Options/Hint}} aria-label={{$:/language/projectify/Options/Hint}}>
+            {{$:/plugins/mblackman/projectify/images/sliders}}
+          </$button>
+          <$reveal state=<<morePopup>> type="popup" position="belowleft" animate="no">
+            <div class="tc-drop-down py-drop-down">
+              <div class="py-drop-down-section tc-popup-handle">
+                <label class="py-label tc-popup-handle"><<lingo ProjectMode/Label>></label>
+                <$button class={{{ [<projectMode>match[parallel]then[tc-btn-invisible py-active]else[tc-btn-invisible]] }}}>
+                  {{$:/plugins/mblackman/projectify/images/stack}} <<lingo ProjectMode/Parallel>>
+                  <$action-setfield project-mode="parallel"/>
+                  <$action-sendmessage $message="tm-auto-save-wiki"/>
+                </$button>
+                <$button class={{{ [<projectMode>match[sequential]then[tc-btn-invisible py-active]else[tc-btn-invisible]] }}}>
+                  {{$:/plugins/mblackman/projectify/images/checklist}} <<lingo ProjectMode/Sequential>>
+                  <$action-setfield project-mode="sequential"/>
+                  <$action-sendmessage $message="tm-auto-save-wiki"/>
+                </$button>
+              </div>
+              <hr/>
+              <div class="py-drop-down-section tc-popup-handle">
+                <label class="py-label tc-popup-handle"><<lingo AddSection/Caption>></label>
+                <div class="py-inline-section-add tc-popup-handle">
+                  <$keyboard key="enter" actions=<<add-section-actions>>>
+                    <$edit-text
+                      class="py-input tc-popup-handle"
+                      tiddler=<<sectionInputState>>
+                      field="text"
+                      placeholder={{$:/language/projectify/AddSection/Placeholder}}
+                    />
+                  </$keyboard>
+                  <$button class="py-btn btn-small btn-primary" actions=<<add-section-actions>>>
+                    +
+                  </$button>
+                </div>
+              </div>
+            </div>
+          </$reveal>
+        </$let>
+      </div>
     </div>
-  <%endif%>
 
-  {{||$:/plugins/mblackman/projectify/ui/project/ArchivedProjectBanner}}
+    <%if [<projectView>match[board]] %>
+      {{||$:/plugins/mblackman/projectify/ui/project/ProjectBoard}}
+    <%else%>
+      <$transclude
+        $variable="todo-list"
+        emptyTemplate="$:/plugins/mblackman/projectify/ui/welcome/EmptyProject"
+      />
+      {{||$:/plugins/mblackman/projectify/ui/buttons/ToggleCompletedTodos}}
+    <%endif%>
 
-  <h2><<lingo Todos>> {{||$:/plugins/mblackman/projectify/images/pie}}</h2>
-
-  <$transclude
-    $variable="todo-list"
-    emptyTemplate="$:/plugins/mblackman/projectify/ui/welcome/EmptyProject"
-  />
-
-  {{||$:/plugins/mblackman/projectify/ui/buttons/ToggleCompletedTodos}}
-
-  <%if [subfilter<py-is-open>] %>
-    <$let
-      todo-tags={{{ [<currentTiddler>format:titlelist[]addsuffix[ todo]] }}}
-      placeholder={{$:/language/projectify/AddTodoToProject/Placeholder}}
-    >
-      {{||$:/plugins/mblackman/projectify/ui/forms/AddTodo}}
-    </$let>
-  <%endif%>
+    <%if [subfilter<py-is-open>] %>
+      <$let
+        todo-tags={{{ [<currentTiddler>format:titlelist[]addsuffix[ todo]] }}}
+        placeholder={{$:/language/projectify/AddTodoToProject/Placeholder}}
+      >
+        {{||$:/plugins/mblackman/projectify/ui/forms/AddTodo}}
+      </$let>
+    <%endif%>
+  </$let>
 <%endif%>

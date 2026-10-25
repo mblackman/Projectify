@@ -15,6 +15,11 @@ type: text/vnd.tiddlywiki
 \procedure todo-list-drop-actions(tag)
 <!-- Same as list-tagged-draggable-drop-actions, but removing the item from its old project and adding the todo tag. -->
 <$action-listops $tiddler=<<actionTiddler>> $tags=<<todo-list-drop-tags>>/>
+<%if [<targetSection>!is[blank]] %>
+  <$action-setfield $tiddler=<<actionTiddler>> section=<<targetSection>>/>
+<%elseif [<clearSectionOnDrop>match[yes]] %>
+  <$action-deletefield $tiddler=<<actionTiddler>> $field="section"/>
+<%endif%>
 <!-- Save the current ordering of the tiddlers with this tag -->
 <$let order={{{ [<tag>tagging[]format:titlelist[]join[ ]] }}}>
 <!-- Remove any list-after or list-before fields from the tiddlers with this tag -->
@@ -45,18 +50,57 @@ type: text/vnd.tiddlywiki
 </$let>
 \end
 
+\procedure todo-list-section(sectionName)
+<$let
+  sectionSubFilter="tag[todo]!has[draft.of]!tag[done]section<sectionName>"
+  targetSection=<<sectionName>>
+>
+  <div class="py-project-section">
+    <div class="py-section-header">
+      <$droppable actions="<$action-setfield $tiddler=<<actionTiddler>> section=<<sectionName>>/><$action-sendmessage $message='tm-auto-save-wiki'/>" tag="div" class="py-section-title-drop">
+        <span class="py-section-title"><$text text=<<sectionName>>/></span>
+        <span class="py-count"><$count filter="[all[tiddlers]tag<currentTiddler>tag[todo]!has[draft.of]!tag[done]section<sectionName>]"/></span>
+      </$droppable>
+      <$button class="tc-btn-invisible py-section-delete" tooltip={{$:/language/projectify/DeleteSection/Hint}}>
+        {{$:/core/images/delete-button}}
+        <$action-listops $field="sections" $subfilter="-[<sectionName>]"/>
+        <$list filter="[all[tiddlers]tag<currentTiddler>tag[todo]section<sectionName>]" variable="secTodo">
+          <$action-deletefield $tiddler=<<secTodo>> $field="section"/>
+        </$list>
+        <$action-sendmessage $message="tm-auto-save-wiki"/>
+      </$button>
+    </div>
+    <$transclude $variable="todo-list-filtered" subFilter=<<sectionSubFilter>>/>
+  </div>
+</$let>
+\end
+
 \procedure todo-list(emptyTemplate)
 <%if [subfilter<py-has-no-open-todo>] %>
-  <$transclude $tiddler=<<emptyTemplate>>/>
-<%endif%>
-<%if [subfilter<py-has-scheduled-todos>] %>
-  <label class="py-label"><<lingo Scheduled>></label>
-  <$transclude $variable="todo-list-filtered" subFilter=<<py-scheduled-todos-subfilter>>/>
-  <%if [subfilter<py-has-unscheduled-todos>] %>
-    <label class="py-label"><<lingo OtherTasks>></label>
+  <%if [all[current]!has[sections]] %>
+    <$transclude $tiddler=<<emptyTemplate>>/>
   <%endif%>
 <%endif%>
-<$transclude $variable="todo-list-filtered" subFilter=<<py-unscheduled-todos-subfilter>>/>
+
+<%if [all[current]has[sections]] %>
+  <$let clearSectionOnDrop="yes">
+    <%if [all[tiddlers]tag<currentTiddler>tag[todo]!has[draft.of]!tag[done]!has[section]limit[1]] %>
+      <$transclude $variable="todo-list-filtered" subFilter="tag[todo]!has[draft.of]!tag[done]!has[section]"/>
+    <%endif%>
+  </$let>
+  <$list filter="[all[current]get[sections]enlist-input[]]" variable="sectionName">
+    <$transclude $variable="todo-list-section" sectionName=<<sectionName>>/>
+  </$list>
+<%else%>
+  <%if [subfilter<py-has-scheduled-todos>] %>
+    <label class="py-label"><<lingo Scheduled>></label>
+    <$transclude $variable="todo-list-filtered" subFilter=<<py-scheduled-todos-subfilter>>/>
+    <%if [subfilter<py-has-unscheduled-todos>] %>
+      <label class="py-label"><<lingo OtherTasks>></label>
+    <%endif%>
+  <%endif%>
+  <$transclude $variable="todo-list-filtered" subFilter=<<py-unscheduled-todos-subfilter>>/>
+<%endif%>
 \end
 
 \procedure todo-list-completed()

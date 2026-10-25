@@ -1,0 +1,61 @@
+caption: {{$:/plugins/mblackman/projectify/images/matrix}} {{$:/language/projectify/Matrix}}
+created: 20261025120000000
+list-after: $:/plugins/mblackman/projectify/ui/NextActions
+modified: 20261025120000000
+tags: $:/plugins/mblackman/projectify/tags/dashboard
+title: $:/plugins/mblackman/projectify/ui/dashboard/Matrix
+type: text/vnd.tiddlywiki
+
+\procedure lingo-base() $:/language/projectify/
+
+\procedure matrix-quadrant(quadClass, quadTitle, quadSubtitle, quadFilter)
+<div class={{{ [[py-matrix-quadrant ]] [<quadClass>] +[join[]] }}}>
+  <div class="py-matrix-quadrant-header">
+    <div>
+      <h4><$text text=<<quadTitle>>/></h4>
+      <span class="py-matrix-subtitle"><$text text=<<quadSubtitle>>/></span>
+    </div>
+    <span class="py-count"><$count filter=<<quadFilter>>/></span>
+  </div>
+  <div class="py-todos">
+    <$list
+      filter=<<quadFilter>>
+      template="$:/plugins/mblackman/projectify/ui/todo/TodoItem"
+      emptyMessage="<div class='py-empty-quadrant'>—</div>"
+    />
+  </div>
+</div>
+\end
+
+<$let showProjectLinks="yes">
+  <div class="py-matrix-grid">
+    <$transclude
+      $variable="matrix-quadrant"
+      quadClass="py-quadrant-do-first"
+      quadTitle={{$:/language/projectify/Matrix/DoFirst}}
+      quadSubtitle={{$:/language/projectify/Matrix/DoFirst/Hint}}
+      quadFilter=<<py-matrix-do-first>>
+    />
+    <$transclude
+      $variable="matrix-quadrant"
+      quadClass="py-quadrant-schedule"
+      quadTitle={{$:/language/projectify/Matrix/Schedule}}
+      quadSubtitle={{$:/language/projectify/Matrix/Schedule/Hint}}
+      quadFilter=<<py-matrix-schedule>>
+    />
+    <$transclude
+      $variable="matrix-quadrant"
+      quadClass="py-quadrant-delegate"
+      quadTitle={{$:/language/projectify/Matrix/Delegate}}
+      quadSubtitle={{$:/language/projectify/Matrix/Delegate/Hint}}
+      quadFilter=<<py-matrix-delegate>>
+    />
+    <$transclude
+      $variable="matrix-quadrant"
+      quadClass="py-quadrant-backlog"
+      quadTitle={{$:/language/projectify/Matrix/Backlog}}
+      quadSubtitle={{$:/language/projectify/Matrix/Backlog/Hint}}
+      quadFilter=<<py-matrix-backlog>>
+    />
+  </div>
+</$let>

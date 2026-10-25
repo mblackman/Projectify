@@ -7,14 +7,9 @@ description: Projectify -- Toggle the state of the current todo tiddler
 list-before: $:/core/ui/Buttons/close
 type: text/vnd.tiddlywiki
 
-\procedure save-actions()
-<$action-sendmessage $message="tm-auto-save-wiki"/>
-\end
-
 <%if [subfilter<py-is-todo>] %>
-  <span class="tc-btn-invisible py-toggle-todo-button">
-    <$checkbox tag="done" actions=<<save-actions>>>
-      {{||$:/plugins/mblackman/projectify/ui/buttons/Checkbox}}
-    </$checkbox>
-  </span>
+  <$button class="tc-btn-invisible py-toggle-todo-button">
+    <$action-py-toggle-todo $tiddler=<<currentTiddler>>/>
+    {{||$:/plugins/mblackman/projectify/ui/buttons/Checkbox}}
+  </$button>
 <%endif%>

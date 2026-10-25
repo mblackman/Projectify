@@ -6,9 +6,16 @@ type: text/vnd.tiddlywiki
 
 \procedure lingo-base() $:/language/projectify/
 
+\function py.dashboard-tabs()
+[all[tiddlers+shadows]tag[$:/plugins/mblackman/projectify/tags/dashboard]]
+[all[tiddlers+shadows]tag[$:/plugins/nico/projectify/tags/dashboard]]
+-[{$:/config/projectify/ShowMatrixTab}match[no]then[$:/plugins/mblackman/projectify/ui/dashboard/Matrix]]
+-[{$:/config/projectify/ShowReviewTab}match[no]then[$:/plugins/mblackman/projectify/ui/dashboard/Review]]
+\end
+
 <$transclude
   $variable="tabs"
-  tabsList="[all[tiddlers+shadows]tag[$:/plugins/mblackman/projectify/tags/dashboard]] [all[tiddlers+shadows]tag[$:/plugins/nico/projectify/tags/dashboard]]"
+  tabsList="[function[py.dashboard-tabs]]"
   default={{$:/config/projectify/DefaultDashboardTab}}
   state="$:/state/projects-and-schedule"
   class="py-tabs"

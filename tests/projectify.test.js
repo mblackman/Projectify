@@ -56,10 +56,15 @@ describe("Projectify Plugin ($:/plugins/mblackman/projectify)", () => {
       "$:/plugins/mblackman/projectify/ui/dashboard/Today",
       "$:/plugins/mblackman/projectify/ui/dashboard/TodayCount",
       "$:/plugins/mblackman/projectify/ui/dashboard/Upcoming",
+      "$:/plugins/mblackman/projectify/ui/dashboard/Matrix",
+      "$:/plugins/mblackman/projectify/ui/dashboard/Review",
       "$:/plugins/mblackman/projectify/ui/NextActions",
       "$:/plugins/mblackman/projectify/ui/Everything",
       "$:/plugins/mblackman/projectify/ui/inbox/Inbox",
       "$:/plugins/mblackman/projectify/ui/project/Project",
+      "$:/plugins/mblackman/projectify/ui/project/ProjectBoard",
+      "$:/plugins/mblackman/projectify/ui/forms/TodoStatus",
+      "$:/plugins/mblackman/projectify/ui/forms/TodoContext",
       "$:/plugins/mblackman/projectify/ui/todo/TodoItem",
       "$:/plugins/mblackman/projectify/ui/widgets/date-picker.js",
       "$:/plugins/mblackman/projectify/lib/pikaday.js",
@@ -198,5 +203,213 @@ describe("Projectify Plugin ($:/plugins/mblackman/projectify)", () => {
     );
     expect(roadmapPie).not.toContain("NaN");
     expect(roadmapPie).toMatch(/stroke-dasharray="7\.85\d* 31\.42"/);
+  });
+
+  test("action-py-toggle-todo handles multi-status transitions, completion timestamps, and recurring tasks", () => {
+    const ToggleWidget = $tw.modules.applyMethods("widget")["action-py-toggle-todo"];
+
+    // 1. Standard task toggle (marks done + stamps completed + sets status=done)
+    $tw.wiki.addTiddler({
+      title: "TestTaskToggle",
+      tags: ["Inbox", "todo"]
+    });
+
+    const toggle1 = new ToggleWidget(
+      { type: "action-py-toggle-todo", attributes: { $tiddler: { type: "string", value: "TestTaskToggle" } } },
+      { wiki: $tw.wiki }
+    );
+    toggle1.invokeAction();
+
+    let tid = $tw.wiki.getTiddler("TestTaskToggle");
+    expect(tid.fields.tags).toContain("done");
+    expect(tid.fields.status).toBe("done");
+    expect(tid.fields.completed).toBeDefined();
+
+    // 2. Toggle back to open (removes done + clears completed + sets status=todo)
+    toggle1.invokeAction();
+    tid = $tw.wiki.getTiddler("TestTaskToggle");
+    expect(tid.fields.tags).not.toContain("done");
+    expect(tid.fields.status).toBe("todo");
+    expect(tid.fields.completed).toBeUndefined();
+
+    // 3. Explicit multi-status transition (in-progress, waiting, cancelled)
+    const statusInProgress = new ToggleWidget(
+      {
+        type: "action-py-toggle-todo",
+        attributes: {
+          $tiddler: { type: "string", value: "TestTaskToggle" },
+          $status: { type: "string", value: "in-progress" }
+        }
+      },
+      { wiki: $tw.wiki }
+    );
+    statusInProgress.invokeAction();
+    tid = $tw.wiki.getTiddler("TestTaskToggle");
+    expect(tid.fields.status).toBe("in-progress");
+    expect(tid.fields.tags).not.toContain("done");
+
+    const statusCancelled = new ToggleWidget(
+      {
+        type: "action-py-toggle-todo",
+        attributes: {
+          $tiddler: { type: "string", value: "TestTaskToggle" },
+          $status: { type: "string", value: "cancelled" }
+        }
+      },
+      { wiki: $tw.wiki }
+    );
+    statusCancelled.invokeAction();
+    tid = $tw.wiki.getTiddler("TestTaskToggle");
+    expect(tid.fields.status).toBe("cancelled");
+    expect(tid.fields.tags).toContain("done");
+    expect(tid.fields.tags).toContain("cancelled");
+
+    // 4. Recurring task advances due date instead of closing permanently
+    $tw.wiki.addTiddler({
+      title: "TestRecurringTask",
+      tags: ["Inbox", "todo"],
+      due: "20261025235959999",
+      recur: "weekly"
+    });
+    const recurToggle = new ToggleWidget(
+      { type: "action-py-toggle-todo", attributes: { $tiddler: { type: "string", value: "TestRecurringTask" } } },
+      { wiki: $tw.wiki }
+    );
+    recurToggle.invokeAction();
+    const recurTid = $tw.wiki.getTiddler("TestRecurringTask");
+    expect(recurTid.fields.tags).not.toContain("done");
+    expect(recurTid.fields.status).toBe("todo");
+    expect(recurTid.fields["last-completed"]).toBeDefined();
+    expect(recurTid.fields.due > "20261025235959999").toBe(true);
+
+    $tw.wiki.deleteTiddler("TestTaskToggle");
+    $tw.wiki.deleteTiddler("TestRecurringTask");
+  });
+
+  test("action-py-quick-add parses inline smart tokens (!1-!3, @today, #Project, @context)", () => {
+    const QuickAddWidget = $tw.modules.applyMethods("widget")["action-py-quick-add"];
+
+    $tw.wiki.addTiddler({
+      title: "$:/temp/projectify/test-quick-add",
+      "todo-name": "Draft Q4 Architecture Spec !3 @today #[Product roadmap] @work @computer"
+    });
+
+    const quickAdd = new QuickAddWidget(
+      {
+        type: "action-py-quick-add",
+        attributes: {
+          $state: { type: "string", value: "$:/temp/projectify/test-quick-add" },
+          $field: { type: "string", value: "todo-name" },
+          $tags: { type: "string", value: "Inbox todo" }
+        }
+      },
+      { wiki: $tw.wiki }
+    );
+    quickAdd.invokeAction();
+
+    const created = $tw.wiki.getTiddler("Draft Q4 Architecture Spec");
+    expect(created).toBeDefined();
+    expect(created.fields.priority).toBe("3");
+    expect(created.fields.due).toBeDefined();
+    expect(created.fields.tags).toContain("Product roadmap");
+    expect(created.fields.tags).toContain("todo");
+    expect(created.fields.tags).not.toContain("Inbox");
+    expect(created.fields.context).toContain("@work");
+    expect(created.fields.context).toContain("@computer");
+    expect($tw.wiki.getTiddler("$:/temp/projectify/test-quick-add")).toBeUndefined();
+
+    $tw.wiki.deleteTiddler("Draft Q4 Architecture Spec");
+  });
+
+  test("supports recursive sub-project rollups, dependencies (blocked-by), and Kanban / Matrix / Review views", () => {
+    // Set up a parent project with a sub-project and a blocked task
+    $tw.wiki.addTiddler({ title: "TestScaleProject", tags: ["Project"] });
+    $tw.wiki.addTiddler({ title: "Phase 1 Subproject", tags: ["TestScaleProject", "SubProject", "todo"] });
+    $tw.wiki.addTiddler({ title: "Subtask 1Done", tags: ["Phase 1 Subproject", "todo", "done"] });
+    $tw.wiki.addTiddler({ title: "Subtask 2Open", tags: ["Phase 1 Subproject", "todo"], status: "in-progress" });
+    $tw.wiki.addTiddler({
+      title: "BlockedTask",
+      tags: ["TestScaleProject", "todo"],
+      "blocked-by": "[[Subtask 2Open]]"
+    });
+
+    // Recursive descendant count: Phase 1 Subproject + Subtask 1Done + Subtask 2Open + BlockedTask = 4 total, 3 open, 1 completed
+    const totalCount = renderWithGlobals(
+      "<$count filter='[function[py.descendant-todos],[TestScaleProject]]'/>",
+      "TestScaleProject"
+    );
+    expect(totalCount).toContain("4");
+
+    const openCount = renderWithGlobals(
+      "<$count filter='[function[py.open-descendant-todos],[TestScaleProject]]'/>",
+      "TestScaleProject"
+    );
+    expect(openCount).toContain("3");
+
+    // BlockedTask should be excluded from py-next-open-todo while Subtask 2Open is open
+    // Future-scheduled tasks should also be deferred from py-parallel-open-todos
+    $tw.wiki.addTiddler({
+      title: "FutureScheduledTask",
+      tags: ["TestScaleProject", "todo"],
+      scheduled: "20991231235959999"
+    });
+    $tw.wiki.addTiddler({
+      title: "PastScheduledTask",
+      tags: ["TestScaleProject", "todo"],
+      scheduled: "20200101235959999",
+      section: "Phase 1: Research"
+    });
+
+    const nextOpen = renderWithGlobals(
+      "<$list filter=<<py-parallel-open-todos>>><$text text=<<currentTiddler>>/>|</$list>",
+      "TestScaleProject"
+    );
+    expect(nextOpen).toContain("Phase 1 Subproject|");
+    expect(nextOpen).toContain("PastScheduledTask|");
+    expect(nextOpen).not.toContain("BlockedTask|");
+    expect(nextOpen).not.toContain("FutureScheduledTask|");
+
+    // Project sections render without filter syntax errors
+    $tw.wiki.addTiddler({
+      title: "TestScaleProject",
+      tags: ["Project"],
+      sections: "[[Phase 1: Research]]"
+    });
+    const sectionedHtml = renderWithGlobals(
+      "{{||$:/plugins/mblackman/projectify/ui/project/Project}}",
+      "TestScaleProject"
+    );
+    expect(sectionedHtml).toContain("Phase 1: Research");
+    expect(sectionedHtml).toContain("PastScheduledTask");
+    expect(sectionedHtml).not.toContain("Filter error");
+
+    // Kanban board view renders all 4 status columns
+    $tw.wiki.addTiddler({ title: "TestScaleProject", tags: ["Project"], "project-view": "board" });
+    const boardHtml = renderWithGlobals(
+      "{{||$:/plugins/mblackman/projectify/ui/project/Project}}",
+      "TestScaleProject"
+    );
+    expect(boardHtml).toContain("py-board");
+    expect(boardHtml).toContain("py-board-col-todo");
+    expect(boardHtml).toContain("py-board-col-in-progress");
+    expect(boardHtml).toContain("py-board-col-waiting");
+    expect(boardHtml).toContain("py-board-col-done");
+
+    // Matrix and Review dashboard tabs render cleanly
+    const matrixHtml = renderWithGlobals("{{$:/plugins/mblackman/projectify/ui/dashboard/Matrix}}");
+    expect(matrixHtml).toContain("py-matrix-grid");
+    expect(matrixHtml).toContain("Urgent &amp; Important");
+
+    const reviewHtml = renderWithGlobals("{{$:/plugins/mblackman/projectify/ui/dashboard/Review}}");
+    expect(reviewHtml).toContain("py-review-dashboard");
+    expect(reviewHtml).toContain("BlockedTask");
+
+    $tw.wiki.deleteTiddler("TestScaleProject");
+    $tw.wiki.deleteTiddler("Phase 1 Subproject");
+    $tw.wiki.deleteTiddler("Subtask 1Done");
+    $tw.wiki.deleteTiddler("Subtask 2Open");
+    $tw.wiki.deleteTiddler("BlockedTask");
+    $tw.wiki.deleteTiddler("FutureScheduledTask");
+    $tw.wiki.deleteTiddler("PastScheduledTask");
   });
 });

@@ -336,3 +336,492 @@ type: text/vnd.tiddlywiki
   width: 50px;
   padding: 3px;
 }
+
+/* Multi-status checkbox states */
+.py-checkbox .py-state-in-progress {
+  color: var(--tpc-primary, <<colour primary>>);
+  display: inline-flex;
+}
+
+.py-checkbox .py-state-waiting {
+  color: #e77a39;
+  display: inline-flex;
+}
+
+.py-checkbox .py-state-someday {
+  color: var(--tpc-muted-foreground, <<colour muted-foreground>>);
+  display: inline-flex;
+}
+
+.py-checkbox .py-state-cancelled {
+  color: var(--tpc-muted-foreground, <<colour muted-foreground>>);
+  display: inline-flex;
+}
+
+/* Status selector in dropdowns and headings */
+.py-status-selector {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  gap: 4px;
+  padding: 2px 4px;
+}
+
+.tc-drop-down .py-status-selector .tc-btn-invisible,
+.py-todo-heading .py-status-selector .tc-btn-invisible {
+  width: auto;
+  padding: 4px 6px;
+  border-radius: 4px;
+  justify-content: center;
+  color: var(--tpc-muted-foreground, <<colour muted-foreground>>);
+  fill: currentColor;
+}
+
+.py-status-selector .py-status-btn.py-active,
+.py-status-selector .py-status-btn:hover {
+  color: var(--tpc-primary, <<colour primary>>);
+  background: color-mix(in srgb, var(--tpc-primary, <<colour primary>>) 14%, transparent);
+}
+
+/* Date picker tabs, compact quick-dates grid, and recurrence row */
+.py-date-mode-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 4px 8px;
+  border-bottom: 1px solid color-mix(in srgb, var(--tpc-muted-foreground, <<colour muted-foreground>>) 25%, transparent);
+  margin-bottom: 2px;
+}
+
+.tc-drop-down.py-drop-down .py-date-mode-tabs .py-date-mode-tab {
+  width: auto;
+  flex: 1 1 0;
+  justify-content: center;
+  font-size: 12px;
+  line-height: 1.5;
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: var(--tpc-muted-foreground, <<colour muted-foreground>>);
+}
+
+.tc-drop-down.py-drop-down .py-date-mode-tabs .py-date-mode-tab.py-active {
+  background: color-mix(in srgb, var(--tpc-primary, <<colour primary>>) 16%, transparent);
+  color: var(--tpc-primary, <<colour primary>>);
+  font-weight: 600;
+}
+
+.py-quick-dates {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2px;
+  padding: 2px 6px;
+}
+
+.tc-drop-down.py-drop-down .py-quick-dates .tc-btn-invisible {
+  font-size: 12.5px;
+  line-height: 1.6em;
+  padding: 3px 6px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.tc-drop-down.py-drop-down .py-quick-dates .py-calendar-toggle {
+  grid-column: 1 / -1;
+  justify-content: center;
+  background: color-mix(in srgb, var(--tpc-muted-foreground, <<colour muted-foreground>>) 10%, transparent);
+  margin-top: 2px;
+}
+
+.tc-drop-down.py-drop-down .py-quick-dates .py-calendar-toggle.py-active {
+  background: color-mix(in srgb, var(--tpc-primary, <<colour primary>>) 15%, transparent);
+  color: var(--tpc-primary, <<colour primary>>);
+  fill: var(--tpc-primary, <<colour primary>>);
+}
+
+.py-recur-inline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 4px 10px;
+}
+
+.py-inline-label {
+  font-size: 12px;
+  color: var(--tpc-muted-foreground, <<colour muted-foreground>>);
+  fill: currentColor;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0;
+}
+
+.py-menu-actions-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2px;
+  padding: 2px 4px;
+}
+
+.tc-drop-down.py-drop-down .py-menu-actions-grid .tc-btn-invisible {
+  font-size: 12.5px;
+  line-height: 1.6em;
+  padding: 3px 6px;
+  border-radius: 4px;
+}
+
+.tc-drop-down.py-drop-down .py-menu-actions-grid .tc-btn-invisible:last-child:nth-child(odd) {
+  grid-column: 1 / -1;
+}
+
+.tc-drop-down.py-todo-actions-drop-down {
+  width: 245px;
+  max-width: calc(100vw - 24px);
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.py-recur-picker,
+.py-context-picker,
+.py-dependency-picker,
+.py-drop-down-section {
+  padding: 4px 8px;
+}
+
+.py-drop-down-section .py-label,
+.py-dependency-picker .py-label {
+  display: block;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--tpc-muted-foreground, <<colour muted-foreground>>);
+  padding: 2px 4px 4px 4px;
+}
+
+.tc-drop-down.py-drop-down .tc-btn-invisible.py-active {
+  background: color-mix(in srgb, var(--tpc-primary, <<colour primary>>) 14%, transparent);
+  color: var(--tpc-primary, <<colour primary>>);
+  fill: var(--tpc-primary, <<colour primary>>);
+  font-weight: 600;
+  border-radius: 4px;
+}
+
+.py-inline-section-add input.py-input {
+  width: 170px;
+  padding: 4px 8px;
+  font-size: 13px;
+}
+
+.py-recur-label {
+  font-size: 12px;
+  color: var(--tpc-muted-foreground, <<colour muted-foreground>>);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 4px;
+}
+
+.py-recur-options,
+.py-context-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.tc-drop-down.py-drop-down .py-recur-options .py-recur-chip,
+.tc-drop-down.py-drop-down .py-context-chips .py-context-chip {
+  width: auto;
+  font-size: 11px;
+  line-height: 1.4;
+  padding: 2px 7px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--tpc-muted-foreground, <<colour muted-foreground>>) 35%, transparent);
+  color: var(--tpc-foreground, <<colour foreground>>);
+}
+
+.tc-drop-down.py-drop-down .py-recur-options .py-recur-chip.py-active,
+.tc-drop-down.py-drop-down .py-context-chips .py-context-chip.py-active {
+  background: var(--tpc-primary, <<colour primary>>);
+  border-color: var(--tpc-primary, <<colour primary>>);
+  color: var(--tpc-background, <<colour background>>);
+}
+
+/* Badges & Context pills on todo items */
+.py-badge,
+.py-context-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.75em;
+  padding: 1px 6px;
+  border-radius: 999px;
+  margin-left: 4px;
+  background: color-mix(in srgb, var(--tpc-muted-foreground, <<colour muted-foreground>>) 15%, transparent);
+  color: var(--tpc-muted-foreground, <<colour muted-foreground>>);
+  fill: currentColor;
+  white-space: nowrap;
+}
+
+.py-badge-blocked {
+  color: #e73939;
+  background: color-mix(in srgb, #e73939 15%, transparent);
+}
+
+.py-context-pill {
+  color: var(--tpc-primary, <<colour primary>>);
+  background: color-mix(in srgb, var(--tpc-primary, <<colour primary>>) 12%, transparent);
+}
+
+/* Inline Sub-tasks & Inline Edit */
+.py-todo-check-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+}
+
+.py-subtask-toggle {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 6px;
+  padding: 2px 4px;
+  color: var(--tpc-muted-foreground, <<colour muted-foreground>>);
+  fill: currentColor;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.py-subtask-toggle:hover {
+  background: color-mix(in srgb, var(--tpc-muted-foreground, <<colour muted-foreground>>) 15%, transparent);
+}
+
+.py-subtasks-indent {
+  margin-left: 24px;
+  padding-left: 10px;
+  border-left: 2px solid color-mix(in srgb, var(--tpc-muted-foreground, <<colour muted-foreground>>) 22%, transparent);
+  margin-bottom: 6px;
+}
+
+.py-inline-subtask-form,
+.py-inline-edit-row,
+.py-inline-section-add {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+input.py-input.py-subtask-input,
+input.py-input.py-inline-input {
+  padding: 4px 8px;
+  font-size: 0.9em;
+  width: 240px;
+}
+
+/* Project Toolbar, View Switcher, and Sections */
+.py-project-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 12px 0 8px 0;
+}
+
+.py-project-toolbar h2 {
+  margin: 0;
+}
+
+.py-project-toolbar-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.py-view-switcher {
+  display: inline-flex;
+  gap: 4px;
+}
+
+.py-btn.py-active {
+  background: color-mix(in srgb, var(--tpc-primary, <<colour primary>>) 16%, transparent);
+  border-color: var(--tpc-primary, <<colour primary>>);
+  color: var(--tpc-primary, <<colour primary>>);
+  fill: var(--tpc-primary, <<colour primary>>);
+  font-weight: 600;
+}
+
+.py-project-section {
+  margin-top: 14px;
+}
+
+.py-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 0;
+  border-bottom: 2px solid color-mix(in srgb, var(--tpc-muted-foreground, <<colour muted-foreground>>) 28%, transparent);
+  margin-bottom: 4px;
+}
+
+.py-section-title-drop {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1 1 auto;
+}
+
+.py-section-title {
+  font-weight: 700;
+  font-size: 0.95em;
+  color: var(--tpc-tiddler-title-foreground, <<colour tiddler-title-foreground>>);
+}
+
+.py-section-delete {
+  color: var(--tpc-muted-foreground, <<colour muted-foreground>>);
+  fill: currentColor;
+  opacity: 0.5;
+  cursor: pointer;
+}
+
+.py-section-delete:hover {
+  opacity: 1;
+}
+
+/* Kanban Board View */
+.py-board {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 12px;
+  margin: 12px 0 18px 0;
+  align-items: start;
+}
+
+.py-board-column {
+  background: color-mix(in srgb, var(--tpc-muted-foreground, <<colour muted-foreground>>) 8%, var(--tpc-tiddler-background, <<colour tiddler-background>>));
+  border: 1px solid color-mix(in srgb, var(--tpc-muted-foreground, <<colour muted-foreground>>) 22%, transparent);
+  border-radius: 8px;
+  padding: 10px;
+  min-height: 160px;
+}
+
+.py-board-column-inner.tc-droppable.tc-dragover {
+  outline: 2px dashed var(--tpc-primary, <<colour primary>>);
+  border-radius: 6px;
+}
+
+.py-board-column-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid color-mix(in srgb, var(--tpc-muted-foreground, <<colour muted-foreground>>) 22%, transparent);
+}
+
+.py-board-column-title {
+  font-weight: 700;
+  font-size: 0.9em;
+}
+
+.py-board-cards .py-todo-item-wrapper {
+  background: var(--tpc-tiddler-background, <<colour tiddler-background>>);
+  border: 1px solid color-mix(in srgb, var(--tpc-muted-foreground, <<colour muted-foreground>>) 22%, transparent);
+  border-radius: 6px;
+  padding: 4px 8px;
+  margin-bottom: 6px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+/* Eisenhower Matrix & Review Dashboards */
+.py-matrix-grid,
+.py-review-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin: 12px 0;
+}
+
+@media (max-width: {{$:/themes/tiddlywiki/vanilla/metrics/sidebarbreakpoint}}) {
+  .py-matrix-grid,
+  .py-review-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.py-matrix-quadrant,
+.py-review-panel {
+  border: 1px solid color-mix(in srgb, var(--tpc-muted-foreground, <<colour muted-foreground>>) 24%, transparent);
+  border-radius: 8px;
+  padding: 12px;
+  background: var(--tpc-tiddler-background, <<colour tiddler-background>>);
+}
+
+.py-matrix-quadrant-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.py-matrix-quadrant-header h4,
+.py-review-panel h3 {
+  margin: 0;
+}
+
+.py-matrix-subtitle {
+  font-size: 0.8em;
+  color: var(--tpc-muted-foreground, <<colour muted-foreground>>);
+}
+
+.py-quadrant-do-first {
+  border-top: 3px solid #e73939;
+}
+
+.py-quadrant-schedule {
+  border-top: 3px solid var(--tpc-primary, <<colour primary>>);
+}
+
+.py-quadrant-delegate {
+  border-top: 3px solid #e77a39;
+}
+
+.py-quadrant-backlog {
+  border-top: 3px solid var(--tpc-muted-foreground, <<colour muted-foreground>>);
+}
+
+.py-empty-quadrant {
+  color: var(--tpc-muted-foreground, <<colour muted-foreground>>);
+  font-size: 0.9em;
+  padding: 8px 0;
+}
+
+/* Context filter bar, Today heading, & Presets */
+.py-context-filter-bar,
+.py-preset-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 8px 0 12px 0;
+}
+
+.py-today-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.py-quick-capture-toolbar {
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.py-select-compact {
+  font-size: 0.85em;
+  padding: 3px 8px;
+  border-radius: 1em;
+  border: 1px solid color-mix(in srgb, var(--tpc-muted-foreground, <<colour muted-foreground>>) 40%, transparent);
+  background: var(--tpc-tiddler-background, <<colour tiddler-background>>);
+  color: var(--tpc-foreground, <<colour foreground>>);
+}

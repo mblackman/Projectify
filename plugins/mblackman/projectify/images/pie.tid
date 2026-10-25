@@ -5,8 +5,8 @@ type: text/vnd.tiddlywiki
 
 <$let
   circumference="31.4159"
-  all={{{ [tag<currentTiddler>tag[todo]!has[draft.of]count[]] }}}
-  closed={{{ [tag<currentTiddler>tag[todo]!has[draft.of]tag[done]count[]] }}}
+  all={{{ [function[py.descendant-todos],<currentTiddler>count[]] }}}
+  closed={{{ [function[py.completed-descendant-todos],<currentTiddler>count[]] }}}
   ratio={{{ [<all>match[0]then[0]] :else[<circumference>multiply<closed>divide<all>] }}}
 >
   <svg
@@ -20,8 +20,8 @@ type: text/vnd.tiddlywiki
       r="14"
       cx="15"
       cy="15"
-      fill="white"
-      stroke="tomato"
+      fill="var(--tpc-background, white)"
+      stroke="var(--tpc-primary, tomato)"
       stroke-width="2"
     />
     <circle
@@ -30,7 +30,7 @@ type: text/vnd.tiddlywiki
       cx="15"
       cy="15"
       fill="transparent"
-      stroke="tomato"
+      stroke="var(--tpc-primary, tomato)"
       stroke-width="10"
       transform="rotate(-90) translate(-30)"
       stroke-dasharray={{{ [<ratio>addsuffix[ 31.42]] }}}

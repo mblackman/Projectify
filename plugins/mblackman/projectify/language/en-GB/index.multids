@@ -4,21 +4,33 @@ AddProject/Caption: Add project
 AddProject/Hint: Create a new project
 AddCategory/Caption: Add category
 AddCategory/Hint: Create a new category
+AddSection/Caption: Add section
+AddSection/Placeholder: Section name...
 AddSubTasks/Caption: Add sub-tasks
 AddToInbox/Hint: Press <kbd>{{$:/config/shortcuts/py-quick-capture}}</kbd> to capture from anywhere.
-AddToInbox/Placeholder: Add to inbox...
+AddToInbox/Placeholder: Add to inbox... (e.g. Task @today !3 #Project @work)
 AddTodo/Caption: Add todo
 AddTodo/Hint: Add a new todo to the project
-AddTodoToProject/Placeholder: Describe this task...
+AddTodoToProject/Placeholder: Describe this task... (supports @today !1-!3 @context)
 AllClear: All clear!
 Archive: Archive
 ArchiveProject/Caption: Archive project
 ArchiveProject/Hint: Remove this project from the active project list
+BlockedBy/Caption: Blocked by
 Cancel/Caption: Cancel
 CardOptions/Hint: Card options
 Clear: Clear
 Close/Caption: Close
 Completed/Caption: Completed
+Config/EnableBoardView: Enable per-project Kanban Board view switcher
+Config/EnableContexts: Enable @context tags and filtering
+Config/EnableMultiStatus: Enable multi-stage task statuses (In Progress, Waiting, Someday, Cancelled)
+Config/EnableScheduledDates: Enable separate Start/Scheduled dates alongside Due dates
+Config/ShowMatrixTab: Show Eisenhower Matrix tab in Dashboard
+Config/ShowReviewTab: Show Weekly Review & Logbook tab in Dashboard
+Config/SmartQuickAdd: Enable smart inline tokens (!1-!3, @today, #Project, @context)
+Context/All: All
+Context/Filter: Context
 ConvertIntoProject: Convert into project
 Calendar: Calendar
 Category: Category
@@ -26,7 +38,9 @@ Categories: Categories
 Dashboard: Dashboard
 DateFormat: DDth mmm
 DefaultDashboardTab: Default dashboard tab
+DeleteSection/Hint: Delete section
 DragTodoTip: Drag & drop any tiddler below to add it as a task to this project.
+DueDate/Tab: Due (Deadline)
 EditCategories: Edit categories
 FilterProjects: Filter projects
 FirstDayOfWeek: First day of week
@@ -35,6 +49,15 @@ HelpSearch/Placeholder: Search...
 HideArchived/Caption: Hide archived
 HideCompleted/Caption: Hide completed
 Inbox: Inbox
+Matrix: Matrix
+Matrix/DoFirst: Urgent & Important
+Matrix/DoFirst/Hint: Do First (Due soon & Priority)
+Matrix/Schedule: Important, Not Urgent
+Matrix/Schedule/Hint: Schedule (Priority, Later)
+Matrix/Delegate: Urgent, Less Important
+Matrix/Delegate/Hint: Quick / Delegate (Due soon)
+Matrix/Backlog: Neither Urgent nor Priority
+Matrix/Backlog/Hint: Backlog / Later
 More: More
 MoreActions/Hint: More actions
 NewProject: Create new project
@@ -50,12 +73,28 @@ OtherTasks: Other tasks
 Overdue: Overdue
 Priority/Hint: Priority
 ProjectArchived: This project is archived.
+ProjectMode/Label: Project mode
+ProjectMode/Parallel: Parallel (all available actions)
+ProjectMode/Sequential: Sequential (first action only)
 Projects: Projects
 QuickAddTodo: Quick add todo
-QuickCapture/Hint: Press <kbd>⏎</kbd> to capture.
+QuickCapture/Hint: Press <kbd>⏎</kbd> to capture. Supports `@today`, `!1`–`!3`, `#Project`, `@context`.
+RenameTodo/Caption: Rename task
 ReorderProjects/Hint: Drag & drop items in the list to reorder projects
 ReorderProjects/Caption: Reorder projects
+Repeat: Repeat
+Repeat/None: None
+RescheduleOverdue/Caption: Reschedule all to Today
 RestoreProject: Restore project
+Review: Review
+Review/Logbook: Completed Logbook
+Review/Logbook/Hint: Recently completed tasks across all projects
+Review/Someday: Someday / Maybe
+Review/Someday/Hint: Tasks deferred for future consideration
+Review/StalledProjects: Stalled Projects
+Review/StalledProjects/Hint: Active projects with no open tasks defined
+Review/WaitingBlocked: Waiting & Blocked
+Review/WaitingBlocked/Hint: Tasks waiting on others or blocked by dependencies
 Save/Caption: Save
 Schedule/Caption: Schedule
 Scheduled: Scheduled
@@ -64,6 +103,14 @@ SetCategory/Hint: Select a category for this project
 ShowArchived/Caption: Show archived
 ShowCompletedTodosByDefault: Show completed todos by default
 ShowWelcomeMessages: Show welcome messages
+StartDate/Tab: Start (Scheduled)
+Status/Blocked: Blocked by another task
+Status/Cancelled: Cancelled
+Status/Done: Done
+Status/InProgress: In Progress
+Status/Someday: Someday / Maybe
+Status/Todo: To Do
+Status/Waiting: Waiting
 Tip: Tip
 Today: Today
 TodayAndOverdue: Today and overdue
@@ -72,9 +119,16 @@ TodoActions/Hint: Actions
 Todos: Todos
 Tomorrow: Tomorrow
 Upcoming: Upcoming
+View/Board: Board
+View/List: List
 ViewAsCards: View as cards
 ViewAsList: View as list
 ViewProjectsAs: View projects as
+WorkflowPreset/Full: Full Suite
+WorkflowPreset/GTD: GTD Power
+WorkflowPreset/Kanban: Kanban & Agile
+WorkflowPreset/Label: Workflow Preset
+WorkflowPreset/Minimal: Minimal / Classic
 Yesterday: Yesterday
 cards: cards
 list: list

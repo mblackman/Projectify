@@ -21,7 +21,7 @@ type: text/vnd.tiddlywiki
       <%endif%>
     </div>
     <div class="py-project-infos">
-      <$count filter=<<py-open-todos>>/> <<lingo OpenTasks>>
+      <$count filter="[function[py.open-descendant-todos],<currentTiddler>]"/> <<lingo OpenTasks>>
     </div>
   </li>
 </$let>

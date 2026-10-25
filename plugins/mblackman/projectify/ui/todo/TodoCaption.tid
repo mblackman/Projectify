@@ -4,4 +4,8 @@ tags:
 title: $:/plugins/mblackman/projectify/ui/todo/TodoCaption
 type: text/vnd.tiddlywiki
 
-<$view field="title"/>
+<%if [{!!caption}!is[blank]] %>
+  <$view field="caption"/>
+<%else%>
+  <$view field="title"/>
+<%endif%>

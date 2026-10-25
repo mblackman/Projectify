@@ -1,0 +1,31 @@
+created: 20261025120000000
+modified: 20261025120000000
+tags:
+title: $:/plugins/mblackman/projectify/ui/forms/TodoContext
+type: text/vnd.tiddlywiki
+
+\procedure lingo-base() $:/language/projectify/
+
+\procedure toggle-context-actions()
+<%if [all[current]get[context]enlist-input[]match<ctx>] %>
+  <$action-listops $field="context" $subfilter="-[<ctx>]"/>
+<%else%>
+  <$action-listops $field="context" $subfilter="[<ctx>]"/>
+<%endif%>
+<$action-sendmessage $message="tm-auto-save-wiki"/>
+\end
+
+<%if [{$:/config/projectify/EnableContexts}!match[no]] %>
+  <div class="py-context-picker tc-popup-handle">
+    <div class="py-context-chips">
+      <$list filter="[{$:/config/projectify/DefaultContexts}enlist-input[]] [subfilter<py-all-contexts>] +[unique[]]" variable="ctx">
+        <$button
+          class={{{ [all[current]get[context]enlist-input[]match<ctx>then[tc-btn-invisible py-context-chip py-active tc-popup-handle]else[tc-btn-invisible py-context-chip tc-popup-handle]] }}}
+          actions=<<toggle-context-actions>>
+        >
+          <$text text=<<ctx>>/>
+        </$button>
+      </$list>
+    </div>
+  </div>
+<%endif%>

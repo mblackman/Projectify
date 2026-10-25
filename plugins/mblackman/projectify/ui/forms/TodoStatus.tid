@@ -1,0 +1,58 @@
+created: 20261025120000000
+modified: 20261025120000000
+tags:
+title: $:/plugins/mblackman/projectify/ui/forms/TodoStatus
+type: text/vnd.tiddlywiki
+
+\procedure lingo-base() $:/language/projectify/
+
+<div class="py-status-selector">
+  <$button
+    class={{{ [{!!status}match[todo]then[tc-btn-invisible py-status-btn py-active]] [{!!status}is[blank]!tag[done]then[tc-btn-invisible py-status-btn py-active]] :else[[tc-btn-invisible py-status-btn]] }}}
+    tooltip={{$:/language/projectify/Status/Todo}}
+    aria-label={{$:/language/projectify/Status/Todo}}
+  >
+    {{$:/plugins/mblackman/projectify/images/checkbox}}
+    <$action-py-toggle-todo $tiddler=<<currentTiddler>> $status="todo"/>
+  </$button>
+  <$button
+    class={{{ [{!!status}match[in-progress]then[tc-btn-invisible py-status-btn py-active]else[tc-btn-invisible py-status-btn]] }}}
+    tooltip={{$:/language/projectify/Status/InProgress}}
+    aria-label={{$:/language/projectify/Status/InProgress}}
+  >
+    {{$:/plugins/mblackman/projectify/images/status-in-progress}}
+    <$action-py-toggle-todo $tiddler=<<currentTiddler>> $status="in-progress"/>
+  </$button>
+  <$button
+    class={{{ [{!!status}match[waiting]then[tc-btn-invisible py-status-btn py-active]else[tc-btn-invisible py-status-btn]] }}}
+    tooltip={{$:/language/projectify/Status/Waiting}}
+    aria-label={{$:/language/projectify/Status/Waiting}}
+  >
+    {{$:/plugins/mblackman/projectify/images/status-waiting}}
+    <$action-py-toggle-todo $tiddler=<<currentTiddler>> $status="waiting"/>
+  </$button>
+  <$button
+    class={{{ [{!!status}match[someday]then[tc-btn-invisible py-status-btn py-active]else[tc-btn-invisible py-status-btn]] }}}
+    tooltip={{$:/language/projectify/Status/Someday}}
+    aria-label={{$:/language/projectify/Status/Someday}}
+  >
+    {{$:/plugins/mblackman/projectify/images/status-someday}}
+    <$action-py-toggle-todo $tiddler=<<currentTiddler>> $status="someday"/>
+  </$button>
+  <$button
+    class={{{ [all[current]tag[done]!status[cancelled]then[tc-btn-invisible py-status-btn py-active]else[tc-btn-invisible py-status-btn]] }}}
+    tooltip={{$:/language/projectify/Status/Done}}
+    aria-label={{$:/language/projectify/Status/Done}}
+  >
+    {{$:/plugins/mblackman/projectify/images/checkbox-checked-solid}}
+    <$action-py-toggle-todo $tiddler=<<currentTiddler>> $status="done"/>
+  </$button>
+  <$button
+    class={{{ [{!!status}match[cancelled]then[tc-btn-invisible py-status-btn py-active]else[tc-btn-invisible py-status-btn]] }}}
+    tooltip={{$:/language/projectify/Status/Cancelled}}
+    aria-label={{$:/language/projectify/Status/Cancelled}}
+  >
+    {{$:/plugins/mblackman/projectify/images/status-cancelled}}
+    <$action-py-toggle-todo $tiddler=<<currentTiddler>> $status="cancelled"/>
+  </$button>
+</div>
