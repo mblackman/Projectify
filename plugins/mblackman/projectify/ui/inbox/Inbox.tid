@@ -1,0 +1,35 @@
+caption: {{$:/plugins/mblackman/projectify/images/inbox}} {{$:/language/projectify/Inbox}}
+created: 20200425193337699
+modified: 20261025120000000
+tags:
+title: $:/plugins/mblackman/projectify/ui/inbox/Inbox
+type: text/vnd.tiddlywiki
+
+\procedure lingo-base() $:/language/projectify/
+
+\procedure inbox-count()
+<$let currentTiddler="Inbox">
+  <span class="py-count">
+    <$count filter=<<py-open-todos>>/>
+  </span>
+</$let>
+\end
+
+<h2>{{$:/language/projectify/Inbox}} <<inbox-count>></h2>
+
+<$let currentTiddler="Inbox">
+  <$transclude
+    $variable="todo-list"
+    emptyTemplate="$:/plugins/mblackman/projectify/ui/welcome/EmptyInbox"
+  />
+</$let>
+
+<label class="py-label py-right-aligned">
+  <<lingo AddToInbox/Hint>>
+</label>
+<$let
+  todo-tags="Inbox todo"
+  placeholder={{$:/language/projectify/AddToInbox/Placeholder}}
+>
+  {{$:/plugins/mblackman/projectify/ui/forms/AddTodo}}
+</$let>

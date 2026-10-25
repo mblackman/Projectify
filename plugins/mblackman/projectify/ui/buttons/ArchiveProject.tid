@@ -1,0 +1,17 @@
+created: 20201209150027612
+modified: 20261025120000000
+tags:
+title: $:/plugins/mblackman/projectify/ui/buttons/ArchiveProject
+type: text/vnd.tiddlywiki
+
+\procedure lingo-base() $:/language/projectify/
+
+<$button
+  class="py-btn btn-small btn-danger nc-archive-project"
+  tooltip={{$:/language/projectify/ArchiveProject/Hint}}
+  aria-label={{$:/language/projectify/ArchiveProject/Hint}}
+>
+  <$action-listops $tags="done"/>
+  <$action-sendmessage $message="tm-auto-save-wiki"/>
+  {{$:/core/images/delete-button}} <<lingo ArchiveProject/Caption>>
+</$button>

@@ -1,0 +1,27 @@
+created: 20201208175952867
+modified: 20261025120000000
+tags:
+title: $:/plugins/mblackman/projectify/ui/welcome/EmptyProject
+type: text/vnd.tiddlywiki
+
+\procedure lingo-base() $:/language/projectify/
+
+<%if [{$:/config/projectify/ShowWelcomeMessages}match[yes]] %>
+  <$droppable actions=<<project-refile-actions>>>
+    <%if [subfilter<py-is-empty-project>] %>
+      <div class="py-welcome">
+        <div class="icon">{{$:/plugins/mblackman/projectify/images/victory}}</div>
+        <h3>{{$:/language/projectify/EmptyProjectTitle}}</h3>
+        {{$:/language/projectify/EmptyProjectDescription}}
+      </div>
+    <%else%>
+      <div class="py-welcome">
+        <div class="icon">{{$:/plugins/mblackman/projectify/images/rocket}}</div>
+        <h3>{{$:/language/projectify/WelcomeProjectTitle}}</h3>
+        {{$:/language/projectify/WelcomeProjectDescription}}
+      </div>
+
+      <$transclude $variable="py-tip" text=<<lingo DragTodoTip>>/>
+    <%endif%>
+  </$droppable>
+<%endif%>

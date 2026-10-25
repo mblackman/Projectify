@@ -1,3 +1,30 @@
-/editions/*/output/
-node_modules/
 .DS_Store
+
+# IDE
+.vscode/**/*
+!.vscode/settings.json
+!.vscode/extensions.json
+.idea/
+
+# Dependencies & Build Output
+node_modules/
+build/
+dist/
+debug/
+
+# Logs & Coverage
+logs
+*.log
+npm-debug.log*
+coverage/
+.nyc_output
+
+# TiddlyWiki runtime state in demo/
+demo/tiddlers/$__StoryList.tid
+demo/tiddlers/$__StoryList_*.tid
+demo/tiddlers/$__HistoryList.tid
+demo/tiddlers/$__UpgradeLibrary*
+demo/tiddlers/$__temp_*
+demo/tiddlers/$__state_*
+demo/tiddlers/$__info_*
+demo/tiddlers/$__Import.tid

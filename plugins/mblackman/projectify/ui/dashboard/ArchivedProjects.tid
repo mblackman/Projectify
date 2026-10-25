@@ -1,0 +1,25 @@
+created: 20210116212646239
+modified: 20261025120000000
+tags:
+title: $:/plugins/mblackman/projectify/ui/dashboard/ArchivedProjects
+type: text/vnd.tiddlywiki
+
+<%if [subfilter<py-has-archived-projects>] %>
+  <%if [{$:/state/projectify/show-archived}match[show]] %>
+    <$button class="tc-btn-invisible py-link-muted" set="$:/state/projectify/show-archived" setTo="">
+      {{$:/plugins/mblackman/projectify/images/eyeslash}} <<lingo HideArchived/Caption>>
+    </$button>
+
+    <h2><<lingo Archive>></h2>
+
+    <ul class="py-projects">
+      <$list filter=<<py-archived-projects>>>
+        {{||$:/plugins/mblackman/projectify/ui/dashboard/ProjectListItem}}
+      </$list>
+    </ul>
+  <%else%>
+    <$button class="tc-btn-invisible py-link-muted" set="$:/state/projectify/show-archived" setTo="show">
+      {{$:/plugins/mblackman/projectify/images/eye}} <<lingo ShowArchived/Caption>>
+    </$button>
+  <%endif%>
+<%endif%>

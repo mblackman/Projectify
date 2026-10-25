@@ -1,0 +1,21 @@
+created: 20200424192751342
+modified: 20261025120000000
+tags:
+title: $:/plugins/mblackman/projectify/ui/dashboard/Dashboard
+type: text/vnd.tiddlywiki
+
+\procedure lingo-base() $:/language/projectify/
+
+<$transclude
+  $variable="tabs"
+  tabsList="[all[tiddlers+shadows]tag[$:/plugins/mblackman/projectify/tags/dashboard]] [all[tiddlers+shadows]tag[$:/plugins/nico/projectify/tags/dashboard]]"
+  default={{$:/config/projectify/DefaultDashboardTab}}
+  state="$:/state/projects-and-schedule"
+  class="py-tabs"
+/>
+
+<div class="py-right-aligned">
+  <$link to="$:/plugins/mblackman/projectify/doc/Help">
+    {{$:/plugins/mblackman/projectify/images/info}} <<lingo Help>>
+  </$link>
+</div>

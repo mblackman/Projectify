@@ -1,0 +1,14 @@
+created: 20200428151242242
+modified: 20261025120000000
+tags:
+title: $:/plugins/mblackman/projectify/ui/buttons/Checkbox
+type: text/vnd.tiddlywiki
+
+<span class="py-checkbox">
+  <%if [subfilter<py-is-open>] %>
+    <span class="todo">{{$:/plugins/mblackman/projectify/images/checkbox}}</span>
+    <span class="todo-hover">{{$:/plugins/mblackman/projectify/images/checkbox-checked}}</span>
+  <%else%>
+    <span class="done">{{$:/plugins/mblackman/projectify/images/checkbox-checked-solid}}</span>
+  <%endif%>
+</span>

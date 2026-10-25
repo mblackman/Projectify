@@ -1,0 +1,34 @@
+created: 20200427182956318
+modified: 20261025120000000
+tags:
+title: $:/plugins/mblackman/projectify/QuickCapture
+type: text/vnd.tiddlywiki
+
+\procedure lingo-base() $:/language/projectify/
+
+\procedure quick-capture-actions()
+<$let title={{{ [{$:/temp/projectify/QuickCapture!!todo_name}trim[]] }}}>
+  <%if [<title>!is[blank]] %>
+    <$action-createtiddler
+      $basetitle=<<title>>
+      tags="Inbox todo"
+    />
+    <$action-deletefield $tiddler="$:/temp/projectify/QuickCapture" $field="todo_name"/>
+    <$action-sendmessage $message="tm-close-tiddler"/>
+    <$action-sendmessage $message="tm-auto-save-wiki"/>
+  <%endif%>
+</$let>
+\end
+
+!! {{$:/plugins/mblackman/projectify/images/quick-capture}} <<lingo QuickAddTodo>>
+
+<$keyboard key="enter" actions=<<quick-capture-actions>>>
+  <$edit-text
+    class="py-input input-large"
+    tiddler="$:/temp/projectify/QuickCapture"
+    field="todo_name"
+    placeholder={{$:/language/projectify/AddToInbox/Placeholder}}
+    focus="true"
+  />
+  <label class="py-label py-right-aligned"><<lingo QuickCapture/Hint>></label>
+</$keyboard>

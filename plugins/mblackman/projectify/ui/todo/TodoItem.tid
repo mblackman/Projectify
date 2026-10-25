@@ -1,0 +1,47 @@
+created: 20200422200123438
+modified: 20261025120000000
+tags:
+title: $:/plugins/mblackman/projectify/ui/todo/TodoItem
+type: text/vnd.tiddlywiki
+
+\procedure drag-handle()
+<$draggable
+  tag="span"
+  class="py-drag-handle"
+  tiddler={{!!title}}
+>
+  {{$:/plugins/mblackman/projectify/images/drag-handle}}
+</$draggable>
+\end
+
+\procedure save-actions()
+<$action-sendmessage $message="tm-auto-save-wiki"/>
+\end
+
+<div class={{{ [all[current]tag[done]then[py-todo py-completed]else[py-todo]] }}}>
+  <div class="py-todo-main">
+    <%if [<dragHandle>!is[blank]] %>
+      <<drag-handle>>
+    <%endif%>
+
+    <$checkbox tag="done" actions=<<save-actions>>>
+      {{||$:/plugins/mblackman/projectify/ui/buttons/Checkbox}}
+      <%if [<currentTiddler>has[priority]] %>
+        {{||$:/plugins/mblackman/projectify/ui/buttons/TodoPriority}}
+      <%endif%>
+      <$link to={{!!title}}>
+        {{||$:/plugins/mblackman/projectify/ui/todo/TodoCaption}}
+        <%if [subfilter<py-has-todos>] %>
+          {{||$:/plugins/mblackman/projectify/images/pie}}
+        <%endif%>
+        <%if [all[current]!text[]] %>
+          <span class="py-todo-text-icon">
+            {{$:/plugins/mblackman/projectify/images/file}}
+          </span>
+        <%endif%>
+      </$link>
+    </$checkbox>
+  </div>
+
+  {{||$:/plugins/mblackman/projectify/ui/todo/TodoActions}}
+</div>

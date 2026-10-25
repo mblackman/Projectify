@@ -1,3 +1,65 @@
-<h1 class="">Projectify</h1><p>Projectify is a project management app for <a class="tc-tiddlylink-external" href="https://tiddlywiki.com" rel="noopener noreferrer" target="_blank">TiddlyWiki</a>, inspired by products like <a class="tc-tiddlylink-external" href="https://todoist.com" rel="noopener noreferrer" target="_blank">Todoist</a> and <a class="tc-tiddlylink-external" href="https://basecamp.com" rel="noopener noreferrer" target="_blank">Basecamp</a>.</p><p>This is a maintained fork by <a class="tc-tiddlylink-external" href="https://github.com/mblackman" rel="noopener noreferrer" target="_blank">Matt Blackman</a> published as <code>$:/plugins/mblackman/projectify</code>, forked from the original project by <a class="tc-tiddlylink-external" href="https://nicolas.petton.fr" rel="noopener noreferrer" target="_blank">Nicolas Petton</a>.</p><p><a class="tc-tiddlylink-external" href="https://tiddlywiki.com" rel="noopener noreferrer" target="_blank">TiddlyWiki</a> is an excellent note-taking &amp; knowledge-base app with <a class="tc-tiddlylink-external" href="https://tiddlywiki.com/#TiddlyWiki" rel="noopener noreferrer" target="_blank">unique features</a>. Projectify brings project management to TiddlyWiki, extending it to let you <a class="tc-tiddlylink tc-tiddlylink-shadow" href="https://mblackman.github.io/Projectify/demo.html#%24%3A%2Fplugins%2Fmblackman%2Fprojectify%2Fdoc%2FInbox">capture thoughts</a>, <a class="tc-tiddlylink tc-tiddlylink-shadow" href="https://mblackman.github.io/Projectify/demo.html#%24%3A%2Fplugins%2Fmblackman%2Fprojectify%2Fdoc%2FProjects">plan projects</a> and <a class="tc-tiddlylink tc-tiddlylink-shadow" href="https://mblackman.github.io/Projectify/demo.html#%24%3A%2Fplugins%2Fmblackman%2Fprojectify%2Fdoc%2FSchedule">schedule tasks</a>.</p><p>Projectify is carefully crafted, with an intuitive interface that integrates seamlessly with the core of TiddlyWiki. <a class="tc-tiddlylink-external" href="https://tiddlywiki.com/#Drag%20and%20Drop" rel="noopener noreferrer" target="_blank">Drag and drop</a> any tiddler into a project to add it as a todo, <a class="tc-tiddlylink-external" href="https://tiddlywiki.com/#Transclusion" rel="noopener noreferrer" target="_blank">transclude</a> and <a class="tc-tiddlylink-external" href="https://tiddlywiki.com/#Linking%20in%20WikiText" rel="noopener noreferrer" target="_blank">link</a> other tiddlers into projects or tasks.</p><p>For all changes in the latest 0.15.0 release, see <a class="tc-tiddlylink tc-tiddlylink-shadow" href="https://mblackman.github.io/Projectify/demo.html#%24%3A%2Fplugins%2Fmblackman%2Fprojectify%2Fchangelog">ChangeLog</a>.</p><h2 class="">Demo</h2><p>A demo is available at <a class="tc-tiddlylink-external" href="https://mblackman.github.io/Projectify" rel="noopener noreferrer" target="_blank">mblackman.github.io/Projectify</a>.</p><h2 class="">Download</h2><p>Download a pre-configured empty wiki:</p><p><a class="py-btn btn-primary download-link" download="empty.html" href="https://mblackman.github.io/Projectify/empty.html">
-  Get Projectify <svg class="tc-image-save-button tc-image-button" height="22pt" viewBox="0 0 128 128" width="22pt"><path d="M120.783 34.33c4.641 8.862 7.266 18.948 7.266 29.646 0 35.347-28.653 64-64 64-35.346 0-64-28.653-64-64 0-35.346 28.654-64 64-64 18.808 0 35.72 8.113 47.43 21.03l2.68-2.68c3.13-3.13 8.197-3.132 11.321-.008 3.118 3.118 3.121 8.193-.007 11.32l-4.69 4.691zm-12.058 12.058a47.876 47.876 0 013.324 17.588c0 26.51-21.49 48-48 48s-48-21.49-48-48 21.49-48 48-48c14.39 0 27.3 6.332 36.098 16.362L58.941 73.544 41.976 56.578c-3.127-3.127-8.201-3.123-11.32-.005-3.123 3.124-3.119 8.194.006 11.319l22.617 22.617a7.992 7.992 0 005.659 2.347c2.05 0 4.101-.783 5.667-2.349l44.12-44.12z" fill-rule="evenodd"></path></svg>
-</a></p><p>Alternatively, see <a class="tc-tiddlylink tc-tiddlylink-shadow" href="https://mblackman.github.io/Projectify/demo.html#%24%3A%2Fplugins%2Fmblackman%2Fprojectify%2Fdoc%2FInstallation">Installation</a> for installation instructions in an existing wiki.</p><h2 class="">Documentation</h2><ul><li>If you are new to <strong>TiddlyWiki</strong>, we strongly encourage you to read the <a class="tc-tiddlylink-external" href="https://tiddlywiki.com/#GettingStarted" rel="noopener noreferrer" target="_blank">Getting started</a> documentation.</li><li>The <strong>Projectify documentation</strong> is available <a class="tc-tiddlylink tc-tiddlylink-shadow" href="https://mblackman.github.io/Projectify/demo.html#%24%3A%2Fplugins%2Fmblackman%2Fprojectify%2Fdoc%2FHelp">online</a> as well as locally when the plugin is installed.</li></ul><h2 class="">Development setup</h2><ul><li>Install <a class="tc-tiddlylink-external" href="https://nodejs.org/en/" rel="noopener noreferrer" target="_blank">Node.js</a></li><li>In the root folder of the project run <code>npm install</code></li><li>To start the <a class="tc-tiddlylink tc-tiddlylink-missing" href="https://mblackman.github.io/Projectify/demo.html#TiddlyWiki">TiddlyWiki</a> server, run <code>npm run dev</code>. The wiki is available at <a class="tc-tiddlylink-external" href="http://localhost:8080" rel="noopener noreferrer" target="_blank">http://localhost:8080</a>.</li><li>To write demo pages, run <code>npm run dev-demo</code>. The demo is available at <a class="tc-tiddlylink-external" href="http://localhost:8080" rel="noopener noreferrer" target="_blank">http://localhost:8080</a>.</li><li>To write empty page, run <code>npm run dev-empty</code>. The empty page is available at <a class="tc-tiddlylink-external" href="http://localhost:8080" rel="noopener noreferrer" target="_blank">http://localhost:8080</a>.</li><li>To build HTML files for all editions, run <code>npm run build</code></li></ul><h2 class="">Upstream &amp; Contributors</h2><p>Originally created by <a class="tc-tiddlylink-external" href="https://nicolas.petton.fr" rel="noopener noreferrer" target="_blank">Nicolas Petton</a> (<a class="tc-tiddlylink-external" href="https://github.com/NicolasPetton/Projectify" rel="noopener noreferrer" target="_blank">upstream repo</a>).</p><p>Many thanks to the following people who have contributed to Projectify:</p><ul><li><a class="tc-tiddlylink-external" href="https://github.com/OdinJorna" rel="noopener noreferrer" target="_blank">@OdinJorna</a></li><li><a class="tc-tiddlylink-external" href="https://github.com/kookma" rel="noopener noreferrer" target="_blank">@Kookma</a></li><li><a class="tc-tiddlylink-external" href="https://github.com/joebordes" rel="noopener noreferrer" target="_blank">@Joebordes</a></li><li><a class="tc-tiddlylink-external" href="https://github.com/silvyn" rel="noopener noreferrer" target="_blank">@Silvyn</a></li><li><a class="tc-tiddlylink-external" href="https://github.com/HueLiu" rel="noopener noreferrer" target="_blank">@HueLiu</a></li><li><a class="tc-tiddlylink-external" href="https://github.com/gregorfischer" rel="noopener noreferrer" target="_blank">@gregorfischer</a></li></ul>
+# Projectify
+
+Simple and beautiful project management for **[TiddlyWiki](https://tiddlywiki.com)** (`>=5.4.0`), published as `$:/plugins/mblackman/projectify`.
+
+[![CI](https://github.com/mblackman/Projectify/actions/workflows/ci.yml/badge.svg)](https://github.com/mblackman/Projectify/actions/workflows/ci.yml)
+[![Latest Release](https://img.shields.io/github/v/release/mblackman/Projectify?color=blue)](https://github.com/mblackman/Projectify/releases)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Live Demo](https://img.shields.io/badge/Demo-Interactive%20Preview-brightgreen)](https://mblackman.github.io/Projectify/)
+
+Projectify brings GTD-inspired project and task management to TiddlyWiki, inspired by tools like [Todoist](https://todoist.com) and [Basecamp](https://basecamp.com). This is a maintained, modernized fork by [Matt Blackman](https://github.com/mblackman) of the original Projectify plugin created by [Nicolas Petton](https://github.com/NicolasPetton/Projectify).
+
+👉 **[Try the Live Demo](https://mblackman.github.io/Projectify/)**
+
+---
+
+## Features
+
+* 📥 **Inbox & Quick Capture**: Capture thoughts into your Inbox from anywhere using the Quick Capture keyboard shortcut (`Alt+C` by default).
+* 🗂️ **Projects, Sub-Projects & Categories**: Organize tasks into projects, group projects by color-coded categories, view projects as cards or lists, and track progress with live pie charts.
+* 📅 **Scheduling & Priority**: Schedule due dates with an interactive calendar picker (`Today`, `Tomorrow`, `Next week`, or any date), assign priorities, and review tasks in the **Today**, **Upcoming**, and **Next Actions** views.
+* 🔀 **Drag & Drop Refiling**: Drag and drop any tiddler into a project to add it as a task, or drag tasks between the Inbox and projects.
+* 🎨 **Modern TiddlyWiki 5.4+ Integration**: Built with TiddlyWiki 5.4+ procedures, conditional syntax, and `--tpc-*` palette variables for seamless light and dark theme support.
+
+---
+
+## Installation
+
+### Drag & Drop (Fastest)
+1. Open your TiddlyWiki in a browser.
+2. Open the [Live Demo](https://mblackman.github.io/Projectify/) or download `projectify.tid` / `projectify-plugin.json` from the [Latest Release](https://github.com/mblackman/Projectify/releases/latest).
+3. Drag and drop the plugin into your wiki, click **Import**, and save & reload.
+
+### Node.js Edition
+Clone into your wiki's `plugins` folder:
+```bash
+git clone https://github.com/mblackman/Projectify.git plugins/mblackman/projectify
+```
+And add `"mblackman/projectify"` to the `plugins` list in your `tiddlywiki.info`.
+
+---
+
+## Development & Build Commands
+
+```bash
+# Install dependencies
+npm install
+
+# Start live-reloading development server on http://127.0.0.1:8080
+npm run dev
+
+# Run Jest test suite
+npm test
+
+# Build plugin artifacts (build/projectify.tid, build/projectify-plugin.json, dist/projectify-plugin.json), demo wiki, and plugin library
+npm run build-all
+```
+
+---
+
+## Credits & License
+
+Originally created by [Nicolas Petton](https://nicolas.petton.fr) ([upstream repository](https://github.com/NicolasPetton/Projectify)).
+Maintained and modernized for TiddlyWiki 5.4+ by [Matt Blackman](https://github.com/mblackman).
+
+MIT License — see [LICENSE](LICENSE).

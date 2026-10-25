@@ -1,0 +1,10 @@
+created: 20210117163947721
+modified: 20261025120000000
+tags:
+title: $:/plugins/mblackman/projectify/ui/category/Category
+type: text/vnd.tiddlywiki
+
+<$let colour={{{ [all[current]get[color]] }}}>
+  {{||$:/plugins/mblackman/projectify/ui/category/CategoryPill}}
+  <$text text={{!!title}}/>
+</$let>

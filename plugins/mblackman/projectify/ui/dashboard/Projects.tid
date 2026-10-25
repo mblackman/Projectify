@@ -1,0 +1,34 @@
+caption: {{$:/plugins/mblackman/projectify/images/collection}} Projects
+created: 20200424193106051
+modified: 20261025120000000
+tags:
+title: $:/plugins/mblackman/projectify/ui/dashboard/Projects
+type: text/vnd.tiddlywiki
+
+\procedure lingo-base() $:/language/projectify/
+
+<div class="py-projects-heading">
+  <div class="py-title">
+    <h2><<lingo Projects>></h2>
+    {{$:/plugins/mblackman/projectify/ui/buttons/ProjectListSettings}}
+  </div>
+
+  <div class="py-category-filter">
+    {{$:/plugins/mblackman/projectify/ui/buttons/CategoryFilter}}
+  </div>
+</div>
+
+<$reveal
+  type="match"
+  state="$:/state/projectify/show-reorder-projects"
+  class="tc-tiddler-info tc-popup-handle py-reorder-projects"
+  text="yes"
+  animate="yes"
+  retain="yes"
+>
+  {{$:/plugins/mblackman/projectify/ui/dashboard/ReorderProjects}}
+</$reveal>
+
+{{$:/plugins/mblackman/projectify/ui/dashboard/ActiveProjects}}
+{{$:/plugins/mblackman/projectify/ui/buttons/AddProject}}
+{{$:/plugins/mblackman/projectify/ui/dashboard/ArchivedProjects}}

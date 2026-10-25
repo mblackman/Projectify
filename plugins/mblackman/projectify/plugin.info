@@ -4,7 +4,7 @@
     "description": "Simple and Beautiful project management in TiddlyWiki",
     "author": "Matt Blackman (forked from Nicolas Petton)",
     "version": "0.15.0",
-    "core-version": ">=5.1.22",
+    "core-version": ">=5.4.0",
     "source": "https://github.com/mblackman/Projectify",
     "list": "doc/Help changelog LICENSE",
     "dependents": "",

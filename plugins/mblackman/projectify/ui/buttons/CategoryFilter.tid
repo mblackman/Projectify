@@ -1,0 +1,49 @@
+created: 20210116205450353
+modified: 20261025120000000
+title: $:/plugins/mblackman/projectify/ui/buttons/CategoryFilter
+type: text/vnd.tiddlywiki
+
+\procedure lingo-base() $:/language/projectify/
+
+<$let
+  popupTiddler=<<qualify "$:/state/projectify/category-filter-dropdown">>
+  stateTiddler="$:/state/projectify/project-category-filter"
+  selectedCategory={{{ [<stateTiddler>get[text]] }}}
+>
+  <$button popup=<<popupTiddler>> class="py-btn btn-small">
+    {{$:/plugins/mblackman/projectify/images/funnel}}
+    <%if [<selectedCategory>is[blank]] %>
+      <<lingo FilterProjects>>
+    <%else%>
+      Projects in
+      <$tiddler tiddler=<<selectedCategory>>>
+        {{||$:/plugins/mblackman/projectify/ui/category/Category}}
+      </$tiddler>
+    <%endif%>
+  </$button>
+
+  <$reveal state=<<popupTiddler>> type="popup" position="below" animate="yes" class="tc-drop-down py-drop-down">
+    <$list filter=<<py-all-categories>> variable="category">
+      <$let colour={{{ [<category>get[color]] }}}>
+        <$button class="tc-btn-invisible">
+          <$tiddler tiddler=<<category>>>
+            {{||$:/plugins/mblackman/projectify/ui/category/Category}}
+          </$tiddler>
+          <$action-setfield $tiddler=<<stateTiddler>> text=<<category>>/>
+        </$button>
+      </$let>
+    </$list>
+
+    <hr/>
+    <$link to="$:/plugins/mblackman/projectify/ui/config/Categories">
+      <<lingo EditCategories>>
+    </$link>
+  </$reveal>
+
+  <%if [<selectedCategory>!is[blank]] %>
+    <$button class="tc-btn-invisible btn-small py-link-muted">
+      <<lingo Clear>>
+      <$action-deletetiddler $tiddler=<<stateTiddler>>/>
+    </$button>
+  <%endif%>
+</$let>

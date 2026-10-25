@@ -23,8 +23,11 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build demo, empty, plugin, and readme
-        run: npm run build
+      - name: Run tests
+        run: npm test
+
+      - name: Build plugin, demo, and CPL library
+        run: npm run build-all
 
       - name: Verify plugin.info version matches tag
         run: |
@@ -41,8 +44,8 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            docs/projectify.json
-            docs/demo.html
-            docs/empty.html
+            build/projectify.tid
+            dist/projectify-plugin.json
+            build/index.html
           generate_release_notes: true
           fail_on_unmatched_files: true

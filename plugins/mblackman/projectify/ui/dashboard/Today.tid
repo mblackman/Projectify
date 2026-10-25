@@ -1,0 +1,23 @@
+caption: {{$:/plugins/mblackman/projectify/images/sun}} {{$:/language/projectify/Today}} {{$:/plugins/mblackman/projectify/ui/dashboard/TodayCount}}
+created: 20210107213438937
+list-after: $:/plugins/mblackman/projectify/ui/dashboard/InboxAndProjects
+modified: 20261025120000000
+tags: $:/plugins/mblackman/projectify/tags/dashboard
+title: $:/plugins/mblackman/projectify/ui/dashboard/Today
+type: text/vnd.tiddlywiki
+
+\procedure lingo-base() $:/language/projectify/
+
+<$let showProjectLinks="yes">
+  <%if [subfilter<py-has-overdue-todos>] %>
+    <dl>
+      <dt><<lingo Overdue>></dt>
+      <dd><<py-schedule-overdue>></dd>
+    </dl>
+  <%endif%>
+
+  <dl>
+    <dt><<lingo Today>></dt>
+    <dd><<py-schedule-today>></dd>
+  </dl>
+</$let>

@@ -1,0 +1,39 @@
+created: 20201207165347344
+list-after: $:/plugins/mblackman/projectify/ui/todo/TodoHeading
+modified: 20261025120000000
+tags: $:/tags/ViewTemplate
+title: $:/plugins/mblackman/projectify/ui/project/Project
+type: text/vnd.tiddlywiki
+
+\procedure lingo-base() $:/language/projectify/
+
+<%if [subfilter<py-is-project>] %>
+  <%if [subfilter<py-is-not-subproject>] %>
+    <div class="py-category-wrapper">
+      {{||$:/plugins/mblackman/projectify/ui/buttons/SelectCategory}}
+      <%if [subfilter<py-is-open>] %>
+        {{||$:/plugins/mblackman/projectify/ui/buttons/ArchiveProject}}
+      <%endif%>
+    </div>
+  <%endif%>
+
+  {{||$:/plugins/mblackman/projectify/ui/project/ArchivedProjectBanner}}
+
+  <h2><<lingo Todos>> {{||$:/plugins/mblackman/projectify/images/pie}}</h2>
+
+  <$transclude
+    $variable="todo-list"
+    emptyTemplate="$:/plugins/mblackman/projectify/ui/welcome/EmptyProject"
+  />
+
+  {{||$:/plugins/mblackman/projectify/ui/buttons/ToggleCompletedTodos}}
+
+  <%if [subfilter<py-is-open>] %>
+    <$let
+      todo-tags={{{ [<currentTiddler>format:titlelist[]addsuffix[ todo]] }}}
+      placeholder={{$:/language/projectify/AddTodoToProject/Placeholder}}
+    >
+      {{||$:/plugins/mblackman/projectify/ui/forms/AddTodo}}
+    </$let>
+  <%endif%>
+<%endif%>

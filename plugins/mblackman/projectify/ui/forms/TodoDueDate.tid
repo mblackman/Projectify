@@ -1,0 +1,14 @@
+created: 20210110175047050
+modified: 20261025120000000
+tags:
+title: $:/plugins/mblackman/projectify/ui/forms/TodoDueDate
+type: text/vnd.tiddlywiki
+
+\procedure lingo-base() $:/language/projectify/
+
+<$py-date-today>{{$:/plugins/mblackman/projectify/images/sun}} <<lingo Today>></$py-date-today>
+<$py-date-tomorrow>{{$:/plugins/mblackman/projectify/images/calendar-event}} <<lingo Tomorrow>></$py-date-tomorrow>
+<$py-date-next-week>{{$:/plugins/mblackman/projectify/images/calendar}} <<lingo NextWeek>></$py-date-next-week>
+<$py-date-clear>{{$:/plugins/mblackman/projectify/images/slash-circle}} <<lingo Clear>></$py-date-clear>
+<hr/>
+<$py-date-calendar/>

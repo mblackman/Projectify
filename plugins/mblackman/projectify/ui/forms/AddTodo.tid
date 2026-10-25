@@ -1,0 +1,53 @@
+created: 20201207165347344
+modified: 20261025120000000
+title: $:/plugins/mblackman/projectify/ui/forms/AddTodo
+type: text/vnd.tiddlywiki
+
+\procedure lingo-base() $:/language/projectify/
+
+\procedure add-todo-actions()
+<$let todoName={{{ [<stateTiddler>get[todo-name]trim[]] }}}>
+  <%if [<todoName>!is[blank]] %>
+    <$action-createtiddler
+      $basetitle=<<todoName>>
+      due={{{ [<stateTiddler>get[due]] }}}
+      priority={{{ [<stateTiddler>get[priority]] }}}
+    >
+      <$action-listops $tiddler=<<createTiddler-title>> $tags=<<todo-tags>>/>
+    </$action-createtiddler>
+    <$action-deletefield $tiddler=<<stateTiddler>> $field="todo-name" $field="due" $field="priority"/>
+    <$action-deletetiddler $tiddler=<<stateTiddler>>/>
+    <$action-sendmessage $message="tm-auto-save-wiki"/>
+  <%endif%>
+</$let>
+\end
+
+<$let stateTiddler=<<qualify "$:/temp/projectify/add-todo-form">>>
+  <div class="py-composite-input">
+    <$keyboard key="enter" actions=<<add-todo-actions>>>
+      <$edit-text
+        class="py-input"
+        tiddler=<<stateTiddler>>
+        field="todo-name"
+        placeholder=<<placeholder>>
+      />
+    </$keyboard>
+
+    <div class="py-todo-actions">
+      <$let currentTiddler=<<stateTiddler>>>
+        <$transclude $tiddler="$:/plugins/mblackman/projectify/ui/buttons/TodoDueDate" $mode="inline"/>
+        <$transclude $tiddler="$:/plugins/mblackman/projectify/ui/buttons/TodoPriority" $mode="inline"/>
+      </$let>
+    </div>
+  </div>
+  <div class="py-actions">
+    <$button
+      class="py-btn btn-primary"
+      actions=<<add-todo-actions>>
+      tooltip={{$:/language/projectify/AddTodo/Hint}}
+      aria-label={{$:/language/projectify/AddTodo/Hint}}
+    >
+      <<lingo AddTodo/Caption>>
+    </$button>
+  </div>
+</$let>

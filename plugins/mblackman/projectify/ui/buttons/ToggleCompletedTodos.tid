@@ -1,0 +1,28 @@
+created: 20201212172804699
+modified: 20261025120000000
+title: $:/plugins/mblackman/projectify/ui/buttons/ToggleCompletedTodos
+type: text/vnd.tiddlywiki
+
+\procedure lingo-base() $:/language/projectify/
+
+<%if [subfilter<py-has-completed-todos>] %>
+  <$let
+    stateTiddler=<<qualify "$:/state/projectify/show-completed">>
+    default={{$:/config/projectify/ShowCompletedTodos}}
+    isVisible={{{ [<stateTiddler>get[text]else<default>] }}}
+  >
+    <%if [<isVisible>match[yes]] %>
+      <div class="py-actions">
+        <$button class="tc-btn-invisible py-link-muted" set=<<stateTiddler>> setTo="no">
+          {{$:/plugins/mblackman/projectify/images/eyeslash}} <<lingo HideCompleted/Caption>>
+        </$button>
+      </div>
+      <$transclude $variable="todo-list-completed"/>
+    <%else%>
+      <$button class="tc-btn-invisible py-link-muted" set=<<stateTiddler>> setTo="yes">
+        {{$:/plugins/mblackman/projectify/images/eye}}
+        <$count filter=<<py-completed-todos>>/> <<lingo Completed/Caption>>
+      </$button>
+    <%endif%>
+  </$let>
+<%endif%>

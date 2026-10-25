@@ -1,0 +1,13 @@
+created: 20201209151126748
+modified: 20261025120000000
+tags:
+title: $:/plugins/mblackman/projectify/ui/buttons/RestoreProject
+type: text/vnd.tiddlywiki
+
+\procedure lingo-base() $:/language/projectify/
+
+<$button class="tc-btn-invisible">
+  <$action-listops $tags="-done"/>
+  <<lingo RestoreProject>>
+  <$action-sendmessage $message="tm-auto-save-wiki"/>
+</$button>

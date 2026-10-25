@@ -1,0 +1,15 @@
+created: 20200424193106051
+modified: 20261025120000000
+tags:
+title: $:/plugins/mblackman/projectify/ui/dashboard/ProjectCards
+type: text/vnd.tiddlywiki
+
+<div class="py-cards">
+  <$list filter=<<py-active-projects>>>
+    <%if [all[current]field:category<category>] [<category>is[blank]] %>
+      <$droppable actions=<<project-refile-actions>>>
+        {{||$:/plugins/mblackman/projectify/ui/dashboard/ProjectCard}}
+      </$droppable>
+    <%endif%>
+  </$list>
+</div>

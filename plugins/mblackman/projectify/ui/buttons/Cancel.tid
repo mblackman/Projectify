@@ -1,0 +1,10 @@
+created: 20201212172804699
+modified: 20261025120000000
+title: $:/plugins/mblackman/projectify/ui/buttons/Cancel
+type: text/vnd.tiddlywiki
+
+\procedure lingo-base() $:/language/projectify/
+
+<$button class="py-btn" set=<<stateTiddler>> setTo="">
+  <<lingo Cancel/Caption>>
+</$button>

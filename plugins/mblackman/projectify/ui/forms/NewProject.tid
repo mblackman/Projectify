@@ -1,0 +1,65 @@
+created: 20201217232220846
+modified: 20261025120000000
+title: $:/plugins/mblackman/projectify/ui/forms/NewProject
+type: text/vnd.tiddlywiki
+
+\procedure lingo-base() $:/language/projectify/
+
+\procedure add-project-actions()
+<$let projectTitle={{{ [{$:/temp/projectify/new-project!!project_title}trim[]] }}}>
+  <%if [<projectTitle>!is[blank]] %>
+    <$action-createtiddler
+      $basetitle=<<projectTitle>>
+      description={{$:/temp/projectify/new-project!!description}}
+      category={{$:/temp/projectify/new-project!!category}}
+      tags="Project"
+    />
+    <$action-deletetiddler $tiddler="$:/temp/projectify/new-project"/>
+    <$action-deletetiddler $tiddler="$:/state/projectify/show-new-project-popup"/>
+    <$action-sendmessage $message="tm-auto-save-wiki"/>
+  <%endif%>
+</$let>
+\end
+
+<div class="py-form">
+  <$keyboard key="enter" actions=<<add-project-actions>>>
+    <div class="py-control-group">
+      <div class="py-label"><<lingo NewProjectTitle>></div>
+      <$edit-text
+        class="py-input"
+        focus="true"
+        tiddler="$:/temp/projectify/new-project"
+        field="project_title"
+      />
+    </div>
+    <div class="py-control-group">
+      <div class="py-label"><<lingo NewProjectDescription>></div>
+      <$edit-text
+        class="py-input"
+        tiddler="$:/temp/projectify/new-project"
+        field="description"
+      />
+    </div>
+    <div class="py-control-group">
+      <div class="py-label"><<lingo NewProjectCategory>></div>
+      <$select tiddler="$:/temp/projectify/new-project" field="category">
+        <option value=""></option>
+        <$list filter=<<py-all-categories>>>
+          <option value=<<currentTiddler>>>
+            <$text text=<<currentTiddler>>/>
+          </option>
+        </$list>
+      </$select>
+    </div>
+  </$keyboard>
+  <div class="py-actions">
+    <$button class="py-btn btn-primary" actions=<<add-project-actions>>>
+      <<lingo Save/Caption>>
+    </$button>
+    <<lingo Or>>
+    <$button class="py-btn">
+      <$action-deletetiddler $tiddler="$:/state/projectify/show-new-project-popup"/>
+      <<lingo Cancel/Caption>>
+    </$button>
+  </div>
+</div>

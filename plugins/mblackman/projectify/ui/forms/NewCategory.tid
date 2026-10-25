@@ -1,0 +1,53 @@
+created: 20210114223425845
+modified: 20261025120000000
+title: $:/plugins/mblackman/projectify/ui/forms/NewCategory
+type: text/vnd.tiddlywiki
+
+\procedure lingo-base() $:/language/projectify/
+
+\procedure add-category-actions()
+<$let categoryName={{{ [{$:/temp/projectify/new-category!!tag_name}trim[]] }}}>
+  <%if [<categoryName>!is[blank]] %>
+    <$action-createtiddler
+      $basetitle=<<categoryName>>
+      color={{$:/temp/projectify/new-category!!color}}
+      tags="$:/plugins/mblackman/projectify/tags/Category"
+    />
+    <$action-deletetiddler $tiddler="$:/temp/projectify/new-category"/>
+    <$action-deletetiddler $tiddler="$:/state/projectify/show-new-category-popup"/>
+    <$action-sendmessage $message="tm-auto-save-wiki"/>
+  <%endif%>
+</$let>
+\end
+
+<div class="py-form">
+  <$keyboard key="enter" actions=<<add-category-actions>>>
+    <div class="py-control-group">
+      <div class="py-label"><<lingo Category>></div>
+      <$edit-text
+        class="py-input"
+        focus="true"
+        tiddler="$:/temp/projectify/new-category"
+        field="tag_name"
+      />
+    </div>
+    <div class="py-control-group">
+      <div class="py-label">{{$:/language/TagManager/Colour/Heading}}</div>
+      <$edit-text
+        class="py-input"
+        tiddler="$:/temp/projectify/new-category"
+        field="color"
+      />
+    </div>
+  </$keyboard>
+  <div class="py-actions">
+    <$button class="py-btn btn-primary" actions=<<add-category-actions>>>
+      <<lingo Save/Caption>>
+    </$button>
+    <<lingo Or>>
+    <$button class="py-btn">
+      <$action-deletetiddler $tiddler="$:/state/projectify/show-new-category-popup"/>
+      <<lingo Cancel/Caption>>
+    </$button>
+  </div>
+</div>

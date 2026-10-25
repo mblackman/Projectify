@@ -1,0 +1,34 @@
+created: 20201210171047824
+modified: 20261025120000000
+title: $:/plugins/mblackman/projectify/ui/buttons/ProjectListSettings
+type: text/vnd.tiddlywiki
+
+\procedure lingo-base() $:/language/projectify/
+
+<$button
+  popup="$:/state/projectify/project-list-settings-dropdown"
+  tooltip={{$:/language/projectify/Options/Hint}}
+  aria-label={{$:/language/projectify/Options/Hint}}
+  class="tc-btn-invisible"
+  selectedClass="tc-selected"
+>
+  {{$:/core/images/down-arrow}}
+</$button>
+
+<$reveal state="$:/state/projectify/project-list-settings-dropdown" type="popup" position="below" animate="yes" class="tc-drop-down py-drop-down">
+  <$let switchView={{{ [{$:/config/projectify/projects-view}match[list]then[cards]else[list]] }}}>
+    <$button class="tc-btn-invisible">
+      <%if [<switchView>match[list]] %>
+        <<lingo ViewAsList>>
+      <%else%>
+        <<lingo ViewAsCards>>
+      <%endif%>
+      <$action-setfield $tiddler="$:/config/projectify/projects-view" text=<<switchView>>/>
+    </$button>
+  </$let>
+
+  <$button class="tc-btn-invisible">
+    <<lingo ReorderProjects/Caption>>
+    <$action-setfield $tiddler="$:/state/projectify/show-reorder-projects" text="yes"/>
+  </$button>
+</$reveal>

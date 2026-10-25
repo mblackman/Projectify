@@ -1,0 +1,195 @@
+created: 20201202200514984
+modified: 20261025120000000
+tags: $:/tags/Global $:/tags/Macro
+title: $:/plugins/mblackman/projectify/macros/filters
+type: text/vnd.tiddlywiki
+
+\whitespace trim
+
+\procedure py-archived-projects()
+[all[tiddlers]tag[Project]!has[draft.of]!title[Inbox]tag[done]sort[title]]
+\end
+
+\procedure py-active-projects()
+[all[tiddlers]tag[Project]!has[draft.of]!title[Inbox]!tag[done]]
+\end
+
+\procedure py-all-categories()
+[all[tiddlers]tag[$:/plugins/mblackman/projectify/tags/Category]sort[title]] [all[tiddlers]tag[$:/plugins/nico/projectify/tags/Category]sort[title]]
+\end
+
+\procedure py-has-scheduled-todos-in-projects()
+[all[tiddlers]tag[todo]!tag[done]!has[draft.of]has[due]limit[1]]
+\end
+
+\procedure py-has-active-projects()
+[all[tiddlers]tag[Project]!has[draft.of]!tag[done]limit[1]]
+\end
+
+\procedure py-has-archived-projects()
+[all[tiddlers]tag[Project]!title[Inbox]tag[done]limit[1]]
+\end
+
+\procedure py-has-projects()
+[all[tiddlers]tag[Project]!title[Inbox]limit[1]]
+\end
+
+\procedure py-is-project()
+[all[current]tag[Project]] [all[current]tag[SubProject]]
+\end
+
+\procedure py-is-not-subproject()
+[all[current]!tag[SubProject]]
+\end
+
+\procedure py-is-empty-project()
+[all[tiddlers]tag<currentTiddler>tag[todo]!has[draft.of]limit[1]]
+\end
+
+\procedure py-has-category()
+[all[current]has[category]]
+\end
+
+\procedure py-has-todos()
+[all[tiddlers]tag<currentTiddler>tag[todo]!has[draft.of]limit[1]]
+\end
+
+\procedure py-has-open-todos()
+[all[tiddlers]tag<currentTiddler>tag[todo]!has[draft.of]!tag[done]limit[1]]
+\end
+
+\procedure py-has-no-open-todo()
+[all[tiddlers]tag<currentTiddler>tag[todo]!has[draft.of]!tag[done]count[]match[0]]
+\end
+
+\procedure py-has-scheduled-todos()
+[all[tiddlers]tag<currentTiddler>tag[todo]!has[draft.of]!tag[done]has[due]limit[1]]
+\end
+
+\procedure py-has-unscheduled-todos()
+[all[tiddlers]tag<currentTiddler>tag[todo]!has[draft.of]!tag[done]!has[due]limit[1]]
+\end
+
+\procedure py-has-completed-todos()
+[all[tiddlers]tag<currentTiddler>tag[todo]!has[draft.of]tag[done]limit[1]]
+\end
+
+\procedure py-next-open-todo()
+[all[tiddlers]tag<currentTiddler>tag[todo]!has[draft.of]!tag[done]limit[1]]
+\end
+
+\procedure py-has-filtered-todos()
+[all[tiddlers]subfilter<todoFilter>tag[todo]!has[draft.of]limit[1]]
+\end
+
+\procedure py-filtered-todos()
+[all[tiddlers]subfilter<todoFilter>tag[todo]!has[draft.of]sort[title]]
+\end
+
+\procedure py-open-todos()
+[all[tiddlers]tag<currentTiddler>tag[todo]!has[draft.of]!tag[done]]
+\end
+
+\procedure py-completed-todos()
+[all[tiddlers]tag<currentTiddler>tag[done]!has[draft.of]sort[created]]
+\end
+
+\procedure py-todos-due-today()
+[all[tiddlers]!tag[done]tag[todo]!has[draft.of]days:due[0]!nsort[priority]]
+\end
+
+\procedure py-todos-overdue()
+[all[tiddlers]!tag[done]tag[todo]!has[draft.of]!days:due[-1]sort[due]]
+\end
+
+\procedure py-todos-due-today-or-overdue()
+[all[tiddlers]days:due[0]] [all[tiddlers]!days:due[-1]] +[!has[draft.of]!tag[done]tag[todo]sort[due]]
+\end
+
+\procedure py-upcoming-due-dates()
+[all[tiddlers]tag[todo]!has[draft.of]!tag[done]has[due]sort[due]eachday[due]] -[!days:due[-1]]
+\end
+
+\procedure py-todos-due-on()
+[all[tiddlers]!tag[done]tag[todo]!has[draft.of]sameday:due<day>!nsort[priority]]
+\end
+
+\procedure py-has-overdue-todos()
+[all[tiddlers]!tag[done]tag[todo]!has[draft.of]!days:due[-1]limit[1]]
+\end
+
+\procedure py-has-todos-due-today-or-overdue()
+[all[tiddlers]days:due[0]] [all[tiddlers]!days:due[-1]] +[!has[draft.of]!tag[done]tag[todo]limit[1]]
+\end
+
+\procedure py-is-todo()
+[all[current]tag[todo]]
+\end
+
+\procedure py-is-open()
+[all[current]!tag[done]]
+\end
+
+\procedure py-is-completed()
+[all[current]tag[done]]
+\end
+
+\procedure py-is-overdue()
+[all[current]!tag[done]!has[draft.of]!days:due[-1]]
+\end
+
+\procedure py-is-due-today()
+[all[current]!has[draft.of]days:due[0]]
+\end
+
+\procedure py-is-due-yesterday()
+[all[current]!has[draft.of]days:due[-1]]
+\end
+
+\procedure py-is-due-tomorrow()
+[all[current]!has[draft.of]days:due[1]]
+\end
+
+\procedure py-is-due-later()
+[all[current]!has[draft.of]!days:due[1]]
+\end
+
+\procedure py-is-scheduled()
+[all[current]!has[draft.of]has[due]]
+\end
+
+\procedure py-is-not-scheduled()
+[all[current]!has[draft.of]!has[due]]
+\end
+
+\procedure py-is-not-overdue()
+[all[current]!has[draft.of]] -[!days:due[-1]]
+\end
+
+\procedure py-unscheduled-todos-subfilter()
+tag[todo]!has[draft.of]!tag[done]!has[due]!nsort[priority]
+\end
+
+\procedure py-scheduled-todos-subfilter()
+tag[todo]!has[draft.of]!tag[done]has[due]sort[due]
+\end
+
+\procedure py-is-active-subfilter()
+!tag[done]
+\end
+
+\procedure py-all-projects-and-subprojects-filter()
+[tag[Project]] [tag[SubProject]]
+\end
+
+\procedure todo-list-drop-tags()
+todo [all[current]tags[]] -Inbox -[tag[Project]] -[tag[SubProject]] [<tag>]
+\end
+
+\procedure project-refile-tags()
+todo [all<actionTiddler>tags[]] -Inbox -[tag[Project]] -[tag[SubProject]] [<currentTiddler>]
+\end
+
+\procedure py-convert-todo-into-project()
+[all[current]tags[]] -Inbox -[tag[Project]] -[tag[SubProject]] -SubProject -Inbox -todo Project
+\end

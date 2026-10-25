@@ -1,0 +1,17 @@
+created: 20210116214213972
+modified: 20261025120000000
+tags:
+title: $:/plugins/mblackman/projectify/ui/dashboard/ActiveProjects
+type: text/vnd.tiddlywiki
+
+<%if [subfilter<py-has-projects>] %>
+  <$let category={{$:/state/projectify/project-category-filter}}>
+    <%if [{$:/config/projectify/projects-view}match[list]] %>
+      {{$:/plugins/mblackman/projectify/ui/dashboard/ProjectList}}
+    <%else%>
+      {{$:/plugins/mblackman/projectify/ui/dashboard/ProjectCards}}
+    <%endif%>
+  </$let>
+<%else%>
+  {{$:/plugins/mblackman/projectify/ui/welcome/EmptyProjects}}
+<%endif%>

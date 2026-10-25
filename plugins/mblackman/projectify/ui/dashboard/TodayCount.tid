@@ -1,0 +1,10 @@
+created: 20210108114443405
+modified: 20261025120000000
+title: $:/plugins/mblackman/projectify/ui/dashboard/TodayCount
+type: text/vnd.tiddlywiki
+
+<%if [subfilter<py-has-todos-due-today-or-overdue>] %>
+  <span class="py-count">
+    <$count filter=<<py-todos-due-today-or-overdue>>/>
+  </span>
+<%endif%>

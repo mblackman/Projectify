@@ -1,0 +1,13 @@
+created: 20210111194810128
+modified: 20261025120000000
+tags:
+title: $:/plugins/mblackman/projectify/ui/forms/TodoConvert
+type: text/vnd.tiddlywiki
+
+\procedure lingo-base() $:/language/projectify/
+
+<$button class="tc-btn-invisible">
+  {{$:/plugins/mblackman/projectify/images/front}} <<lingo ConvertIntoProject>>
+  <$action-listops $tags=<<py-convert-todo-into-project>>/>
+  <$action-sendmessage $message="tm-auto-save-wiki"/>
+</$button>

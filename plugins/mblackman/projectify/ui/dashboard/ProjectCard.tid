@@ -1,0 +1,37 @@
+created: 20200424193106051
+modified: 20261025120000000
+tags:
+title: $:/plugins/mblackman/projectify/ui/dashboard/ProjectCard
+type: text/vnd.tiddlywiki
+
+\procedure lingo-base() $:/language/projectify/
+
+<$let
+  category={{!!category}}
+  background={{{ [<category>get[color]] }}}
+  cardStyle={{{ [<background>!is[blank]addprefix[background-color: ]addsuffix[; --py-card-has-custom-bg: 1;]] }}}
+>
+  <div class={{{ [<background>!is[blank]then[py-card-wrapper py-card-custom-bg]else[py-card-wrapper]] }}} style=<<cardStyle>>>
+    <$link overrideClass="py-card" to={{!!title}}>
+      <div class="py-card-options">
+        {{||$:/plugins/mblackman/projectify/ui/buttons/ProjectCardSettings}}
+      </div>
+      <div class="py-card-head">
+        <h3><$text text=<<currentTiddler>>/></h3>
+        <div class="py-description">
+          {{!!description}}
+        </div>
+      </div>
+      <div class="py-project-infos">
+        {{||$:/plugins/mblackman/projectify/images/pie}}
+        <$count filter=<<py-open-todos>>/>
+        <<lingo OpenTasks>>
+      </div>
+      <%if [subfilter<py-has-category>] %>
+        <div class="py-project-category">
+          <$text text=<<category>>/>
+        </div>
+      <%endif%>
+    </$link>
+  </div>
+</$let>

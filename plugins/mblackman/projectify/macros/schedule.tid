@@ -1,0 +1,29 @@
+created: 20210107213957129
+modified: 20261025120000000
+tags: $:/tags/Global $:/tags/Macro
+title: $:/plugins/mblackman/projectify/macros/schedule
+type: text/vnd.tiddlywiki
+
+\whitespace trim
+
+\procedure py-schedule-overdue()
+<$list
+  filter=<<py-todos-overdue>>
+  template="$:/plugins/mblackman/projectify/ui/todo/TodoItem"
+/>
+\end
+
+\procedure py-schedule-day(day)
+<$list
+  filter=<<py-todos-due-on>>
+  template="$:/plugins/mblackman/projectify/ui/todo/TodoItem"
+/>
+\end
+
+\procedure py-schedule-today()
+<$list
+  filter=<<py-todos-due-today>>
+  template="$:/plugins/mblackman/projectify/ui/todo/TodoItem"
+  emptyMessage="🌞 {{$:/language/projectify/AllClear}}"
+/>
+\end

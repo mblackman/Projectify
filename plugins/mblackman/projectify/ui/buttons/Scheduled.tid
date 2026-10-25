@@ -1,0 +1,42 @@
+created: 20201210171047824
+description: Show all todos scheduled for today
+modified: 20261025120000000
+tags: $:/tags/PageControls
+title: $:/plugins/mblackman/projectify/ui/buttons/Scheduled
+type: text/vnd.tiddlywiki
+
+\procedure lingo-base() $:/language/projectify/
+
+<$button
+  popup="$:/state/projectify/scheduled-dropdown"
+  tooltip={{$:/language/projectify/TodaysTodos}}
+  aria-label={{$:/language/projectify/TodaysTodos}}
+  class={{{ [[desktop-only ]addsuffix<tv-config-toolbar-class>] }}}
+  selectedClass="tc-selected"
+>
+  <%if [<tv-config-toolbar-icons>match[yes]] %>
+    <span class="py-pill-container">
+      {{$:/plugins/mblackman/projectify/images/calendar}}
+      <%if [subfilter<py-has-todos-due-today-or-overdue>] %>
+        <div class="py-pill"></div>
+      <%endif%>
+    </span>
+  <%endif%>
+  <%if [<tv-config-toolbar-text>match[yes]] %>
+    <span class="tc-btn-text"><<lingo TodaysTodos>></span>
+  <%endif%>
+</$button>
+
+<$reveal state="$:/state/projectify/scheduled-dropdown" type="popup" position="belowleft">
+  <div class="tc-drop-down py-scheduled-drop-down">
+    <h4><<lingo TodayAndOverdue>></h4>
+    <$list
+      filter=<<py-todos-due-today-or-overdue>>
+      emptyMessage="""<div class="clear">🌞 <<lingo AllClear>></div>"""
+    >
+      <$link to={{!!title}}>
+        {{||$:/plugins/mblackman/projectify/ui/todo/TodoCaption}}
+      </$link>
+    </$list>
+  </div>
+</$reveal>

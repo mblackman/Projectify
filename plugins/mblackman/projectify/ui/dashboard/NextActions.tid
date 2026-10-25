@@ -1,0 +1,18 @@
+caption: {{$:/plugins/mblackman/projectify/images/stack}} {{$:/language/projectify/Next}}
+created: 20200425195221581
+list-after: $:/plugins/mblackman/projectify/ui/dashboard/Upcoming
+modified: 20261025120000000
+tags: $:/plugins/mblackman/projectify/tags/dashboard
+title: $:/plugins/mblackman/projectify/ui/NextActions
+type: text/vnd.tiddlywiki
+
+<%if [subfilter<py-has-active-projects>] %>
+  <dl>
+    <$list
+      filter=<<py-active-projects>>
+      template="$:/plugins/mblackman/projectify/ui/project/NextAction"
+    />
+  </dl>
+<%else%>
+  {{$:/plugins/mblackman/projectify/ui/welcome/EmptyNextActions}}
+<%endif%>

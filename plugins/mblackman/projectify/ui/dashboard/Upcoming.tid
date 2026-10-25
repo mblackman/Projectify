@@ -1,0 +1,29 @@
+caption: {{$:/plugins/mblackman/projectify/images/calendar-checked}} {{$:/language/projectify/Upcoming}}
+created: 20200424193230404
+list-after: $:/plugins/mblackman/projectify/ui/dashboard/Today
+modified: 20261025120000000
+tags: $:/plugins/mblackman/projectify/tags/dashboard
+title: $:/plugins/mblackman/projectify/ui/dashboard/Upcoming
+type: text/vnd.tiddlywiki
+
+\procedure lingo-base() $:/language/projectify/
+
+<$let showProjectLinks="yes">
+  <%if [subfilter<py-has-scheduled-todos-in-projects>] %>
+    <%if [subfilter<py-has-overdue-todos>] %>
+      <dl>
+        <dt><<lingo Overdue>></dt>
+        <dd><<py-schedule-overdue>></dd>
+      </dl>
+    <%endif%>
+
+    <$list filter=<<py-upcoming-due-dates>>>
+      <dl>
+        <dt>{{||$:/plugins/mblackman/projectify/ui/dashboard/Date}}</dt>
+        <dd><$transclude $variable="py-schedule-day" day={{!!due}}/></dd>
+      </dl>
+    </$list>
+  <%else%>
+    {{$:/plugins/mblackman/projectify/ui/welcome/EmptyUpcoming}}
+  <%endif%>
+</$let>

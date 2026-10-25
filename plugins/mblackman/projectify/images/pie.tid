@@ -1,0 +1,39 @@
+created: 20201207124527891
+modified: 20261025120000000
+title: $:/plugins/mblackman/projectify/images/pie
+type: text/vnd.tiddlywiki
+
+<$let
+  circumference="31.4159"
+  all={{{ [tag<currentTiddler>tag[todo]!has[draft.of]count[]] }}}
+  closed={{{ [tag<currentTiddler>tag[todo]!has[draft.of]tag[done]count[]] }}}
+  ratio={{{ [<all>match[0]then[0]] :else[<circumference>multiply<closed>divide<all>] }}}
+>
+  <svg
+    class="py-icon py-pie"
+    height="1em"
+    width="1em"
+    viewBox="0 0 30 30"
+  >
+    <circle
+      class="border"
+      r="14"
+      cx="15"
+      cy="15"
+      fill="white"
+      stroke="tomato"
+      stroke-width="2"
+    />
+    <circle
+      class="border"
+      r="5"
+      cx="15"
+      cy="15"
+      fill="transparent"
+      stroke="tomato"
+      stroke-width="10"
+      transform="rotate(-90) translate(-30)"
+      stroke-dasharray={{{ [<ratio>addsuffix[ 31.42]] }}}
+    />
+  </svg>
+</$let>

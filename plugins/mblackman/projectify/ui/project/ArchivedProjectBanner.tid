@@ -1,0 +1,11 @@
+created: 20201209151421299
+modified: 20261025120000000
+tags:
+title: $:/plugins/mblackman/projectify/ui/project/ArchivedProjectBanner
+type: text/vnd.tiddlywiki
+
+<%if [subfilter<py-is-completed>] %>
+  <div class="py-banner">
+    {{$:/language/projectify/ProjectArchived}} {{||$:/plugins/mblackman/projectify/ui/buttons/RestoreProject}}
+  </div>
+<%endif%>

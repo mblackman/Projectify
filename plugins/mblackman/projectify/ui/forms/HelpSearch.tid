@@ -1,0 +1,33 @@
+created: 20201229010310903
+modified: 20261025120000000
+tags:
+title: $:/plugins/mblackman/projectify/ui/forms/HelpSearch
+type: text/vnd.tiddlywiki
+
+<$let searchTiddler="$:/temp/projectify/help-search">
+  <$edit-text
+    tiddler=<<searchTiddler>>
+    tag="input"
+    type="search"
+    focusPopup="$:/state/projectify/popup-help-search"
+    class="tc-popup-handle py-input"
+    placeholder={{$:/language/projectify/HelpSearch/Placeholder}}
+    default=""
+  />
+
+  <$let searchText={{{ [<searchTiddler>get[text]] }}}>
+    <$reveal tag="div" class="tc-block-dropdown-wrapper" state="$:/state/projectify/popup-help-search" type="nomatch" text="" default="">
+      <%if [<searchText>minlength{$:/config/Search/MinLength}] %>
+        <div class="tc-block-dropdown tc-search-drop-down">
+          <div class="tc-search-results">
+            <small>{{$:/language/Search/Matches/Title}}</small>
+            <$list filter="[all[tiddlers+shadows]tag[Projectify documentation]search:title<searchText>sort[title]]" template="$:/core/ui/ListItemTemplate"/>
+
+            <small>{{$:/language/Search/Matches/All}}</small>
+            <$list filter="[all[tiddlers+shadows]tag[Projectify documentation]search<searchText>sort[title]]" template="$:/core/ui/ListItemTemplate"/>
+          </div>
+        </div>
+      <%endif%>
+    </$reveal>
+  </$let>
+</$let>

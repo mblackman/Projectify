@@ -1,0 +1,6 @@
+created: 20210107174519365
+modified: 20261025120000000
+title: $:/plugins/mblackman/projectify/ui/dashboard/Date
+type: text/vnd.tiddlywiki
+
+<%if [subfilter<py-is-due-today>] %>Today — <%endif%><$view field="due" format="date" template="DDth MMM"/>

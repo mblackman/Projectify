@@ -1,0 +1,7 @@
+created: 20210117163947721
+modified: 20261025120000000
+tags:
+title: $:/plugins/mblackman/projectify/ui/category/CategoryPill
+type: text/vnd.tiddlywiki
+
+<div class="py-category-pill" style={{{ [[background-color: ]addsuffix<colour>] }}}></div>

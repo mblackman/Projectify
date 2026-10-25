@@ -1,0 +1,43 @@
+created: 20200424135048294
+modified: 20261025120000000
+tags:
+title: $:/plugins/mblackman/projectify/ui/buttons/TodoDueDate
+type: text/vnd.tiddlywiki
+
+\procedure lingo-base() $:/language/projectify/
+
+<$let popupTiddler=<<qualify "$:/state/projectify/due-date-dropdown">>>
+  <%if [subfilter<py-is-overdue>] %>
+    <$button class="py-btn py-due-date py-overdue" popup=<<popupTiddler>>>
+      <%if [subfilter<py-is-due-yesterday>] %>
+        <<lingo Yesterday>>
+      <%else%>
+        <$view field="due" format="relativedate"/>
+      <%endif%>
+    </$button>
+  <%elseif [subfilter<py-is-due-today>] %>
+    <$button class="py-btn py-due-date py-due-today" popup=<<popupTiddler>>>
+      {{$:/plugins/mblackman/projectify/images/calendar}} <<lingo Today>>
+    </$button>
+  <%elseif [subfilter<py-is-scheduled>] %>
+    <$button class="py-btn py-due-date" popup=<<popupTiddler>>>
+      {{$:/plugins/mblackman/projectify/images/calendar}}
+      <%if [subfilter<py-is-due-tomorrow>] %>
+        <<lingo Tomorrow>>
+      <%else%>
+        <$view field="due" format="date" template={{$:/language/projectify/DateFormat}}/>
+      <%endif%>
+    </$button>
+  <%else%>
+    <$button class="py-btn py-due-date py-not-scheduled" popup=<<popupTiddler>>>
+      {{$:/plugins/mblackman/projectify/images/calendar}}
+      <<lingo Schedule/Caption>>
+    </$button>
+  <%endif%>
+
+  <$reveal state=<<popupTiddler>> type="popup" position="belowleft" animate="no">
+    <div class="tc-drop-down py-drop-down py-date-picker">
+      {{||$:/plugins/mblackman/projectify/ui/forms/TodoDueDate}}
+    </div>
+  </$reveal>
+</$let>

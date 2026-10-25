@@ -1,0 +1,18 @@
+created: 20200422200123438
+modified: 20261025120000000
+tags:
+title: $:/plugins/mblackman/projectify/ui/todo/TodoActions
+type: text/vnd.tiddlywiki
+
+<span class="py-todo-actions">
+  <%if [<showProjectLinks>!is[blank]] %>
+    <$list filter="[all[current]tags[]filter<py-all-projects-and-subprojects-filter>]">
+      <$link to={{!!title}} overrideClass="py-project-link"/>
+    </$list>
+  <%endif%>
+
+  <%if [subfilter<py-is-scheduled>] %>
+    {{||$:/plugins/mblackman/projectify/ui/buttons/TodoDueDate}}
+  <%endif%>
+  {{||$:/plugins/mblackman/projectify/ui/buttons/TodoActions}}
+</span>
