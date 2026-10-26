@@ -37,7 +37,7 @@ describe("Projectify Plugin ($:/plugins/mblackman/projectify)", () => {
     expect(pluginTiddler).toBeDefined();
     expect(pluginTiddler.fields.name).toBe("Projectify");
     expect(pluginTiddler.fields["core-version"]).toBe(">=5.4.0");
-    expect(pluginTiddler.fields.version).toBe("0.16.1");
+    expect(pluginTiddler.fields.version).toBe("0.17.0");
     expect(pluginTiddler.fields["plugin-type"]).toBe("plugin");
     expect(pluginTiddler.fields.list).toEqual(["readme", "doc/Help", "changelog", "LICENSE"]);
   });
@@ -480,8 +480,14 @@ describe("Projectify Plugin ($:/plugins/mblackman/projectify)", () => {
     const dueRule = $tw.wiki.getTiddler("$:/config/projectify/notifications/TodoDueRule");
     expect(dueRule.fields["rule-id"]).toBe("projectify.todo-due");
     expect(dueRule.fields["date-field"]).toBe("due");
-    expect(dueRule.fields["offset-minutes"]).toBe("-899");
+    expect(dueRule.fields["offset-minutes"]).toBe("-719");
+    expect(dueRule.fields["default-time"]).toBe("12:00");
     expect(dueRule.fields.enabled).toBe("yes");
+
+    const schedRule = $tw.wiki.getTiddler("$:/config/projectify/notifications/TodoScheduledRule");
+    expect(schedRule.fields["rule-id"]).toBe("projectify.todo-scheduled");
+    expect(schedRule.fields["offset-minutes"]).toBe("-719");
+    expect(schedRule.fields["default-time"]).toBe("12:00");
 
     const matchedDueTodos = $tw.wiki.filterTiddlers(dueRule.fields.filter);
     expect(matchedDueTodos).toContain("Schedule meeting with John");
@@ -503,12 +509,13 @@ describe("Projectify Plugin ($:/plugins/mblackman/projectify)", () => {
     expect(renderedDueBody).toContain("Product roadmap");
     expect(renderedDueBody).toContain("(P3)");
 
-    // 2. Verify Tier 3 UI in TodoDueDate / TodoReminder and Notifications Config
+    // 2. Verify Tier 3 UI in TodoDueDate / TodoReminder, py-time-picker, and Notifications Config
     const dueFormOnExistingHtml = renderWithGlobals(
       "{{||$:/plugins/mblackman/projectify/ui/forms/TodoDueDate}}",
       "Schedule meeting with John"
     );
     expect(dueFormOnExistingHtml).toContain("py-reminder-section");
+    expect(dueFormOnExistingHtml).toContain("py-time-picker-control");
     expect(dueFormOnExistingHtml).toContain("+15m");
     expect(dueFormOnExistingHtml).toContain("🍅 25m");
 
@@ -516,7 +523,78 @@ describe("Projectify Plugin ($:/plugins/mblackman/projectify)", () => {
       "{{$:/plugins/mblackman/projectify/ui/config/Notifications}}"
     );
     expect(notifConfigHtml).toContain("Automatic Due &amp; Start Date Rules");
-    expect(notifConfigHtml).toContain("09:00");
+    expect(notifConfigHtml).toMatch(/12:00(\s+PM)?\s+\(Noon\)/);
+
+    // 2b. Verify Smart Quick-Add with specific times (@today@14:30, ~tomorrow@09:15), py-time-picker, and 12h/24h TimeFormat setting
+    const QuickAddWidget = $tw.modules.applyMethods("widget")["action-py-quick-add"];
+    $tw.wiki.addTiddler({
+      title: "$:/temp/projectify/test-timed-quick-add",
+      "todo-name": "Timed Call with Client @today@14:30 ~today@09:15 #Inbox",
+    });
+    const timedQuickAdd = new QuickAddWidget(
+      {
+        type: "action-py-quick-add",
+        attributes: {
+          $state: { type: "string", value: "$:/temp/projectify/test-timed-quick-add" },
+          $field: { type: "string", value: "todo-name" },
+          $tags: { type: "string", value: "Inbox todo" },
+        },
+      },
+      { wiki: $tw.wiki }
+    );
+    timedQuickAdd.invokeAction();
+    const timedTid = $tw.wiki.getTiddler("Timed Call with Client");
+    expect(timedTid).toBeDefined();
+    const parsedDue = $tw.utils.parseDate(timedTid.fields.due);
+    expect(parsedDue.getHours()).toBe(14);
+    expect(parsedDue.getMinutes()).toBe(30);
+    const parsedSched = $tw.utils.parseDate(timedTid.fields.scheduled);
+    expect(parsedSched.getHours()).toBe(9);
+    expect(parsedSched.getMinutes()).toBe(15);
+
+    // Test 24h explicit setting
+    $tw.wiki.addTiddler({ title: "$:/config/projectify/TimeFormat", text: "24h" });
+    const renderedTimedDueBody24 = $tw.wiki
+      .renderText("text/plain", "text/vnd.tiddlywiki", dueRule.fields["body-template"], {
+        variables: { currentTiddler: "Timed Call with Client" },
+      })
+      .trim();
+    expect(renderedTimedDueBody24).toContain("at 14:30");
+
+    const dueBtnHtml24 = renderWithGlobals(
+      "{{||$:/plugins/mblackman/projectify/ui/buttons/TodoDueDate}}",
+      "Timed Call with Client"
+    );
+    expect(dueBtnHtml24).toContain("14:30");
+    const dueFormHtml24 = renderWithGlobals(
+      "{{||$:/plugins/mblackman/projectify/ui/forms/TodoDueDate}}",
+      "Timed Call with Client"
+    );
+    expect(dueFormHtml24).toContain("🌅 09:00");
+
+    // Test 12h explicit setting
+    $tw.wiki.addTiddler({ title: "$:/config/projectify/TimeFormat", text: "12h" });
+    const renderedTimedDueBody12 = $tw.wiki
+      .renderText("text/plain", "text/vnd.tiddlywiki", dueRule.fields["body-template"], {
+        variables: { currentTiddler: "Timed Call with Client" },
+      })
+      .trim();
+    expect(renderedTimedDueBody12).toContain("at 2:30 pm");
+
+    const dueBtnHtml12 = renderWithGlobals(
+      "{{||$:/plugins/mblackman/projectify/ui/buttons/TodoDueDate}}",
+      "Timed Call with Client"
+    );
+    expect(dueBtnHtml12).toContain("2:30 pm");
+    const dueFormHtml12 = renderWithGlobals(
+      "{{||$:/plugins/mblackman/projectify/ui/forms/TodoDueDate}}",
+      "Timed Call with Client"
+    );
+    expect(dueFormHtml12).toContain("🌅 9 AM");
+
+    // Restore default auto setting
+    $tw.wiki.addTiddler({ title: "$:/config/projectify/TimeFormat", text: "auto" });
+    $tw.wiki.deleteTiddler("Timed Call with Client");
 
     // 3. Verify th-pwa-notification-action hook handler (Mark Done, Snooze 1h, Open Review)
     const dispatchedEvents = [];

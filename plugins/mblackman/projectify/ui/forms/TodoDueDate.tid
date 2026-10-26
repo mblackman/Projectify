@@ -55,6 +55,11 @@ type: text/vnd.tiddlywiki
     <$py-date-calendar field=<<dateField>>/>
   <%endif%>
 
+  <hr/>
+  <div class="py-time-section tc-popup-handle">
+    <$py-time-picker field=<<dateField>>/>
+  </div>
+
   <%if [all[current]is[tiddler]] %>
     <div class="py-recur-inline tc-popup-handle">
       <label class="py-inline-label tc-popup-handle">

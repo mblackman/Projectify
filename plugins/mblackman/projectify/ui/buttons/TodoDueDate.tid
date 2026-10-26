@@ -6,7 +6,10 @@ type: text/vnd.tiddlywiki
 
 \procedure lingo-base() $:/language/projectify/
 
-<$let popupTiddler=<<qualify "$:/state/projectify/due-date-dropdown">>>
+<$let
+  popupTiddler=<<qualify "$:/state/projectify/due-date-dropdown">>
+  timeTemplate={{{ [function[py.time-template]] }}}
+>
   <%if [subfilter<py-is-overdue>] %>
     <$button class="py-btn py-due-date py-overdue" popup=<<popupTiddler>>>
       <%if [subfilter<py-is-due-yesterday>] %>
@@ -14,10 +17,13 @@ type: text/vnd.tiddlywiki
       <%else%>
         <$view field="due" format="relativedate"/>
       <%endif%>
+      <%if [subfilter<py-has-due-time>] %>
+        <span class="py-due-time"> <$view field="due" format="date" template=<<timeTemplate>>/></span>
+      <%endif%>
     </$button>
   <%elseif [subfilter<py-is-due-today>] %>
     <$button class="py-btn py-due-date py-due-today" popup=<<popupTiddler>>>
-      {{$:/plugins/mblackman/projectify/images/calendar}} <<lingo Today>>
+      {{$:/plugins/mblackman/projectify/images/calendar}} <<lingo Today>><%if [subfilter<py-has-due-time>] %><span class="py-due-time"> <$view field="due" format="date" template=<<timeTemplate>>/></span><%endif%>
     </$button>
   <%elseif [subfilter<py-is-scheduled>] %>
     <$button class="py-btn py-due-date" popup=<<popupTiddler>>>
@@ -26,6 +32,9 @@ type: text/vnd.tiddlywiki
         <<lingo Tomorrow>>
       <%else%>
         <$view field="due" format="date" template={{$:/language/projectify/DateFormat}}/>
+      <%endif%>
+      <%if [subfilter<py-has-due-time>] %>
+        <span class="py-due-time"> <$view field="due" format="date" template=<<timeTemplate>>/></span>
       <%endif%>
     </$button>
   <%else%>

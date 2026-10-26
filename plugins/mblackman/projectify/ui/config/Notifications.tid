@@ -16,15 +16,34 @@ caption: {{$:/plugins/mblackman/projectify/images/bell}} {{$:/language/projectif
 \end
 
 \procedure select-rule-time(ruleTiddler)
-<$select tiddler=<<ruleTiddler>> field="offset-minutes" default="-899">
-  <option value="-1019">07:00</option>
-  <option value="-959">08:00</option>
-  <option value="-899">09:00</option>
-  <option value="-839">10:00</option>
-  <option value="-719">12:00</option>
-  <option value="-599">14:00</option>
-  <option value="-419">17:00</option>
-  <option value="0">23:59 (End of day)</option>
+<$select tiddler=<<ruleTiddler>> field="offset-minutes" default="-719">
+  <%if [function[py.is-12h-time]] %>
+    <option value="-1019">7:00 AM</option>
+    <option value="-959">8:00 AM</option>
+    <option value="-899">9:00 AM</option>
+    <option value="-839">10:00 AM</option>
+    <option value="-719">12:00 PM (Noon)</option>
+    <option value="-599">2:00 PM</option>
+    <option value="-419">5:00 PM</option>
+    <option value="0">11:59 PM (End of day)</option>
+  <%else%>
+    <option value="-1019">07:00</option>
+    <option value="-959">08:00</option>
+    <option value="-899">09:00</option>
+    <option value="-839">10:00</option>
+    <option value="-719">12:00 (Noon)</option>
+    <option value="-599">14:00</option>
+    <option value="-419">17:00</option>
+    <option value="0">23:59 (End of day)</option>
+  <%endif%>
+</$select>
+\end
+
+\procedure select-time-format()
+<$select tiddler="$:/config/projectify/TimeFormat" default="auto">
+  <option value="auto">{{$:/language/projectify/TimeFormat/Auto}}</option>
+  <option value="12h">{{$:/language/projectify/TimeFormat/12h}}</option>
+  <option value="24h">{{$:/language/projectify/TimeFormat/24h}}</option>
 </$select>
 \end
 
@@ -56,4 +75,5 @@ caption: {{$:/plugins/mblackman/projectify/images/bell}} {{$:/language/projectif
 
 |<<lingo Notifications/Rule/TodoDue>> |<$transclude $variable="select-rule-enabled" ruleTiddler="$:/config/projectify/notifications/TodoDueRule"/> |<<lingo Notifications/Rule/NotifyTime>>: <$transclude $variable="select-rule-time" ruleTiddler="$:/config/projectify/notifications/TodoDueRule"/> |
 |<<lingo Notifications/Rule/TodoScheduled>> |<$transclude $variable="select-rule-enabled" ruleTiddler="$:/config/projectify/notifications/TodoScheduledRule"/> |<<lingo Notifications/Rule/NotifyTime>>: <$transclude $variable="select-rule-time" ruleTiddler="$:/config/projectify/notifications/TodoScheduledRule"/> |
+|<<lingo TimeFormat>> |<<select-time-format>> | |
 |<<lingo Config/EnablePushNotifications>> |<$select tiddler="$:/config/projectify/EnablePushNotifications" default="yes"><option value="yes">{{$:/language/Yes}}</option><option value="no">{{$:/language/No}}</option></$select> |<<lingo Notifications/QuickReminders/Hint>> |

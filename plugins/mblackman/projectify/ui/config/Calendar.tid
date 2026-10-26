@@ -15,4 +15,13 @@ caption: {{$:/language/projectify/Calendar}}
 </$select>
 \end
 
+\procedure select-time-format()
+<$select tiddler="$:/config/projectify/TimeFormat" default="auto">
+  <option value="auto">{{$:/language/projectify/TimeFormat/Auto}}</option>
+  <option value="12h">{{$:/language/projectify/TimeFormat/12h}}</option>
+  <option value="24h">{{$:/language/projectify/TimeFormat/24h}}</option>
+</$select>
+\end
+
 |<<lingo FirstDayOfWeek>> |<<select-first-day-of-week>> |
+|<<lingo TimeFormat>> |<<select-time-format>> |

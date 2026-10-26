@@ -141,6 +141,11 @@ Status/Someday: Someday / Maybe
 Status/Todo: To Do
 Status/Waiting: Waiting
 Tip: Tip
+Time: Time
+TimeFormat: Time format
+TimeFormat/Auto: Automatic (Device locale)
+TimeFormat/12h: 12-hour (AM/PM)
+TimeFormat/24h: 24-hour
 Today: Today
 TodayAndOverdue: Today and overdue
 TodaysTodos: Today's todos

@@ -6,10 +6,10 @@ rule-id: projectify.todo-due
 enabled: yes
 filter: [all[tiddlers]tag[todo]!has[draft.of]!tag[done]!status[someday]has[due]]
 date-field: due
-default-time: 23:59
-offset-minutes: -899
+default-time: 12:00
+offset-minutes: -719
 title-template: 📋 <$text text={{{ [{!!caption}!is[blank]else{!!title}] }}}/>
-body-template: <$list filter="[all[current]tags[]tag[Project]limit[1]] [all[current]tags[]tag[SubProject]limit[1]] [all[current]tag[Inbox]then[Inbox]] +[limit[1]]" variable="proj"><$text text=<<proj>>/> · </$list>Due <$view field="due" format="date" template="YYYY-0MM-0DD"/><$list filter="[all[current]has[priority]]"> (P{{!!priority}})</$list>
+body-template: <$list filter="[all[current]tags[]tag[Project]limit[1]] [all[current]tags[]tag[SubProject]limit[1]] [all[current]tag[Inbox]then[Inbox]] +[limit[1]]" variable="proj"><$text text=<<proj>>/> · </$list>Due <$view field="due" format="date" template="YYYY-0MM-0DD"/><$list filter="[all[current]get[due]format:date[0hh:0mm]!match[23:59]]" variable="dueTime"><$let timeFmt={{{ [{$:/config/projectify/TimeFormat}match[12h]then[hh12:0mm am]] [{$:/config/projectify/TimeFormat}!match[24h]then{$:/status/projectify/LocaleTimeFormat}match[12h]then[hh12:0mm am]] ~[[0hh:0mm]] }}}> at <$view field="due" format="date" template=<<timeFmt>>/></$let></$list><$list filter="[all[current]has[priority]]"> (P{{!!priority}})</$list>
 navigate-to: {{!!title}}
 actions-json: [{"action":"py-complete-todo","title":"Mark Done"},{"action":"py-snooze-1h","title":"Snooze 1h"}]
 type: text/vnd.tiddlywiki

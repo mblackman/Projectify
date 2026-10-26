@@ -5,6 +5,7 @@ DefaultContexts: @work @home @computer @errands @calls
 ShowWelcomeMessages: yes
 ShowCompletedTodos: no
 FirstDayOfWeek: 1
+TimeFormat: auto
 EnableMultiStatus: yes
 EnableScheduledDates: yes
 EnableBoardView: yes

@@ -18,6 +18,36 @@ class). See $:/plugins/mblackman/projectify/ui/buttons/TodoDueDate for usages.
 const Widget = require("$:/core/modules/widgets/widget.js").widget;
 const Pikaday = require("$:/plugins/mblackman/projectify/lib/pikaday.js");
 
+function detectDeviceLocaleUses12Hour() {
+	try {
+		if(typeof Intl !== "undefined" && typeof Intl.DateTimeFormat === "function") {
+			const opts = new Intl.DateTimeFormat(undefined, {hour: "numeric"}).resolvedOptions();
+			if(typeof opts.hour12 === "boolean") {
+				return opts.hour12;
+			}
+			if(typeof opts.hourCycle === "string") {
+				return opts.hourCycle === "h11" || opts.hourCycle === "h12";
+			}
+		}
+	} catch(_e) {
+		// Fall back to 24h if Intl is unavailable
+	}
+	return false;
+}
+
+function is12HourTimePreferred(wiki) {
+	const targetWiki = wiki || (typeof $tw !== "undefined" ? $tw.wiki : null);
+	if(targetWiki) {
+		const pref = (targetWiki.getTiddlerText("$:/config/projectify/TimeFormat", "auto") || "auto").trim().toLowerCase();
+		if(pref === "12h" || pref === "12") return true;
+		if(pref === "24h" || pref === "24") return false;
+		const statusVal = (targetWiki.getTiddlerText("$:/status/projectify/LocaleTimeFormat", "") || "").trim().toLowerCase();
+		if(statusVal === "12h") return true;
+		if(statusVal === "24h") return false;
+	}
+	return detectDeviceLocaleUses12Hour();
+}
+
 function getToday() {
 	return new Date();
 }
@@ -36,15 +66,71 @@ function getNextMonday() {
 	return monday;
 }
 
+function isEndOfDayDate(date) {
+	if(!(date instanceof Date) || Number.isNaN(date.getTime())) {
+		return true;
+	}
+	return (
+		date.getHours() === 23 &&
+		date.getMinutes() === 59 &&
+		date.getSeconds() === 59 &&
+		date.getMilliseconds() === 999
+	);
+}
+
 function formatEndOfDay(date) {
 	const endOfDay = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 23, 59, 59, 999);
 	return $tw.utils.formatDateString(endOfDay, "[UTC]YYYY0MM0DD0hh0mm0ss0XXX");
 }
 
+function formatDateWithOptionalTime(date, existingDate, timeToken) {
+	if(timeToken) {
+		const tm = parseTimeToken(timeToken);
+		if(tm) {
+			const withTime = new Date(date.getFullYear(), date.getMonth(), date.getDate(), tm.hours, tm.minutes, 0, 0);
+			return $tw.utils.formatDateString(withTime, "[UTC]YYYY0MM0DD0hh0mm0ss0XXX");
+		}
+	}
+	if(existingDate instanceof Date && !Number.isNaN(existingDate.getTime()) && !isEndOfDayDate(existingDate)) {
+		const preserved = new Date(
+			date.getFullYear(),
+			date.getMonth(),
+			date.getDate(),
+			existingDate.getHours(),
+			existingDate.getMinutes(),
+			0,
+			0
+		);
+		return $tw.utils.formatDateString(preserved, "[UTC]YYYY0MM0DD0hh0mm0ss0XXX");
+	}
+	return formatEndOfDay(date);
+}
+
+function parseTimeToken(str) {
+	if(!str) return null;
+	const m = String(str).trim().match(/^(\d{1,2})(?::(\d{2}))?\s*(am|pm)?$/i);
+	if(!m) return null;
+	let hours = parseInt(m[1], 10);
+	const minutes = m[2] !== undefined ? parseInt(m[2], 10) : 0;
+	const meridiem = m[3] ? m[3].toLowerCase() : null;
+	if(minutes < 0 || minutes > 59) return null;
+	if(meridiem) {
+		if(hours < 1 || hours > 12) return null;
+		if(meridiem === "pm" && hours < 12) hours += 12;
+		if(meridiem === "am" && hours === 12) hours = 0;
+	} else {
+		if(hours < 0 || hours > 23) return null;
+	}
+	return {hours, minutes};
+}
+
 function computeNextOccurrenceDate(baseDate, recurRule) {
 	const today = getToday();
 	const start = (baseDate && !Number.isNaN(baseDate.getTime()) && baseDate > today) ? new Date(baseDate) : new Date(today);
-	const next = new Date(start.getFullYear(), start.getMonth(), start.getDate(), 23, 59, 59, 999);
+	const hasSpecificTime = baseDate instanceof Date && !Number.isNaN(baseDate.getTime()) && !isEndOfDayDate(baseDate);
+	const next = hasSpecificTime
+		? new Date(start.getFullYear(), start.getMonth(), start.getDate(), baseDate.getHours(), baseDate.getMinutes(), 0, 0)
+		: new Date(start.getFullYear(), start.getMonth(), start.getDate(), 23, 59, 59, 999);
 	const rule = (recurRule || "").trim().toLowerCase();
 
 	if(rule === "daily") {
@@ -100,41 +186,63 @@ function parseSmartQuickAddTokens(rawText, wiki) {
 		return " ";
 	});
 
-	// Parse due date tokens: @today, @tomorrow, @nextweek, @YYYY-MM-DD
-	text = text.replace(/(?:^|\s)@(today|tomorrow|nextweek|\d{4}-\d{2}-\d{2})(?=\s|$)/gi, (match, token) => {
+	// Parse due date tokens: @today, @tomorrow, @nextweek, @YYYY-MM-DD (with optional @time suffix like @today@14:30 or @tomorrow@9am)
+	text = text.replace(/(?:^|\s)@(today|tomorrow|nextweek|\d{4}-\d{2}-\d{2})(?:@(\d{1,2}(?::\d{2})?(?:am|pm)?))?(?=\s|$)/gi, (match, token, timePart) => {
 		const lower = token.toLowerCase();
+		let dt;
 		if(lower === "today") {
-			result.due = formatEndOfDay(getToday());
+			dt = getToday();
 		} else if(lower === "tomorrow") {
-			result.due = formatEndOfDay(getTomorrow());
+			dt = getTomorrow();
 		} else if(lower === "nextweek") {
-			result.due = formatEndOfDay(getNextMonday());
+			dt = getNextMonday();
 		} else {
 			const parts = token.split("-");
-			const dt = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
-			if(!Number.isNaN(dt.getTime())) {
-				result.due = formatEndOfDay(dt);
+			const parsedDt = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+			if(!Number.isNaN(parsedDt.getTime())) {
+				dt = parsedDt;
 			}
+		}
+		if(dt) {
+			result.due = formatDateWithOptionalTime(dt, null, timePart);
 		}
 		return " ";
 	});
 
-	// Parse start/scheduled tokens: ~today, ~tomorrow, ~nextweek, ~YYYY-MM-DD
-	text = text.replace(/(?:^|\s)~(today|tomorrow|nextweek|\d{4}-\d{2}-\d{2})(?=\s|$)/gi, (match, token) => {
+	// Parse standalone due time token: @14:30, @9am, @5:30pm (implies due today at that time if no due date was specified)
+	text = text.replace(/(?:^|\s)@(\d{1,2}:\d{2}(?:am|pm)?|\d{1,2}(?:am|pm))(?=\s|$)/gi, (match, timePart) => {
+		const baseDt = result.due ? $tw.utils.parseDate(result.due) : getToday();
+		result.due = formatDateWithOptionalTime(baseDt || getToday(), null, timePart);
+		return " ";
+	});
+
+	// Parse start/scheduled tokens: ~today, ~tomorrow, ~nextweek, ~YYYY-MM-DD (with optional @time suffix like ~today@09:00)
+	text = text.replace(/(?:^|\s)~(today|tomorrow|nextweek|\d{4}-\d{2}-\d{2})(?:@(\d{1,2}(?::\d{2})?(?:am|pm)?))?(?=\s|$)/gi, (match, token, timePart) => {
 		const lower = token.toLowerCase();
+		let dt;
 		if(lower === "today") {
-			result.scheduled = formatEndOfDay(getToday());
+			dt = getToday();
 		} else if(lower === "tomorrow") {
-			result.scheduled = formatEndOfDay(getTomorrow());
+			dt = getTomorrow();
 		} else if(lower === "nextweek") {
-			result.scheduled = formatEndOfDay(getNextMonday());
+			dt = getNextMonday();
 		} else {
 			const parts = token.split("-");
-			const dt = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
-			if(!Number.isNaN(dt.getTime())) {
-				result.scheduled = formatEndOfDay(dt);
+			const parsedDt = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+			if(!Number.isNaN(parsedDt.getTime())) {
+				dt = parsedDt;
 			}
 		}
+		if(dt) {
+			result.scheduled = formatDateWithOptionalTime(dt, null, timePart);
+		}
+		return " ";
+	});
+
+	// Parse standalone scheduled time token: ~14:30, ~9am, ~5:30pm
+	text = text.replace(/(?:^|\s)~(\d{1,2}:\d{2}(?:am|pm)?|\d{1,2}(?:am|pm))(?=\s|$)/gi, (match, timePart) => {
+		const baseDt = result.scheduled ? $tw.utils.parseDate(result.scheduled) : getToday();
+		result.scheduled = formatDateWithOptionalTime(baseDt || getToday(), null, timePart);
 		return " ";
 	});
 
@@ -201,9 +309,34 @@ class AbstractDatePickerWidget extends Widget {
 			return;
 		}
 		const existing = this.getTiddler();
+		const currentVal = this.getValue();
 		const updateFields = {
 			title: this.title,
-			[this.field]: date ? this.endOfDate(date) : undefined
+			[this.field]: date ? formatDateWithOptionalTime(date, currentVal) : undefined
+		};
+
+		this.wiki.addTiddler(
+			new $tw.Tiddler(
+				this.wiki.getCreationFields(),
+				existing,
+				updateFields,
+				this.wiki.getModificationFields()
+			)
+		);
+
+		$tw.rootWidget.dispatchEvent({type: "tm-auto-save-wiki"});
+	}
+
+	setSpecificTime(timeStr) {
+		if(!this.title) {
+			return;
+		}
+		const existing = this.getTiddler();
+		const currentVal = this.getValue() || getToday();
+		const cleanTime = (timeStr || "").trim();
+		const updateFields = {
+			title: this.title,
+			[this.field]: cleanTime ? formatDateWithOptionalTime(currentVal, null, cleanTime) : formatEndOfDay(currentVal)
 		};
 
 		this.wiki.addTiddler(
@@ -222,6 +355,230 @@ class AbstractDatePickerWidget extends Widget {
 		// TW format is [UTC]YYYY0MM0DD0hh0mm0ss0XXX
 		const endOfDay = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 23, 59, 59, 999);
 		return $tw.utils.formatDateString(endOfDay, "[UTC]YYYY0MM0DD0hh0mm0ss0XXX");
+	}
+}
+
+class TimePickerWidget extends AbstractDatePickerWidget {
+	render(parent, nextSibling) {
+		this.parentDomNode = parent;
+		this.computeAttributes();
+		this.execute();
+
+		this.domNode = this.createDomNode();
+		parent.insertBefore(this.domNode, nextSibling);
+		this.domNodes.push(this.domNode);
+	}
+
+	refresh(changedTiddlers) {
+		const changedAttributes = this.computeAttributes();
+		if(
+			changedAttributes.tiddler ||
+			changedAttributes.field ||
+			changedTiddlers["$:/config/projectify/TimeFormat"] ||
+			changedTiddlers["$:/status/projectify/LocaleTimeFormat"]
+		) {
+			this.refreshSelf();
+			return true;
+		}
+		if(changedTiddlers[this.title]) {
+			this.syncUiState();
+		}
+		return this.refreshChildren(changedTiddlers);
+	}
+
+	getCurrentTimeString() {
+		const dt = this.getValue();
+		if(!dt || isEndOfDayDate(dt)) {
+			return "";
+		}
+		const hh = String(dt.getHours()).padStart(2, "0");
+		const mm = String(dt.getMinutes()).padStart(2, "0");
+		return `${hh}:${mm}`;
+	}
+
+	syncLocaleTimeStatus() {
+		if(this.wiki && !this.wiki.tiddlerExists("$:/status/projectify/LocaleTimeFormat")) {
+			this.wiki.addTiddler({
+				title: "$:/status/projectify/LocaleTimeFormat",
+				text: detectDeviceLocaleUses12Hour() ? "12h" : "24h"
+			});
+		}
+	}
+
+	syncUiState() {
+		const currentStr = this.getCurrentTimeString();
+		if(this.clearBtnNode) {
+			this.clearBtnNode.hidden = !currentStr;
+		}
+		if(this.presetButtons) {
+			this.presetButtons.forEach(({btn, time}) => {
+				const baseCls = "tc-btn-invisible py-time-chip tc-popup-handle";
+				btn.className = currentStr === time ? `${baseCls} py-active` : baseCls;
+			});
+		}
+		if(this.hourSelectNode && this.minuteSelectNode) {
+			if(currentStr) {
+				const parts = currentStr.split(":");
+				const hh = parts[0] || "";
+				const mm = parts[1] || "00";
+				this.hourSelectNode.value = hh;
+				if(this.minuteOptions && !this.minuteOptions.includes(mm)) {
+					this.minuteOptions.push(mm);
+					const customOpt = this.document.createElement("option");
+					customOpt.value = mm;
+					customOpt.textContent = mm;
+					this.minuteSelectNode.appendChild(customOpt);
+				}
+				this.minuteSelectNode.value = mm;
+			} else {
+				this.hourSelectNode.value = "";
+				this.minuteSelectNode.value = "00";
+			}
+		}
+	}
+
+	formatHourOptionLabel(h, use12h) {
+		const hh = String(h).padStart(2, "0");
+		const suffix = h < 12 ? "AM" : "PM";
+		const h12 = h % 12 === 0 ? 12 : h % 12;
+		if(use12h) {
+			return `${h12}:00 ${suffix}`;
+		}
+		return `${hh}:00`;
+	}
+
+	createDomNode() {
+		this.syncLocaleTimeStatus();
+		const use12h = is12HourTimePreferred(this.wiki);
+		const wrap = this.document.createElement("div");
+		wrap.className = "py-time-picker-control tc-popup-handle";
+
+		// 1. Header row: Clock icon + "Time" label + Clear button
+		const header = this.document.createElement("div");
+		header.className = "py-time-header tc-popup-handle";
+
+		const labelSpan = this.document.createElement("span");
+		labelSpan.className = "py-inline-label tc-popup-handle";
+		const clockIconTid = this.wiki.getTiddlerText("$:/plugins/mblackman/projectify/images/clock", "");
+		const timeCaption = this.wiki.getTiddlerText("$:/language/projectify/Time", "Time");
+		labelSpan.innerHTML = `${clockIconTid} <span class="tc-popup-handle">${timeCaption}</span>`;
+
+		const clearBtn = this.document.createElement("button");
+		clearBtn.setAttribute("type", "button");
+		clearBtn.className = "tc-btn-invisible py-time-clear tc-popup-handle";
+		const clearCaption = this.wiki.getTiddlerText("$:/language/projectify/Clear", "Clear");
+		clearBtn.textContent = `× ${clearCaption}`;
+		clearBtn.title = use12h
+			? "Clear specific time (use default 12:00 PM notification)"
+			: "Clear specific time (use default 12:00 notification)";
+		this.clearBtnNode = clearBtn;
+
+		clearBtn.addEventListener("click", (e) => {
+			e.preventDefault();
+			this.setSpecificTime("");
+			this.syncUiState();
+		});
+
+		header.appendChild(labelSpan);
+		header.appendChild(clearBtn);
+		wrap.appendChild(header);
+
+		// 2. Mobile-friendly 4-chip quick preset grid
+		const presetsGrid = this.document.createElement("div");
+		presetsGrid.className = "py-time-presets tc-popup-handle";
+		const presets = [
+			{label: use12h ? "🌅 9 AM" : "🌅 09:00", time: "09:00", hint: "Morning (9:00 AM)"},
+			{label: use12h ? "☀️ 12 PM" : "☀️ 12:00", time: "12:00", hint: "Noon (12:00 PM)"},
+			{label: use12h ? "🌤️ 3 PM" : "🌤️ 15:00", time: "15:00", hint: "Afternoon (3:00 PM)"},
+			{label: use12h ? "🌙 6 PM" : "🌙 18:00", time: "18:00", hint: "Evening (6:00 PM)"}
+		];
+		this.presetButtons = [];
+
+		presets.forEach((p) => {
+			const btn = this.document.createElement("button");
+			btn.setAttribute("type", "button");
+			btn.className = "tc-btn-invisible py-time-chip tc-popup-handle";
+			btn.textContent = p.label;
+			btn.title = p.hint;
+			btn.addEventListener("click", (e) => {
+				e.preventDefault();
+				const currentStr = this.getCurrentTimeString();
+				if(currentStr === p.time) {
+					this.setSpecificTime("");
+				} else {
+					this.setSpecificTime(p.time);
+				}
+				this.syncUiState();
+			});
+			this.presetButtons.push({btn, time: p.time});
+			presetsGrid.appendChild(btn);
+		});
+		wrap.appendChild(presetsGrid);
+
+		// 3. Touch-friendly Hour & Minute <select> wheels (keeps popup open on mobile & desktop)
+		const customRow = this.document.createElement("div");
+		customRow.className = "py-time-custom-row tc-popup-handle";
+
+		const hourSelect = this.document.createElement("select");
+		hourSelect.className = "py-select-compact py-time-select py-time-hour-select tc-popup-handle";
+		hourSelect.setAttribute("aria-label", "Hour");
+		const placeholderOpt = this.document.createElement("option");
+		placeholderOpt.value = "";
+		placeholderOpt.textContent = use12h ? "— Default (12:00 PM) —" : "— Default (12:00) —";
+		hourSelect.appendChild(placeholderOpt);
+		for(let h = 0; h < 24; h++) {
+			const opt = this.document.createElement("option");
+			const hh = String(h).padStart(2, "0");
+			opt.value = hh;
+			opt.textContent = this.formatHourOptionLabel(h, use12h);
+			hourSelect.appendChild(opt);
+		}
+		this.hourSelectNode = hourSelect;
+
+		const sep = this.document.createElement("span");
+		sep.className = "py-time-sep tc-popup-handle";
+		sep.textContent = ":";
+
+		const minuteSelect = this.document.createElement("select");
+		minuteSelect.className = "py-select-compact py-time-select py-time-minute-select tc-popup-handle";
+		minuteSelect.setAttribute("aria-label", "Minute");
+		this.minuteOptions = [];
+		for(let m = 0; m < 60; m += 5) {
+			const opt = this.document.createElement("option");
+			const mm = String(m).padStart(2, "0");
+			opt.value = mm;
+			opt.textContent = mm;
+			minuteSelect.appendChild(opt);
+			this.minuteOptions.push(mm);
+		}
+		this.minuteSelectNode = minuteSelect;
+
+		const onSelectChange = () => {
+			const hh = hourSelect.value;
+			const mm = minuteSelect.value || "00";
+			if(!hh) {
+				this.setSpecificTime("");
+			} else {
+				this.setSpecificTime(`${hh}:${mm}`);
+			}
+			this.syncUiState();
+		};
+
+		hourSelect.addEventListener("change", onSelectChange);
+		minuteSelect.addEventListener("change", () => {
+			if(!hourSelect.value) {
+				hourSelect.value = "12";
+			}
+			onSelectChange();
+		});
+
+		customRow.appendChild(hourSelect);
+		customRow.appendChild(sep);
+		customRow.appendChild(minuteSelect);
+		wrap.appendChild(customRow);
+
+		this.syncUiState();
+		return wrap;
 	}
 }
 
@@ -453,14 +810,14 @@ class ActionToggleTodoWidget extends Widget {
 			const nextDueDate = computeNextOccurrenceDate(currentDue, recurRule);
 			const updateFields = {
 				title: title,
-				due: formatEndOfDay(nextDueDate),
+				due: formatDateWithOptionalTime(nextDueDate, currentDue),
 				"last-completed": nowStamp,
 				status: "todo"
 			};
 			if(existing.getFieldString("scheduled")) {
 				const currentSched = $tw.utils.parseDate(existing.getFieldString("scheduled"));
 				const nextSchedDate = computeNextOccurrenceDate(currentSched, recurRule);
-				updateFields.scheduled = formatEndOfDay(nextSchedDate);
+				updateFields.scheduled = formatDateWithOptionalTime(nextSchedDate, currentSched);
 			}
 			this.wiki.addTiddler(
 				new $tw.Tiddler(
@@ -836,8 +1193,11 @@ class QuickInputWidget extends Widget {
 				}
 			});
 		} else if(tokenInfo.trigger === "@") {
+			const use12h = is12HourTimePreferred(this.wiki);
+			const noonBadge = use12h ? "Due today at 12:00 PM" : "Due today at 12:00";
 			const dateSuggestions = [
 				{label: "@today", badge: "Due today", token: "@today", prefix: "@"},
+				{label: "@today@12:00", badge: noonBadge, token: "@today@12:00", prefix: "@"},
 				{label: "@tomorrow", badge: "Due tomorrow", token: "@tomorrow", prefix: "@"},
 				{label: "@nextweek", badge: "Due next Monday", token: "@nextweek", prefix: "@"}
 			];
@@ -862,8 +1222,11 @@ class QuickInputWidget extends Widget {
 				});
 			}
 		} else if(tokenInfo.trigger === "~") {
+			const use12h = is12HourTimePreferred(this.wiki);
+			const noonSchedBadge = use12h ? "Start today at 12:00 PM" : "Start today at 12:00";
 			const schedSuggestions = [
 				{label: "~today", badge: "Start today", token: "~today", prefix: "~"},
+				{label: "~today@12:00", badge: noonSchedBadge, token: "~today@12:00", prefix: "~"},
 				{label: "~tomorrow", badge: "Start tomorrow", token: "~tomorrow", prefix: "~"},
 				{label: "~nextweek", badge: "Start next Monday", token: "~nextweek", prefix: "~"}
 			];
@@ -1098,6 +1461,13 @@ function handleNotificationActionEvent(event) {
 	}
 }
 
+if($tw.wiki && !$tw.wiki.tiddlerExists("$:/status/projectify/LocaleTimeFormat")) {
+	$tw.wiki.addTiddler({
+		title: "$:/status/projectify/LocaleTimeFormat",
+		text: detectDeviceLocaleUses12Hour() ? "12h" : "24h"
+	});
+}
+
 if($tw.hooks && typeof $tw.hooks.addHook === "function" && !$tw._projectifyPushHookRegistered) {
 	$tw._projectifyPushHookRegistered = true;
 	$tw.hooks.addHook("th-pwa-notification-action", handleNotificationActionEvent);
@@ -1108,6 +1478,7 @@ exports["py-date-tomorrow"] = createQuickDateWidget(getTomorrow, "py-date-tomorr
 exports["py-date-next-week"] = createQuickDateWidget(getNextMonday, "py-date-next-week");
 exports["py-date-clear"] = createQuickDateWidget(function() { return undefined; }, "py-date-clear");
 exports["py-date-calendar"] = CalendarWidget;
+exports["py-time-picker"] = TimePickerWidget;
 exports["py-quick-input"] = QuickInputWidget;
 exports["action-py-toggle-todo"] = ActionToggleTodoWidget;
 exports["action-py-quick-add"] = ActionQuickAddTodoWidget;

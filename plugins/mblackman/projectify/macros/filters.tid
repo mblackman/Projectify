@@ -227,6 +227,22 @@ type: text/vnd.tiddlywiki
 [all[current]!has[draft.of]has[scheduled]]
 \end
 
+\procedure py-has-due-time()
+[all[current]!has[draft.of]has[due]] :filter[get[due]format:date[0hh:0mm]!match[23:59]]
+\end
+
+\procedure py-has-scheduled-time()
+[all[current]!has[draft.of]has[scheduled]] :filter[get[scheduled]format:date[0hh:0mm]!match[23:59]]
+\end
+
+\function py.is-12h-time()
+[{$:/config/projectify/TimeFormat}match[12h]] [{$:/config/projectify/TimeFormat}!match[24h]then{$:/status/projectify/LocaleTimeFormat}match[12h]] +[limit[1]]
+\end
+
+\function py.time-template()
+[function[py.is-12h-time]then[hh12:0mm am]else[0hh:0mm]]
+\end
+
 \procedure py-is-not-overdue()
 [all[current]!has[draft.of]] -[!days:due[-1]]
 \end

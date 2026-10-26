@@ -47,9 +47,11 @@ type: text/vnd.tiddlywiki
 
   <%if [subfilter<py-has-start-date>] %>
     <%if [subfilter<py-is-not-scheduled>] %>
-      <span class="py-badge py-badge-scheduled" title={{$:/language/projectify/StartDate/Tab}}>
-        {{$:/plugins/mblackman/projectify/images/sun}} <$view field="scheduled" format="date" template={{$:/language/projectify/DateFormat}}/>
-      </span>
+      <$let timeTemplate={{{ [function[py.time-template]] }}}>
+        <span class="py-badge py-badge-scheduled" title={{$:/language/projectify/StartDate/Tab}}>
+          {{$:/plugins/mblackman/projectify/images/sun}} <$view field="scheduled" format="date" template={{$:/language/projectify/DateFormat}}/><%if [subfilter<py-has-scheduled-time>] %> <$view field="scheduled" format="date" template=<<timeTemplate>>/><%endif%>
+        </span>
+      </$let>
     <%endif%>
   <%endif%>
 

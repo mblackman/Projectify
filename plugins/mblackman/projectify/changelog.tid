@@ -1,9 +1,24 @@
 caption: ChangeLog
 created: 20201208093546936
-modified: 20261025174500000
+modified: 20261025180600000
 tags:
 title: $:/plugins/mblackman/projectify/changelog
 type: text/vnd.tiddlywiki
+
+! Release 0.17.0
+
+!! Web Push Notifications & Time-Based Scheduling
+
+* ''TiddlyPWA Web Push Notification Integration'':
+** Added automatic Tier 2 declarative notification rules for Due (`$:/config/projectify/notifications/TodoDueRule`) and Scheduled (`$:/config/projectify/notifications/TodoScheduledRule`) tasks with actionable push buttons (''Mark Done'' and ''Open Task'')
+** Added quick one-tap task reminders (+15m, +1h, +3h, Tomorrow 9 AM) via `$:/plugins/mblackman/projectify/ui/forms/TodoReminder`
+** Added Notifications settings tab (`$:/plugins/mblackman/projectify/ui/config/Notifications`) in Control Panel > Projectify
+* ''Specific-Time Task Scheduling & Mobile Time Picker'':
+** Tasks can now be scheduled for a specific time of day (e.g., `14:30` / `2:30 pm`) in addition to date-only deadlines, triggering push notifications at that exact timestamp while date-only tasks default to notifying at 12:00 Noon local time
+** Added inline time token support (`@today@14:30`, `~tomorrow@09:00`) in task capture inputs
+** Redesigned `<$py-time-picker>` for mobile ergonomics with quick-preset chips (`9 AM`, `12 PM`, `3 PM`, `6 PM`) and native touch-friendly Hour / 5-minute step selector wheels
+* ''Configurable 12-Hour / 24-Hour Time Formatting'':
+** Added `$:/config/projectify/TimeFormat` setting (`auto`, `12h`, `24h`) that defaults to the device's locale clock preference (`Intl.DateTimeFormat`) and formats all task pills, time pickers, and notification messages accordingly
 
 ! Release 0.16.1
 
