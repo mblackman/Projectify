@@ -6,6 +6,12 @@ type: text/vnd.tiddlywiki
 
 \procedure lingo-base() $:/language/projectify/
 
+\procedure due-recur-indicator()
+<%if [{!!recur}!is[blank]] %>
+  <span class="py-due-recur-icon" title={{!!recur}}>{{$:/plugins/mblackman/projectify/images/repeat}}</span>
+<%endif%>
+\end
+
 <$let
   popupTiddler=<<qualify "$:/state/projectify/due-date-dropdown">>
   timeTemplate={{{ [function[py.time-template]] }}}
@@ -20,10 +26,11 @@ type: text/vnd.tiddlywiki
       <%if [subfilter<py-has-due-time>] %>
         <span class="py-due-time"> <$view field="due" format="date" template=<<timeTemplate>>/></span>
       <%endif%>
+      <<due-recur-indicator>>
     </$button>
   <%elseif [subfilter<py-is-due-today>] %>
     <$button class="py-btn py-due-date py-due-today" popup=<<popupTiddler>>>
-      {{$:/plugins/mblackman/projectify/images/calendar}} <<lingo Today>><%if [subfilter<py-has-due-time>] %><span class="py-due-time"> <$view field="due" format="date" template=<<timeTemplate>>/></span><%endif%>
+      {{$:/plugins/mblackman/projectify/images/calendar}} <<lingo Today>><%if [subfilter<py-has-due-time>] %><span class="py-due-time"> <$view field="due" format="date" template=<<timeTemplate>>/></span><%endif%><<due-recur-indicator>>
     </$button>
   <%elseif [subfilter<py-is-scheduled>] %>
     <$button class="py-btn py-due-date" popup=<<popupTiddler>>>
@@ -36,6 +43,16 @@ type: text/vnd.tiddlywiki
       <%if [subfilter<py-has-due-time>] %>
         <span class="py-due-time"> <$view field="due" format="date" template=<<timeTemplate>>/></span>
       <%endif%>
+      <<due-recur-indicator>>
+    </$button>
+  <%elseif [subfilter<py-has-start-date>] %>
+    <$button class="py-btn py-due-date py-scheduled-date" popup=<<popupTiddler>> tooltip={{$:/language/projectify/StartDate/Tab}}>
+      {{$:/plugins/mblackman/projectify/images/sun}}
+      <$view field="scheduled" format="date" template={{$:/language/projectify/DateFormat}}/>
+      <%if [subfilter<py-has-scheduled-time>] %>
+        <span class="py-due-time"> <$view field="scheduled" format="date" template=<<timeTemplate>>/></span>
+      <%endif%>
+      <<due-recur-indicator>>
     </$button>
   <%else%>
     <$button class="py-btn py-due-date py-not-scheduled" popup=<<popupTiddler>>>

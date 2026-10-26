@@ -10,34 +10,34 @@ type: text/vnd.tiddlywiki
   $state=<<stateTiddler>>
   $field="todo-name"
   $tags=<<todo-tags>>
+  $section=<<todo-section>>
+  $status=<<todo-status>>
 />
 \end
 
 <$let stateTiddler=<<qualify "$:/temp/projectify/add-todo-form">>>
-  <div class="py-composite-input">
+  <div class="py-composite-input py-omnibar">
     <$py-quick-input
-      class="py-input"
+      class="py-input py-omnibar-input"
       tiddler=<<stateTiddler>>
       field="todo-name"
       placeholder=<<placeholder>>
       actions=<<add-todo-actions>>
     />
 
-    <div class="py-todo-actions">
+    <div class="py-todo-actions py-omnibar-controls">
       <$let currentTiddler=<<stateTiddler>>>
         <$transclude $tiddler="$:/plugins/mblackman/projectify/ui/buttons/TodoDueDate" $mode="inline"/>
         <$transclude $tiddler="$:/plugins/mblackman/projectify/ui/buttons/TodoPriority" $mode="inline"/>
       </$let>
+      <$button
+        class="py-btn btn-small btn-primary py-omnibar-submit"
+        actions=<<add-todo-actions>>
+        tooltip={{$:/language/projectify/AddTodo/Hint}}
+        aria-label={{$:/language/projectify/AddTodo/Hint}}
+      >
+        <<lingo AddTodo/Caption>>
+      </$button>
     </div>
-  </div>
-  <div class="py-actions">
-    <$button
-      class="py-btn btn-primary"
-      actions=<<add-todo-actions>>
-      tooltip={{$:/language/projectify/AddTodo/Hint}}
-      aria-label={{$:/language/projectify/AddTodo/Hint}}
-    >
-      <<lingo AddTodo/Caption>>
-    </$button>
   </div>
 </$let>

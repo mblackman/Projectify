@@ -6,14 +6,20 @@ type: text/vnd.tiddlywiki
 
 <div class="py-priorities">
   <$list filter="3 2 1" variable="priority">
-    <$button class={{{ [[tc-btn-invisible py-priority-]addsuffix<priority>] }}}>
+    <$button
+      class={{{ [{!!priority}match<priority>then[tc-btn-invisible py-priority-btn py-active py-priority-]else[tc-btn-invisible py-priority-btn py-priority-]] [<priority>] +[join[]] }}}
+      tooltip={{{ [[P]] [<priority>] +[join[]] }}}
+    >
       {{$:/plugins/mblackman/projectify/images/flag}}
       <$action-setfield priority=<<priority>>/>
       <$action-sendmessage $message="tm-auto-save-wiki"/>
     </$button>
   </$list>
 
-  <$button class="tc-btn-invisible">
+  <$button
+    class={{{ [{!!priority}is[blank]then[tc-btn-invisible py-priority-btn py-active]else[tc-btn-invisible py-priority-btn]] }}}
+    tooltip={{$:/language/projectify/Clear}}
+  >
     {{$:/plugins/mblackman/projectify/images/slash-circle}}
     <$action-deletefield $field="priority"/>
     <$action-sendmessage $message="tm-auto-save-wiki"/>

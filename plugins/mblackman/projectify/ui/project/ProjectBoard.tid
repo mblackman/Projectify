@@ -7,66 +7,186 @@ type: text/vnd.tiddlywiki
 \procedure lingo-base() $:/language/projectify/
 
 \procedure board-drop-actions(targetStatus)
-<$let projectTag=<<currentTiddler>>>
-  <$action-listops $tiddler=<<actionTiddler>> $tags={{{ [[todo]] [all<actionTiddler>tags[]] -Inbox -[tag[Project]] -[tag[SubProject]] [<projectTag>] +[format:titlelist[]join[ ]] }}}/>
-  <$action-py-toggle-todo $tiddler=<<actionTiddler>> $status=<<targetStatus>>/>
-</$let>
+<$action-listops $tiddler=<<actionTiddler>> $tags={{{ [[todo]] [all<actionTiddler>tags[]] -Inbox -[tag[Project]] -[tag[SubProject]] [<projectTag>] +[format:titlelist[]join[ ]] }}}/>
+<$action-py-toggle-todo $tiddler=<<actionTiddler>> $status=<<targetStatus>>/>
+<$set name="order" filter="[<projectTag>tagging[]]">
+  <$list filter="[<projectTag>tagging[]]">
+    <$action-deletefield $field="list-before"/>
+    <$action-deletefield $field="list-after"/>
+  </$list>
+  <$action-listops $tiddler=<<projectTag>> $field="list" $filter="+[enlist:raw<order>] -[<actionTiddler>] [<actionTiddler>]"/>
+  <$action-sendmessage $message="tm-auto-save-wiki"/>
+</$set>
+\end
+
+\procedure board-card-drop-actions(targetStatus, targetCard)
+<$action-listops $tiddler=<<actionTiddler>> $tags={{{ [[todo]] [all<actionTiddler>tags[]] -Inbox -[tag[Project]] -[tag[SubProject]] [<projectTag>] +[format:titlelist[]join[ ]] }}}/>
+<$action-py-toggle-todo $tiddler=<<actionTiddler>> $status=<<targetStatus>>/>
+<$set name="order" filter="[<projectTag>tagging[]]">
+  <$list filter="[<projectTag>tagging[]]">
+    <$action-deletefield $field="list-before"/>
+    <$action-deletefield $field="list-after"/>
+  </$list>
+  <$action-listops $tiddler=<<projectTag>> $field="list" $filter="+[enlist:raw<order>] +[insertbefore<actionTiddler>,<targetCard>]"/>
+  <$action-sendmessage $message="tm-auto-save-wiki"/>
+</$set>
+\end
+
+\procedure board-column-add-actions(targetStatus, addState)
+<$action-py-quick-add
+  $state=<<addState>>
+  $field="todo-name"
+  $tags={{{ [<currentTiddler>format:titlelist[]addsuffix[ todo]] }}}
+  $status=<<targetStatus>>
+/>
+<$action-deletetiddler $tiddler=<<colAddOpenState>>/>
 \end
 
 \procedure board-column(colStatus, colLabel, colFilter)
-<div class={{{ [[py-board-column py-board-col-]] [<colStatus>] +[join[]] }}}>
-  <$droppable
-    actions="<$transclude $variable='board-drop-actions' targetStatus=<<colStatus>>/>"
-    tag="div"
-    class="py-board-column-inner"
-  >
-    <div class="py-board-column-header">
-      <span class="py-board-column-title"><$text text=<<colLabel>>/></span>
-      <span class="py-count"><$count filter=<<colFilter>>/></span>
-    </div>
-    <div class="py-board-cards">
-      <$let dragHandle="yes">
-        <$list
-          filter=<<colFilter>>
-          template="$:/plugins/mblackman/projectify/ui/todo/TodoItem"
-          emptyMessage="<div class='py-empty-quadrant'>—</div>"
-        />
-      </$let>
-    </div>
-  </$droppable>
-</div>
+<$let
+  colAddOpenState={{{ [[$:/state/projectify/board-add-open/]] [<currentTiddler>] [[/]] [<colStatus>] +[join[]] }}}
+  colAddInputState={{{ [[$:/temp/projectify/board-add-input/]] [<currentTiddler>] [[/]] [<colStatus>] +[join[]] }}}
+>
+  <div class={{{ [[py-board-column py-board-col-]] [<colStatus>] [<colStatus>match[todo]then[ py-board-col-active]else[]] +[join[]] }}} data-col-status=<<colStatus>>>
+    <$droppable
+      actions="<$transclude $variable='board-drop-actions' targetStatus=<<colStatus>>/>"
+      tag="div"
+      class="py-board-column-inner"
+    >
+      <div class="py-board-column-header">
+        <span class="py-board-column-title"><$text text=<<colLabel>>/></span>
+        <span class="py-count"><$count filter=<<colFilter>>/></span>
+      </div>
+      <div class="py-board-cards">
+        <$let isBoardCard="yes" dragHandle="">
+          <$list
+            filter=<<colFilter>>
+            variable="cardTiddler"
+            emptyMessage="<div class='py-empty-quadrant'>—</div>"
+          >
+            <$droppable
+              actions="<$transclude $variable='board-card-drop-actions' targetStatus=<<colStatus>> targetCard=<<cardTiddler>>/>"
+              tag="div"
+              class="py-board-card-slot"
+            >
+              <div class="tc-droppable-placeholder"/>
+              <$let currentTiddler=<<cardTiddler>>>
+                <$draggable
+                  tiddler=<<cardTiddler>>
+                  tag="div"
+                  class="py-board-card-draggable"
+                  data-tiddler-title=<<cardTiddler>>
+                >
+                  {{||$:/plugins/mblackman/projectify/ui/todo/TodoItem}}
+                </$draggable>
+              </$let>
+            </$droppable>
+          </$list>
+        </$let>
+      </div>
+      <%if [<colStatus>!match[done]] %>
+        <div class="py-board-column-footer">
+          <%if [<colAddOpenState>get[text]match[yes]] %>
+            <div class="py-board-inline-add">
+              <$keyboard key="escape" actions="<$action-deletetiddler $tiddler=<<colAddOpenState>>/>">
+                <$py-quick-input
+                  class="py-input py-board-add-input"
+                  tiddler=<<colAddInputState>>
+                  field="todo-name"
+                  placeholder={{$:/language/projectify/AddTodo/Caption}}
+                  focus="true"
+                  actions="<$transclude $variable='board-column-add-actions' targetStatus=<<colStatus>> addState=<<colAddInputState>>/>"
+                />
+              </$keyboard>
+              <div class="py-board-inline-add-actions">
+                <$button
+                  class="py-btn btn-small btn-primary"
+                  actions="<$transclude $variable='board-column-add-actions' targetStatus=<<colStatus>> addState=<<colAddInputState>>/>"
+                >
+                  <<lingo AddTodo/Caption>>
+                </$button>
+                <$button class="py-btn btn-small">
+                  <<lingo Cancel/Caption>>
+                  <$action-deletetiddler $tiddler=<<colAddOpenState>>/>
+                </$button>
+              </div>
+            </div>
+          <%else%>
+            <$button class="tc-btn-invisible py-board-add-trigger" set=<<colAddOpenState>> setTo="yes">
+              + <<lingo AddTodo/Caption>>
+            </$button>
+          <%endif%>
+        </div>
+      <%endif%>
+    </$droppable>
+  </div>
+</$let>
 \end
 
 <$let
-  todoColFilter="[all[tiddlers]tag<currentTiddler>tag[todo]!has[draft.of]!tag[done]!status[in-progress]!status[waiting]!status[someday]!nsort[priority]]"
-  inProgressColFilter="[all[tiddlers]tag<currentTiddler>tag[todo]!has[draft.of]!tag[done]status[in-progress]!nsort[priority]]"
-  waitingColFilter="[all[tiddlers]tag<currentTiddler>tag[todo]!has[draft.of]!tag[done]status[waiting]!nsort[priority]] [all[tiddlers]tag<currentTiddler>tag[todo]!has[draft.of]!tag[done]status[someday]!nsort[priority]] +[unique[]]"
+  projectTag=<<currentTiddler>>
+  todoColFilter="[<currentTiddler>tagging[]tag[todo]!has[draft.of]!tag[done]!status[in-progress]!status[waiting]!status[someday]]"
+  inProgressColFilter="[<currentTiddler>tagging[]tag[todo]!has[draft.of]!tag[done]status[in-progress]]"
+  waitingColFilter="[<currentTiddler>tagging[]tag[todo]!has[draft.of]!tag[done]status[waiting]] [<currentTiddler>tagging[]tag[todo]!has[draft.of]!tag[done]status[someday]] +[unique[]]"
   doneColFilter="[all[tiddlers]tag<currentTiddler>tag[todo]!has[draft.of]tag[done]!sort[completed]limit[25]]"
 >
-  <div class="py-board">
-    <$transclude
-      $variable="board-column"
-      colStatus="todo"
-      colLabel={{$:/language/projectify/Status/Todo}}
-      colFilter=<<todoColFilter>>
-    />
-    <$transclude
-      $variable="board-column"
-      colStatus="in-progress"
-      colLabel={{$:/language/projectify/Status/InProgress}}
-      colFilter=<<inProgressColFilter>>
-    />
-    <$transclude
-      $variable="board-column"
-      colStatus="waiting"
-      colLabel={{$:/language/projectify/Status/Waiting}}
-      colFilter=<<waitingColFilter>>
-    />
-    <$transclude
-      $variable="board-column"
-      colStatus="done"
-      colLabel={{$:/language/projectify/Status/Done}}
-      colFilter=<<doneColFilter>>
-    />
+  <div class="py-board-container">
+    <div class="py-board-mobile-switcher" role="tablist">
+      <button
+        type="button"
+        class="py-btn btn-small py-board-tab py-active"
+        data-col-target="todo"
+      >
+        {{$:/language/projectify/Status/Todo}} <span class="py-count"><$count filter=<<todoColFilter>>/></span>
+      </button>
+      <button
+        type="button"
+        class="py-btn btn-small py-board-tab"
+        data-col-target="in-progress"
+      >
+        {{$:/language/projectify/Status/InProgress}} <span class="py-count"><$count filter=<<inProgressColFilter>>/></span>
+      </button>
+      <button
+        type="button"
+        class="py-btn btn-small py-board-tab"
+        data-col-target="waiting"
+      >
+        {{$:/language/projectify/Status/Waiting}} <span class="py-count"><$count filter=<<waitingColFilter>>/></span>
+      </button>
+      <button
+        type="button"
+        class="py-btn btn-small py-board-tab"
+        data-col-target="done"
+      >
+        {{$:/language/projectify/Status/Done}} <span class="py-count"><$count filter=<<doneColFilter>>/></span>
+      </button>
+    </div>
+
+    <div class="py-board">
+      <$transclude
+        $variable="board-column"
+        colStatus="todo"
+        colLabel={{$:/language/projectify/Status/Todo}}
+        colFilter=<<todoColFilter>>
+      />
+      <$transclude
+        $variable="board-column"
+        colStatus="in-progress"
+        colLabel={{$:/language/projectify/Status/InProgress}}
+        colFilter=<<inProgressColFilter>>
+      />
+      <$transclude
+        $variable="board-column"
+        colStatus="waiting"
+        colLabel={{$:/language/projectify/Status/Waiting}}
+        colFilter=<<waitingColFilter>>
+      />
+      <$transclude
+        $variable="board-column"
+        colStatus="done"
+        colLabel={{$:/language/projectify/Status/Done}}
+        colFilter=<<doneColFilter>>
+      />
+    </div>
   </div>
 </$let>

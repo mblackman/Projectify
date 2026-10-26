@@ -77,7 +77,7 @@ type: text/vnd.tiddlywiki
   display: flex;
   align-items: flex-start;
   gap: 8px;
-  padding: 9px 0;
+  padding: 8px 0;
 }
 
 .py-todo > .py-drag-handle {
@@ -85,9 +85,30 @@ type: text/vnd.tiddlywiki
   flex-shrink: 0;
 }
 
+@media (hover: hover) {
+  .py-todos:not(.py-board-cards) .py-todo > .py-drag-handle {
+    opacity: 0.25;
+    transition: opacity 0.14s ease, background-color 0.14s ease, color 0.14s ease;
+  }
+
+  .py-todos:not(.py-board-cards) .py-todo:hover > .py-drag-handle,
+  .py-todos:not(.py-board-cards) .py-todo:focus-within > .py-drag-handle {
+    opacity: 1;
+  }
+}
+
 .py-todo > .py-todo-check-btn {
-  margin-top: 2px;
+  margin: -7px -5px -7px -5px;
+  padding: 9px 7px;
+  border-radius: 8px;
   flex-shrink: 0;
+}
+
+@media (max-width: {{$:/themes/tiddlywiki/vanilla/metrics/sidebarbreakpoint}}) {
+  .py-todo > .py-todo-check-btn {
+    margin: -11px -7px -11px -7px;
+    padding: 13px 11px;
+  }
 }
 
 .py-todo-body {
@@ -153,17 +174,54 @@ a.py-todo-link {
   flex-shrink: 0;
   display: inline-flex;
   align-items: center;
+  gap: 2px;
   margin-left: 2px;
   margin-top: -1px;
 }
 
 .py-todo-menu .py-btn {
-  padding: 3px 6px;
+  padding: 4px 6px;
+  min-width: 28px;
+  min-height: 28px;
+  justify-content: center;
   border-radius: 6px;
   border-color: transparent;
   background: transparent;
   color: var(--tpc-muted-foreground, <<colour muted-foreground>>);
   fill: var(--tpc-muted-foreground, <<colour muted-foreground>>);
+}
+
+.py-todo-menu .py-btn.py-todo-quick-edit svg,
+.tc-tiddler-frame .py-todo-menu .py-btn.py-todo-quick-edit svg {
+  width: 13px;
+  height: 13px;
+  max-width: none;
+  display: block;
+}
+
+@media (hover: hover) {
+  .py-todo-menu .py-btn.py-todo-quick-edit {
+    opacity: 0;
+    transition: opacity 0.14s ease, background-color 0.14s ease, color 0.14s ease;
+  }
+
+  .py-todo:hover .py-todo-menu .py-btn.py-todo-quick-edit,
+  .py-todo:focus-within .py-todo-menu .py-btn.py-todo-quick-edit {
+    opacity: 1;
+  }
+}
+
+@media (max-width: {{$:/themes/tiddlywiki/vanilla/metrics/sidebarbreakpoint}}) {
+  .py-todo-menu .py-btn.py-todo-quick-edit {
+    display: none;
+  }
+
+  .py-todo-menu .py-btn {
+    min-width: 38px;
+    min-height: 38px;
+    margin: -6px -4px;
+    padding: 8px;
+  }
 }
 
 .py-todo-menu .py-btn:hover,
@@ -278,12 +336,24 @@ a.py-todo-link {
   padding: .3em .9em;
 }
 
-.py-todo-actions .py-btn,
+.py-todo-actions .py-btn:not(.btn-primary):not(.py-overdue):not(.py-due-today),
 .py-todo .py-btn.py-priority {
-  color: var(--tpc-muted-foreground, <<colour muted-foreground>>);
-  fill: var(--tpc-muted-foreground, <<colour muted-foreground>>);
+  color: color-mix(in srgb, var(--tpc-foreground, <<colour foreground>>) 72%, var(--tpc-muted-foreground, <<colour muted-foreground>>));
+  fill: currentColor;
   padding: 2px 7px;
   border-radius: 999px;
+}
+
+.py-todo-actions .py-btn.py-due-date {
+  padding: 2px 7px;
+  border-radius: 999px;
+}
+
+.py-due-recur-icon {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 3px;
+  opacity: 0.85;
 }
 
 .py-due-date.py-overdue {
@@ -302,10 +372,16 @@ a.py-todo-link {
   font-weight: 500;
 }
 
+.py-due-date.py-scheduled-date {
+  border-color: color-mix(in srgb, var(--tpc-muted-foreground, <<colour muted-foreground>>) 32%, transparent);
+  background: color-mix(in srgb, var(--tpc-muted-foreground, <<colour muted-foreground>>) 10%, transparent);
+}
+
 .py-todo .py-todo-actions .py-btn {
   font-size: .75em;
   line-height: 1.3;
   margin-left: 0;
+  white-space: nowrap;
 }
 
 @media (min-width: {{$:/themes/tiddlywiki/vanilla/metrics/sidebarbreakpoint}}) {
@@ -406,7 +482,10 @@ a.py-todo-link {
 }
 
 .tc-drop-down.py-drop-down {
-  min-width: 200px;
+  min-width: 196px;
+  padding: 4px 0;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
 }
 
 .tc-drop-down.py-drop-down .tc-btn-invisible,
@@ -415,34 +494,55 @@ a.py-todo-link {
   align-items: center;
   width: 100%;
   box-sizing: border-box;
-  font-size: 14px;
-  line-height: 2em;
-  padding: 2px 10px;
+  font-size: 13px;
+  line-height: 1.55em;
+  padding: 3px 8px;
   text-align: left;
+  border-radius: 5px;
 }
 
 .tc-drop-down.py-drop-down .tc-btn-invisible svg {
-  margin-right: 6px;
+  margin-right: 5px;
   flex-shrink: 0;
+  width: 13px;
+  height: 13px;
 }
 
 .tc-drop-down.py-drop-down hr {
-  margin: 4px 0;
+  margin: 3px 0;
   padding: 0;
   border: 0;
-  border-bottom: 1px solid color-mix(in srgb, var(--tpc-muted-foreground, <<colour muted-foreground>>) 30%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--tpc-muted-foreground, <<colour muted-foreground>>) 22%, transparent);
+}
+
+.py-menu-top-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 2px 4px;
+  background: color-mix(in srgb, var(--tpc-muted-foreground, <<colour muted-foreground>>) 5%, transparent);
 }
 
 .tc-drop-down .py-priorities {
   display: flex;
   justify-content: space-around;
   align-items: center;
+  gap: 2px;
+  padding: 1px 2px;
 }
 
 .tc-drop-down .py-priorities .tc-btn-invisible {
   width: auto;
+  flex: 1 1 0;
+  padding: 3px 4px;
+  line-height: 1.2;
+  border-radius: 5px;
   justify-content: center;
   text-align: center;
+}
+
+.tc-drop-down .py-priorities .tc-btn-invisible svg {
+  margin-right: 0;
 }
 
 .py-priority-3, .py-priority-3 svg,
@@ -465,8 +565,8 @@ a.py-todo-link {
 .py-drop-down .py-priority-1,
 .py-drop-down .py-priority-1 svg,
 .py-btn.py-priority-1 {
-  fill: #24cd5e;
-  color: #24cd5e;
+  fill: #2563eb;
+  color: #2563eb;
 }
 
 .py-project-category-manager-table {
@@ -512,18 +612,24 @@ a.py-todo-link {
   display: flex;
   align-items: center;
   justify-content: space-around;
-  gap: 4px;
-  padding: 2px 4px;
+  gap: 2px;
+  padding: 1px 2px;
 }
 
 .tc-drop-down .py-status-selector .tc-btn-invisible,
 .py-todo-heading .py-status-selector .tc-btn-invisible {
   width: auto;
-  padding: 4px 6px;
-  border-radius: 4px;
+  flex: 1 1 0;
+  padding: 3px 4px;
+  line-height: 1.2;
+  border-radius: 5px;
   justify-content: center;
   color: var(--tpc-muted-foreground, <<colour muted-foreground>>);
   fill: currentColor;
+}
+
+.tc-drop-down .py-status-selector .tc-btn-invisible svg {
+  margin-right: 0;
 }
 
 .py-status-selector .py-status-btn.py-active,
@@ -535,9 +641,9 @@ a.py-todo-link {
 /* Date picker tabs, compact quick-dates grid, and recurrence row */
 .py-date-mode-tabs {
   display: flex;
-  gap: 4px;
-  padding: 4px 8px;
-  border-bottom: 1px solid color-mix(in srgb, var(--tpc-muted-foreground, <<colour muted-foreground>>) 25%, transparent);
+  gap: 3px;
+  padding: 2px 6px 3px 6px;
+  border-bottom: 1px solid color-mix(in srgb, var(--tpc-muted-foreground, <<colour muted-foreground>>) 20%, transparent);
   margin-bottom: 2px;
 }
 
@@ -545,9 +651,9 @@ a.py-todo-link {
   width: auto;
   flex: 1 1 0;
   justify-content: center;
-  font-size: 12px;
-  line-height: 1.5;
-  padding: 2px 6px;
+  font-size: 11.5px;
+  line-height: 1.35;
+  padding: 2px 4px;
   border-radius: 4px;
   color: var(--tpc-muted-foreground, <<colour muted-foreground>>);
 }
@@ -562,28 +668,110 @@ a.py-todo-link {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 2px;
-  padding: 2px 6px;
+  padding: 2px 5px;
 }
 
 .tc-drop-down.py-drop-down .py-quick-dates .tc-btn-invisible {
-  font-size: 12.5px;
-  line-height: 1.6em;
+  font-size: 12px;
+  line-height: 1.45em;
   padding: 3px 6px;
   border-radius: 4px;
   white-space: nowrap;
 }
 
-.tc-drop-down.py-drop-down .py-quick-dates .py-calendar-toggle {
-  grid-column: 1 / -1;
+.tc-drop-down.py-drop-down .py-quick-dates .py-calendar-toggle,
+.tc-drop-down.py-drop-down .py-quick-dates .py-time-toggle {
   justify-content: center;
-  background: color-mix(in srgb, var(--tpc-muted-foreground, <<colour muted-foreground>>) 10%, transparent);
-  margin-top: 2px;
+  font-size: 11.5px;
+  background: color-mix(in srgb, var(--tpc-muted-foreground, <<colour muted-foreground>>) 9%, transparent);
+  margin-top: 1px;
 }
 
-.tc-drop-down.py-drop-down .py-quick-dates .py-calendar-toggle.py-active {
+.tc-drop-down.py-drop-down .py-quick-dates .py-calendar-toggle.py-active,
+.tc-drop-down.py-drop-down .py-quick-dates .py-time-toggle.py-active {
   background: color-mix(in srgb, var(--tpc-primary, <<colour primary>>) 15%, transparent);
   color: var(--tpc-primary, <<colour primary>>);
   fill: var(--tpc-primary, <<colour primary>>);
+}
+
+.py-calendar-container,
+.py-time-panel-drawer {
+  border-top: 1px solid color-mix(in srgb, var(--tpc-muted-foreground, <<colour muted-foreground>>) 20%, transparent);
+  margin-top: 3px;
+  padding-top: 3px;
+}
+
+/* Collapsible <details> disclosure drawers inside task menus */
+.py-menu-disclosure {
+  margin: 0;
+  padding: 0;
+}
+
+.py-menu-disclosure-summary {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 8px;
+  margin: 0 4px;
+  border-radius: 5px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--tpc-muted-foreground, <<colour muted-foreground>>);
+  fill: currentColor;
+  cursor: pointer;
+  user-select: none;
+}
+
+.py-menu-disclosure-summary::-webkit-details-marker {
+  display: none;
+}
+
+.py-menu-disclosure-summary::after {
+  content: "▸";
+  font-size: 11px;
+  opacity: 0.75;
+  transition: transform 0.14s ease;
+}
+
+.py-menu-disclosure[open] > .py-menu-disclosure-summary {
+  color: var(--tpc-foreground, <<colour foreground>>);
+  background: color-mix(in srgb, var(--tpc-muted-foreground, <<colour muted-foreground>>) 10%, transparent);
+}
+
+.py-menu-disclosure[open] > .py-menu-disclosure-summary::after {
+  transform: rotate(90deg);
+}
+
+.py-menu-disclosure-summary:hover {
+  background: color-mix(in srgb, var(--tpc-muted-foreground, <<colour muted-foreground>>) 12%, transparent);
+  color: var(--tpc-foreground, <<colour foreground>>);
+}
+
+.py-disclosure-summary-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.py-disclosure-summary-label svg {
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
+}
+
+.py-disclosure-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--tpc-primary, <<colour primary>>);
+  margin-left: 3px;
+  flex-shrink: 0;
+}
+
+.py-menu-disclosure-body {
+  padding-top: 3px;
 }
 
 .py-recur-inline {
@@ -701,12 +889,12 @@ a.py-todo-link {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 2px;
-  padding: 2px 4px;
+  padding: 1px 4px;
 }
 
 .tc-drop-down.py-drop-down .py-menu-actions-grid .tc-btn-invisible {
-  font-size: 12.5px;
-  line-height: 1.6em;
+  font-size: 12px;
+  line-height: 1.45em;
   padding: 3px 6px;
   border-radius: 4px;
 }
@@ -715,10 +903,15 @@ a.py-todo-link {
   grid-column: 1 / -1;
 }
 
+.tc-drop-down.py-date-picker {
+  width: 224px;
+  max-width: calc(100vw - 20px);
+}
+
 .tc-drop-down.py-todo-actions-drop-down {
-  width: 245px;
-  max-width: calc(100vw - 24px);
-  max-height: 80vh;
+  width: 220px;
+  max-width: calc(100vw - 20px);
+  max-height: 82vh;
   overflow-y: auto;
 }
 
@@ -798,7 +991,7 @@ a.py-todo-link {
   padding: 2px 7px;
   border-radius: 999px;
   background: color-mix(in srgb, var(--tpc-muted-foreground, <<colour muted-foreground>>) 14%, transparent);
-  color: var(--tpc-muted-foreground, <<colour muted-foreground>>);
+  color: color-mix(in srgb, var(--tpc-foreground, <<colour foreground>>) 75%, var(--tpc-muted-foreground, <<colour muted-foreground>>));
   fill: currentColor;
   white-space: nowrap;
   max-width: 100%;
@@ -1073,11 +1266,73 @@ input.py-input.py-inline-input {
   opacity: 1;
 }
 
+.py-section-footer,
+.py-board-column-footer {
+  margin-top: 6px;
+}
+
+.py-section-add-trigger,
+.py-board-add-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.82em;
+  font-weight: 500;
+  color: var(--tpc-muted-foreground, <<colour muted-foreground>>);
+  padding: 4px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.14s ease, color 0.14s ease;
+}
+
+.py-board-add-trigger {
+  width: 100%;
+  box-sizing: border-box;
+  justify-content: flex-start;
+}
+
+.py-section-add-trigger:hover,
+.py-board-add-trigger:hover {
+  background: color-mix(in srgb, var(--tpc-muted-foreground, <<colour muted-foreground>>) 14%, transparent);
+  color: var(--tpc-foreground, <<colour foreground>>);
+}
+
+.py-section-inline-add {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  padding: 4px 0;
+}
+
+.py-board-inline-add {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-top: 4px;
+}
+
+.py-board-inline-add input.py-input.py-board-add-input {
+  width: 100%;
+  font-size: 0.88em;
+  padding: 6px 8px;
+}
+
+.py-board-inline-add-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
 /* Kanban Board View */
+.py-board-mobile-switcher {
+  display: none;
+}
+
 .py-board {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(215px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(4, minmax(150px, 1fr));
+  gap: 10px;
   margin: 12px 0 18px 0;
   align-items: start;
 }
@@ -1089,11 +1344,20 @@ input.py-input.py-inline-input {
   padding: 10px;
   min-height: 160px;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.py-board-column-inner {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
 }
 
 .py-board-column-inner.tc-droppable.tc-dragover {
   outline: 2px dashed var(--tpc-primary, <<colour primary>>);
-  border-radius: 6px;
+  background: color-mix(in srgb, var(--tpc-primary, <<colour primary>>) 6%, transparent);
+  border-radius: 8px;
 }
 
 .py-board-column-header {
@@ -1110,7 +1374,48 @@ input.py-input.py-inline-input {
   font-size: 0.9em;
 }
 
-.py-board-cards > .py-todo-item-wrapper {
+.py-board-card-slot {
+  display: block;
+}
+
+.py-board-card-slot.tc-droppable.tc-dragover > .tc-droppable-placeholder {
+  display: block;
+  height: 36px;
+  margin-bottom: 8px;
+  border-radius: 8px;
+  border: 2px dashed var(--tpc-primary, <<colour primary>>);
+  background: color-mix(in srgb, var(--tpc-primary, <<colour primary>>) 12%, transparent);
+}
+
+.py-board-card-draggable {
+  cursor: grab;
+}
+
+.py-board-card-draggable:active {
+  cursor: grabbing;
+}
+
+.py-board-card-draggable .tc-drop-down {
+  cursor: default;
+}
+
+.py-board .tc-reveal.tc-popup {
+  position: fixed !important;
+  z-index: 2000 !important;
+}
+
+.py-board .tc-reveal.tc-popup > .tc-drop-down.py-drop-down {
+  position: static !important;
+  right: auto !important;
+  left: auto !important;
+  margin: 0 !important;
+  max-width: calc(100vw - 20px);
+  max-height: calc(100vh - 20px);
+  overflow-y: auto;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.24);
+}
+
+.py-board-cards .py-todo-item-wrapper {
   background: var(--tpc-tiddler-background, <<colour tiddler-background>>);
   border: 1px solid color-mix(in srgb, var(--tpc-muted-foreground, <<colour muted-foreground>>) 22%, transparent);
   border-radius: 8px;
@@ -1119,18 +1424,24 @@ input.py-input.py-inline-input {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   min-width: 0;
   overflow-wrap: break-word;
+  transition: box-shadow 0.14s ease, border-color 0.14s ease;
 }
 
-.py-board-cards > .py-todo-item-wrapper.py-has-priority-3 {
+.py-board-cards .py-todo-item-wrapper:hover {
+  border-color: color-mix(in srgb, var(--tpc-primary, <<colour primary>>) 42%, transparent);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.09);
+}
+
+.py-board-cards .py-todo-item-wrapper.py-has-priority-3 {
   border-left: 3px solid #e73939;
 }
 
-.py-board-cards > .py-todo-item-wrapper.py-has-priority-2 {
+.py-board-cards .py-todo-item-wrapper.py-has-priority-2 {
   border-left: 3px solid #e77a39;
 }
 
-.py-board-cards > .py-todo-item-wrapper.py-has-priority-1 {
-  border-left: 3px solid #24cd5e;
+.py-board-cards .py-todo-item-wrapper.py-has-priority-1 {
+  border-left: 3px solid #2563eb;
 }
 
 .py-board-cards .py-subtasks-indent .py-todo-item-wrapper {
@@ -1147,46 +1458,42 @@ input.py-input.py-inline-input {
   border-bottom: 0;
 }
 
-.py-board-cards > .py-todo-item-wrapper > .py-todo {
+.py-board-cards .py-todo-item-wrapper > .py-todo {
   display: flex;
+  flex-wrap: wrap;
   align-items: flex-start;
-  gap: 8px;
+  gap: 6px;
   padding: 0;
 }
 
-.py-board-cards > .py-todo-item-wrapper > .py-todo > .py-drag-handle {
-  margin-top: -1px;
-  margin-left: -2px;
-  opacity: 0.78;
+.py-board-cards .py-todo-item-wrapper > .py-todo > .py-todo-body {
+  display: contents;
 }
 
-.py-board-cards > .py-todo-item-wrapper > .py-todo > .py-todo-check-btn {
-  margin-top: 2px;
-}
-
-.py-board-cards > .py-todo-item-wrapper > .py-todo > .py-todo-body {
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
+.py-board-cards .py-todo-item-wrapper > .py-todo > .py-todo-body > .py-todo-title-row {
   flex: 1 1 0%;
-  min-width: 0;
-}
-
-.py-board-cards > .py-todo-item-wrapper > .py-todo > .py-todo-body > .py-todo-title-row {
   min-width: 0;
   align-items: flex-start;
   font-weight: 500;
 }
 
-.py-board-cards > .py-todo-item-wrapper > .py-todo > .py-todo-menu {
-  margin-left: 0;
+.py-board-cards .py-todo-item-wrapper > .py-todo > .py-todo-menu {
+  order: 2;
+  margin-left: auto;
   margin-right: -4px;
   margin-top: -2px;
 }
 
-.py-board-cards > .py-todo-item-wrapper > .py-todo > .py-todo-body > .py-todo-actions {
+.py-board-cards .py-todo-item-wrapper > .py-todo > .py-todo-menu .py-todo-quick-edit {
+  display: none;
+}
+
+.py-board-cards .py-todo-item-wrapper > .py-todo > .py-todo-body > .py-todo-actions {
+  order: 3;
+  flex: 1 1 100%;
   justify-content: flex-start;
-  gap: 5px;
+  gap: 4px;
+  margin-top: 2px;
   min-width: 0;
   max-width: 100%;
 }
@@ -1196,10 +1503,14 @@ input.py-input.py-inline-input {
 .py-board-cards .py-todo .py-todo-actions .py-btn {
   margin-left: 0;
   max-width: 100%;
+  font-size: 0.72em;
+  padding: 2px 6px;
 }
 
 .py-board-cards .py-todo .py-todo-actions .py-due-date {
-  white-space: normal;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   line-height: 1.25;
 }
 
@@ -1209,24 +1520,81 @@ input.py-input.py-inline-input {
   margin-top: 6px;
 }
 
-.py-board-cards .py-inline-subtask-form {
+.py-board-cards .py-inline-subtask-form,
+.py-board-cards .py-inline-edit-row {
   flex-wrap: wrap;
   margin-top: 6px;
 }
 
-.py-board-cards input.py-input.py-subtask-input {
+.py-board-cards input.py-input.py-subtask-input,
+.py-board-cards input.py-input.py-inline-input {
   width: 100%;
   min-width: 0;
 }
 
 @media (max-width: {{$:/themes/tiddlywiki/vanilla/metrics/sidebarbreakpoint}}) {
+  .py-board-mobile-switcher {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding: 4px 0 6px 0;
+    margin-top: 6px;
+  }
+
+  .py-board-mobile-switcher::-webkit-scrollbar {
+    display: none;
+  }
+
+  .py-board-mobile-switcher .py-board-tab {
+    flex: 0 0 auto;
+    white-space: nowrap;
+    font-size: 0.8em;
+    padding: 5px 10px;
+    min-height: 34px;
+  }
+
+  .py-board-mobile-switcher .py-board-tab .py-count {
+    font-size: 10.5px;
+    padding: 1px 6px;
+    min-width: 18px;
+  }
+
   .py-board {
-    grid-template-columns: 1fr;
-    gap: 10px;
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    gap: 12px;
+    padding-bottom: 6px;
+    margin-top: 6px;
+  }
+
+  .py-board::-webkit-scrollbar {
+    display: none;
   }
 
   .py-board-column {
-    min-height: 0;
+    flex: 0 0 85%;
+    max-width: 85%;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+    min-height: 180px;
+  }
+
+  .py-board::after {
+    content: "";
+    flex: 0 0 calc(15% - 12px);
+    min-width: 1px;
+  }
+
+  .py-board-column.py-board-col-active {
+    border-color: color-mix(in srgb, var(--tpc-primary, <<colour primary>>) 55%, transparent);
+    box-shadow: 0 2px 8px color-mix(in srgb, var(--tpc-primary, <<colour primary>>) 12%, transparent);
   }
 }
 

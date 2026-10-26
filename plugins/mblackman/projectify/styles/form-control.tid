@@ -37,11 +37,13 @@ type: text/vnd.tiddlywiki
   padding: .2em .8em;
 }
 
-.py-btn.btn-primary {
+.py-btn.btn-primary,
+.tc-tiddler-frame .py-btn.btn-primary {
   background-color: var(--tpc-primary, <<colour primary>>);
   border-color: var(--tpc-primary, <<colour primary>>);
-  color: var(--tpc-background, <<colour background>>);
-  fill: var(--tpc-background, <<colour background>>);
+  color: #ffffff;
+  fill: #ffffff;
+  font-weight: 600;
 }
 
 .py-btn.btn-primary:active {
@@ -80,6 +82,64 @@ type: text/vnd.tiddlywiki
   border-radius: 8px;
   background: var(--tpc-tiddler-background, <<colour tiddler-background>>);
   border: 1px solid var(--tpc-tiddler-editor-border, <<colour tiddler-editor-border>>);
+}
+
+.py-composite-input.py-omnibar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 8px 6px 12px;
+  border-radius: 999px;
+  margin: 8px 0 12px 0;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  transition: border-color 0.14s ease, box-shadow 0.14s ease;
+}
+
+.py-composite-input.py-omnibar:focus-within {
+  border-color: var(--tpc-primary, <<colour primary>>);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--tpc-primary, <<colour primary>>) 16%, transparent);
+}
+
+.py-composite-input.py-omnibar .py-quick-input-wrapper {
+  flex: 1 1 180px;
+  min-width: 0;
+}
+
+.py-composite-input.py-omnibar input.py-input.py-omnibar-input {
+  padding: 4px 0;
+  font-size: 0.95em;
+}
+
+.py-composite-input.py-omnibar .py-omnibar-controls {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 0;
+  flex-shrink: 0;
+}
+
+.py-composite-input.py-omnibar .py-omnibar-controls .py-schedule-caption {
+  display: none;
+}
+
+@media (max-width: {{$:/themes/tiddlywiki/vanilla/metrics/sidebarbreakpoint}}) {
+  .py-composite-input.py-omnibar {
+    flex-wrap: wrap;
+    border-radius: 12px;
+    padding: 8px 10px;
+  }
+
+  .py-composite-input.py-omnibar .py-quick-input-wrapper {
+    flex: 1 1 100%;
+  }
+
+  .py-composite-input.py-omnibar .py-omnibar-controls {
+    width: 100%;
+    justify-content: flex-end;
+    padding-top: 4px;
+    border-top: 1px solid color-mix(in srgb, var(--tpc-muted-foreground, <<colour muted-foreground>>) 15%, transparent);
+  }
 }
 
 .py-composite-input:focus-within {

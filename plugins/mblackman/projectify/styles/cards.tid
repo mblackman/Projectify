@@ -21,14 +21,14 @@ type: text/vnd.tiddlywiki
 
 .py-card-wrapper {
   /* Default background-color adapts cleanly to light and dark palettes */
-  background-color: color-mix(in srgb, var(--tpc-tiddler-background, <<colour tiddler-background>>) 92%, #f59e0b 8%);
+  background-color: color-mix(in srgb, var(--tpc-tiddler-background, <<colour tiddler-background>>) 93%, var(--tpc-muted-foreground, <<colour muted-foreground>>) 7%);
   border-radius: 8px;
   transition: box-shadow ease-in .14s, transform ease-in .14s;
 }
 
 .py-cards .tc-dragover .py-card-wrapper .py-card {
-  background: rgba(0, 125, 255, .25);
-  box-shadow: 0 0 0 4px rgba(0, 125, 255, .3);
+  background: color-mix(in srgb, var(--tpc-primary, <<colour primary>>) 20%, transparent);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--tpc-primary, <<colour primary>>) 28%, transparent);
 }
 
 .py-card,

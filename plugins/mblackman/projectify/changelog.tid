@@ -5,6 +5,24 @@ tags:
 title: $:/plugins/mblackman/projectify/changelog
 type: text/vnd.tiddlywiki
 
+! Release 0.18.0
+
+!! UI/UX Overhaul, Mobile Kanban Carousel & Progressive Disclosure
+
+* ''Single-Line Task Capture Omnibar & Inline Quick-Add'':
+** Redesigned `AddTodo` into a single-row `.py-omnibar` integrating the task input, schedule pill, priority flag, and submit button
+** Added inline `+ Add todo` triggers at the bottom of Project sections (List View) and Kanban status columns (`To Do`, `In Progress`, `Waiting`) that automatically assign the target section or status
+* ''Mobile Kanban Horizontal Swipe Carousel & Whole-Card Dragging'':
+** Replaced vertical column stacking on mobile with a horizontal `scroll-snap-type: x mandatory` swimlane carousel and a synchronized top status-pill switcher (`To Do`, `In Progress`, `Waiting`, `Done`)
+** Made entire Kanban cards draggable with intra-column card-to-card reordering (`board-card-drop-actions`) and priority left-border accents
+* ''Progressive Disclosure & Compact Task Option Menus'':
+** Unified due date, start/scheduled date, and recurrence into a single schedule pill on task rows and cards
+** Redesigned the task `...` actions menu and Date Picker popup with a unified Status + Priority top bar and mutually exclusive collapsible drawers for `Calendar`, `Time / Repeat`, and `Context & Blocked by`
+** Added viewport-clamped `position: fixed` popup positioning so Kanban and mobile task menus never clip or overflow the screen
+* ''Theme Contrast & Visual Polish'':
+** Replaced hardcoded grays and alert-red count badges with TiddlyWiki 5.4 `--tpc-*` palette variables and neutral `.py-count` badges (reserving `.py-count-alert` for overdue/today alerts)
+** Added hover quick-rename button on desktop task rows and enlarged mobile touch targets
+
 ! Release 0.17.0
 
 !! Web Push Notifications & Time-Based Scheduling

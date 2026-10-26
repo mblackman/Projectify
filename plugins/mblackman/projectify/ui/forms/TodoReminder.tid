@@ -7,7 +7,7 @@ type: text/vnd.tiddlywiki
 \procedure lingo-base() $:/language/projectify/
 
 <%if [{$:/config/projectify/EnablePushNotifications}!match[no]] %>
-  <%if [all[current]is[tiddler]] %>
+  <%if [all[current]is[tiddler]!is[system]] %>
     <$let
       taskTitle=<<currentTiddler>>
       taskCaption={{{ [{!!caption}!is[blank]else{!!title}] }}}

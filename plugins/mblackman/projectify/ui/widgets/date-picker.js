@@ -886,6 +886,7 @@ class ActionQuickAddTodoWidget extends Widget {
 		this.fieldAttr = this.getAttribute("$field", this.getAttribute("field", "todo-name"));
 		this.defaultTags = this.getAttribute("$tags", this.getAttribute("tags", "Inbox todo"));
 		this.defaultSection = this.getAttribute("$section", this.getAttribute("section", ""));
+		this.defaultStatus = this.getAttribute("$status", this.getAttribute("status", ""));
 		this.parentTiddler = this.getAttribute("$parent", this.getAttribute("parent", ""));
 	}
 
@@ -938,7 +939,9 @@ class ActionQuickAddTodoWidget extends Widget {
 		const dueVal = stateTid.getFieldString("due") || parsed.due || undefined;
 		const scheduledVal = stateTid.getFieldString("scheduled") || parsed.scheduled || undefined;
 		const priorityVal = stateTid.getFieldString("priority") || parsed.priority || undefined;
+		const recurVal = stateTid.getFieldString("recur") || undefined;
 		const sectionVal = this.defaultSection || stateTid.getFieldString("section") || undefined;
+		const statusVal = this.defaultStatus || stateTid.getFieldString("status") || undefined;
 
 		// Combine contexts from state tiddler and inline tokens
 		const stateContexts = $tw.utils.parseStringArray(stateTid.getFieldString("context")) || [];
@@ -950,6 +953,10 @@ class ActionQuickAddTodoWidget extends Widget {
 		});
 		const contextStr = allContexts.length > 0 ? $tw.utils.stringifyList(allContexts) : undefined;
 
+		if(statusVal === "done" && !tagList.includes("done")) {
+			tagList.push("done");
+		}
+
 		const fields = {
 			title: newTitle,
 			tags: tagList
@@ -957,7 +964,12 @@ class ActionQuickAddTodoWidget extends Widget {
 		if(dueVal) fields.due = dueVal;
 		if(scheduledVal) fields.scheduled = scheduledVal;
 		if(priorityVal) fields.priority = priorityVal;
+		if(recurVal) fields.recur = recurVal;
 		if(sectionVal) fields.section = sectionVal;
+		if(statusVal && statusVal !== "todo") fields.status = statusVal;
+		if(statusVal === "done") {
+			fields.completed = $tw.utils.formatDateString(new Date(), "[UTC]YYYY0MM0DD0hh0mm0ss0XXX");
+		}
 		if(contextStr) fields.context = contextStr;
 
 		this.wiki.addTiddler(
@@ -1714,6 +1726,193 @@ function initTouchDragReorderPolyfill() {
 		}
 		cleanupTouchDrag();
 	}, {passive: true});
+
+	const positionFixedBoardPopup = (domNode) => {
+		if(!domNode || !domNode.isConnected || domNode.hasAttribute("hidden")) return;
+		let triggerBtn = domNode._pyTriggerBtn;
+		if(!triggerBtn || !triggerBtn.isConnected) {
+			const prev = domNode.previousElementSibling;
+			if(prev && prev.tagName === "BUTTON" && (prev.offsetWidth > 0 || prev.offsetHeight > 0)) {
+				triggerBtn = prev;
+			} else if(domNode.parentElement) {
+				const buttons = Array.from(domNode.parentElement.querySelectorAll("button"));
+				triggerBtn = buttons.slice().reverse().find(b => b.offsetWidth > 0 || b.offsetHeight > 0) || buttons[0];
+			}
+			domNode._pyTriggerBtn = triggerBtn;
+		}
+		if(!triggerBtn || typeof triggerBtn.getBoundingClientRect !== "function") return;
+		const btnRect = triggerBtn.getBoundingClientRect();
+		if(btnRect.width === 0 && btnRect.height === 0) return;
+
+		domNode.style.position = "fixed";
+		domNode.style.zIndex = "2000";
+		domNode.style.right = "auto";
+		domNode.style.bottom = "auto";
+
+		const dropDown = domNode.querySelector(".tc-drop-down") || domNode;
+		const popupWidth = Math.max(dropDown.offsetWidth || 0, domNode.offsetWidth || 0, 210);
+		const popupHeight = Math.max(dropDown.offsetHeight || 0, domNode.offsetHeight || 0, 120);
+		const vw = window.innerWidth || document.documentElement.clientWidth || 390;
+		const vh = window.innerHeight || document.documentElement.clientHeight || 844;
+		const margin = 10;
+
+		const posMode = domNode._pyPositionMode || (triggerBtn.closest(".py-todo-menu") ? "belowleft" : "below");
+		let left = posMode === "belowleft" ? (btnRect.right - popupWidth) : btnRect.left;
+		left = Math.max(margin, Math.min(left, vw - popupWidth - margin));
+
+		let top = btnRect.bottom + 4;
+		if(top + popupHeight > vh - margin) {
+			const aboveTop = btnRect.top - popupHeight - 4;
+			if(aboveTop >= margin) {
+				top = aboveTop;
+			} else {
+				top = Math.max(margin, vh - popupHeight - margin);
+			}
+		}
+
+		domNode.style.left = `${Math.round(left)}px`;
+		domNode.style.top = `${Math.round(top)}px`;
+	};
+
+	const shouldUseFixedViewportPopup = (domNode) => {
+		if(!domNode || !domNode.closest) return false;
+		if(domNode.closest(".py-board")) return true;
+		const isMobileViewport = (window.innerWidth || document.documentElement.clientWidth || 1024) <= 960;
+		if(isMobileViewport && (domNode.classList.contains("py-drop-down") || domNode.querySelector(".py-drop-down"))) {
+			return true;
+		}
+		return false;
+	};
+
+	const repositionOpenBoardPopups = () => {
+		document.querySelectorAll(".tc-reveal.tc-popup:not([hidden])").forEach((el) => {
+			if(shouldUseFixedViewportPopup(el)) {
+				positionFixedBoardPopup(el);
+			}
+		});
+	};
+
+	try {
+		const RevealWidget = require("$:/core/modules/widgets/reveal.js").reveal;
+		if(RevealWidget && RevealWidget.prototype && !RevealWidget.prototype._pyBoardPopupPatched) {
+			const origPositionPopup = RevealWidget.prototype.positionPopup;
+			RevealWidget.prototype._pyBoardPopupPatched = true;
+			RevealWidget.prototype.positionPopup = function(domNode) {
+				if(typeof origPositionPopup === "function") {
+					origPositionPopup.call(this, domNode);
+				}
+				if(shouldUseFixedViewportPopup(domNode)) {
+					domNode._pyPositionMode = this.position || "below";
+					if($tw.popup && Array.isArray($tw.popup.popups) && $tw.popup.popups.length > 0) {
+						const stateTitle = this.stateTitle || this.state;
+						const match = $tw.popup.popups.find(p => p && p.title === stateTitle) ||
+							$tw.popup.popups[$tw.popup.popups.length - 1];
+						if(match && match.domNode) {
+							domNode._pyTriggerBtn = match.domNode;
+						}
+					}
+					positionFixedBoardPopup(domNode);
+					requestAnimationFrame(() => {
+						positionFixedBoardPopup(domNode);
+					});
+				}
+			};
+		}
+	} catch(_err) {
+		// Ignore if core reveal module is unavailable
+	}
+
+	const syncBoardActiveStatus = (container, activeStatus, activeIndex) => {
+		if(!container) return;
+		const switcher = container.querySelector(".py-board-mobile-switcher");
+		const board = container.querySelector(".py-board");
+		if(switcher) {
+			const tabs = Array.from(switcher.querySelectorAll(".py-board-tab"));
+			tabs.forEach((tab, i) => {
+				const st = tab.getAttribute("data-col-target");
+				const isMatch = activeStatus ? st === activeStatus : i === activeIndex;
+				tab.classList.toggle("py-active", Boolean(isMatch));
+			});
+		}
+		if(board) {
+			const cols = Array.from(board.querySelectorAll(".py-board-column"));
+			cols.forEach((col, i) => {
+				const st = col.getAttribute("data-col-status");
+				const isMatch = activeStatus ? st === activeStatus : i === activeIndex;
+				col.classList.toggle("py-board-col-active", Boolean(isMatch));
+			});
+		}
+	};
+
+	document.addEventListener("click", (e) => {
+		const toggleBtn = e.target && e.target.closest ? e.target.closest(".py-calendar-toggle, .py-time-toggle") : null;
+		if(toggleBtn) {
+			const dropDown = toggleBtn.closest(".py-todo-actions-drop-down");
+			if(dropDown) {
+				dropDown.querySelectorAll("details.py-menu-disclosure[open]").forEach((d) => {
+					d.removeAttribute("open");
+				});
+			}
+		}
+		requestAnimationFrame(() => {
+			repositionOpenBoardPopups();
+		});
+		const tabBtn = e.target && e.target.closest ? e.target.closest(".py-board-mobile-switcher .py-board-tab") : null;
+		if(!tabBtn) return;
+		const switcher = tabBtn.closest(".py-board-mobile-switcher");
+		if(!switcher) return;
+		const container = switcher.closest(".py-board-container") || switcher.closest(".tc-tiddler-frame, .tc-tiddler-body") || document.body;
+		const tabs = Array.from(switcher.querySelectorAll(".py-board-tab"));
+		const idx = tabs.indexOf(tabBtn);
+		const targetStatus = tabBtn.getAttribute("data-col-target");
+		if(idx < 0 && !targetStatus) return;
+
+		syncBoardActiveStatus(container, targetStatus, idx);
+
+		const board = container.querySelector(".py-board");
+		if(!board) return;
+		const cols = Array.from(board.querySelectorAll(".py-board-column"));
+		const targetCol = (targetStatus && board.querySelector(`.py-board-col-${targetStatus}`)) || cols[idx];
+		if(!targetCol) return;
+
+		const targetLeft = Math.max(0, targetCol.offsetLeft - (cols[0] ? cols[0].offsetLeft : 0));
+		board._pyProgrammaticScrollUntil = Date.now() + 450;
+		if(typeof board.scrollTo === "function") {
+			try {
+				board.scrollTo({left: targetLeft, behavior: "smooth"});
+				return;
+			} catch(_err) {
+				// Fallback to scrollLeft assignment
+			}
+		}
+		board.scrollLeft = targetLeft;
+	}, true);
+
+	document.addEventListener("scroll", (e) => {
+		if(e.target && e.target.closest && e.target.closest(".tc-drop-down")) return;
+		repositionOpenBoardPopups();
+		const board = e.target;
+		if(!board || !board.classList || !board.classList.contains("py-board")) return;
+		if(board._pyProgrammaticScrollUntil && Date.now() < board._pyProgrammaticScrollUntil) return;
+		const container = board.closest(".py-board-container") || board.closest(".tc-tiddler-frame, .tc-tiddler-body");
+		if(!container) return;
+		const cols = Array.from(board.querySelectorAll(".py-board-column"));
+		if(cols.length === 0) return;
+		const baseOffset = cols[0].offsetLeft || 0;
+		const currentScroll = board.scrollLeft;
+		let bestIdx = 0;
+		let bestDist = Infinity;
+		cols.forEach((col, i) => {
+			const colLeft = col.offsetLeft - baseOffset;
+			const dist = Math.abs(colLeft - currentScroll);
+			if(dist < bestDist) {
+				bestDist = dist;
+				bestIdx = i;
+			}
+		});
+		const bestStatus = cols[bestIdx].getAttribute("data-col-status");
+		syncBoardActiveStatus(container, bestStatus, bestIdx);
+	}, {capture: true, passive: true});
 
 	document.addEventListener("touchcancel", () => {
 		cleanupTouchDrag();

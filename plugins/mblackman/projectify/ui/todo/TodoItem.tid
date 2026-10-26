@@ -92,6 +92,16 @@ type: text/vnd.tiddlywiki
       </div>
 
       <div class="py-todo-menu">
+        <%if [<editState>!is[tiddler]] %>
+          <$button
+            class="py-btn py-todo-quick-edit"
+            tooltip={{$:/language/projectify/RenameTodo/Caption}}
+            aria-label={{$:/language/projectify/RenameTodo/Caption}}
+          >
+            {{$:/core/images/edit-button}}
+            <$action-setfield $tiddler=<<editState>> text={{{ [{!!caption}!is[blank]else{!!title}] }}}/>
+          </$button>
+        <%endif%>
         {{||$:/plugins/mblackman/projectify/ui/buttons/TodoActions}}
       </div>
     </div>

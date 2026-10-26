@@ -7,7 +7,9 @@ type: text/vnd.tiddlywiki
 \whitespace trim
 <span class="py-todo-actions">
   <%if [<currentTiddler>has[priority]] %>
-    {{||$:/plugins/mblackman/projectify/ui/buttons/TodoPriority}}
+    <%if [<isBoardCard>!match[yes]] %>
+      {{||$:/plugins/mblackman/projectify/ui/buttons/TodoPriority}}
+    <%endif%>
   <%endif%>
 
   <%if [all[current]tag[SubProject]] [subfilter<py-has-todos>] %>
@@ -22,16 +24,22 @@ type: text/vnd.tiddlywiki
     </$button>
   <%endif%>
 
-  <$list filter="[function[py.open-blockers]]" variable="blocker">
-    <$link
-      to=<<blocker>>
-      overrideClass="py-badge py-badge-blocked"
-      tooltip={{{ [[$:/language/projectify/BlockedBy/Caption]get[text]addsuffix[: ]] [<blocker>get[caption]!is[blank]else<blocker>] +[join[]] }}}
+  <%if [function[py.open-blockers]limit[1]] %>
+    <$let
+      firstBlocker={{{ [function[py.open-blockers]first[]] }}}
+      blockerCount={{{ [function[py.open-blockers]count[]] }}}
+      blockerNames={{{ [function[py.open-blockers]] :map[get[caption]!is[blank]else<currentTiddler>] +[join[, ]] }}}
     >
-      {{$:/plugins/mblackman/projectify/images/lock}}
-      <span class="py-badge-blocked-text"><$text text={{{ [<blocker>get[caption]!is[blank]else<blocker>] }}}/></span>
-    </$link>
-  </$list>
+      <$link
+        to=<<firstBlocker>>
+        overrideClass="py-badge py-badge-blocked"
+        tooltip={{{ [[$:/language/projectify/BlockedBy/Caption]get[text]addsuffix[: ]] [<blockerNames>] +[join[]] }}}
+      >
+        {{$:/plugins/mblackman/projectify/images/lock}}
+        <span class="py-badge-blocked-text"><%if [<isBoardCard>match[yes]] %><$text text=<<blockerCount>>/><%else%><$text text=<<blockerNames>>/><%endif%></span>
+      </$link>
+    </$let>
+  <%endif%>
 
   <%if [function[py.blocking-todos]limit[1]] %>
     <$let blockedList={{{ [function[py.blocking-todos]] +[join[, ]] }}}>
@@ -45,9 +53,11 @@ type: text/vnd.tiddlywiki
   <%endif%>
 
   <%if [{!!recur}!is[blank]] %>
-    <span class="py-badge py-badge-recur" title={{!!recur}}>
-      {{$:/plugins/mblackman/projectify/images/repeat}}<span><$view field="recur"/></span>
-    </span>
+    <%if [subfilter<py-is-not-scheduled>!has[scheduled]] %>
+      <span class="py-badge py-badge-recur" title={{!!recur}}>
+        {{$:/plugins/mblackman/projectify/images/repeat}}<span><$view field="recur"/></span>
+      </span>
+    <%endif%>
   <%endif%>
 
   <%if [{$:/config/projectify/EnableContexts}!match[no]] %>
@@ -62,17 +72,7 @@ type: text/vnd.tiddlywiki
     </$list>
   <%endif%>
 
-  <%if [subfilter<py-has-start-date>] %>
-    <%if [subfilter<py-is-not-scheduled>] %>
-      <$let timeTemplate={{{ [function[py.time-template]] }}}>
-        <span class="py-badge py-badge-scheduled" title={{$:/language/projectify/StartDate/Tab}}>
-          {{$:/plugins/mblackman/projectify/images/sun}}<span><$view field="scheduled" format="date" template={{$:/language/projectify/DateFormat}}/><%if [subfilter<py-has-scheduled-time>] %>&#32;<$view field="scheduled" format="date" template=<<timeTemplate>>/><%endif%></span>
-        </span>
-      </$let>
-    <%endif%>
-  <%endif%>
-
-  <%if [subfilter<py-is-scheduled>] %>
+  <%if [subfilter<py-is-scheduled>] [subfilter<py-has-start-date>] %>
     {{||$:/plugins/mblackman/projectify/ui/buttons/TodoDueDate}}
   <%endif%>
 </span>

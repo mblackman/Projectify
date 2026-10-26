@@ -37,7 +37,7 @@ describe("Projectify Plugin ($:/plugins/mblackman/projectify)", () => {
     expect(pluginTiddler).toBeDefined();
     expect(pluginTiddler.fields.name).toBe("Projectify");
     expect(pluginTiddler.fields["core-version"]).toBe(">=5.4.0");
-    expect(pluginTiddler.fields.version).toBe("0.17.0");
+    expect(pluginTiddler.fields.version).toBe("0.18.0");
     expect(pluginTiddler.fields["plugin-type"]).toBe("plugin");
     expect(pluginTiddler.fields.list).toEqual(["readme", "doc/Help", "changelog", "LICENSE"]);
   });
@@ -425,17 +425,28 @@ describe("Projectify Plugin ($:/plugins/mblackman/projectify)", () => {
     expect(sectionedHtml).toContain("PastScheduledTask");
     expect(sectionedHtml).not.toContain("Filter error");
 
-    // Kanban board view renders all 4 status columns
+    // Kanban board view renders all 4 status columns, whole-card draggable, mobile column switcher, and in-column quick add
     $tw.wiki.addTiddler({ title: "TestScaleProject", tags: ["Project"], "project-view": "board" });
     const boardHtml = renderWithGlobals(
       "{{||$:/plugins/mblackman/projectify/ui/project/Project}}",
       "TestScaleProject"
     );
+    expect(boardHtml).toContain("py-board-container");
     expect(boardHtml).toContain("py-board");
+    expect(boardHtml).toContain("py-board-mobile-switcher");
+    expect(boardHtml).toContain('data-col-target="in-progress"');
+    expect(boardHtml).toContain('data-col-status="in-progress"');
+    expect(boardHtml).toContain("py-board-card-draggable");
+    expect(boardHtml).toContain("py-board-add-trigger");
     expect(boardHtml).toContain("py-board-col-todo");
     expect(boardHtml).toContain("py-board-col-in-progress");
     expect(boardHtml).toContain("py-board-col-waiting");
     expect(boardHtml).toContain("py-board-col-done");
+    expect(boardHtml).toContain("py-omnibar");
+
+    // Verify section inline quick-add trigger in List View
+    expect(sectionedHtml).toContain("py-section-add-trigger");
+    expect(sectionedHtml).toContain("py-omnibar");
 
     // Verify modernized TodoItem layout: priority chip and subtask 1/2 pill live in .py-todo-actions, keeping .py-todo-title-row clean
     const subProjectItemHtml = renderWithGlobals(
@@ -559,6 +570,43 @@ describe("Projectify Plugin ($:/plugins/mblackman/projectify)", () => {
     const parsedSched = $tw.utils.parseDate(timedTid.fields.scheduled);
     expect(parsedSched.getHours()).toBe(9);
     expect(parsedSched.getMinutes()).toBe(15);
+
+    // 2c. Verify action-py-quick-add supports $status, $section, and recur for Kanban column & Section quick-add
+    $tw.wiki.addTiddler({
+      title: "$:/temp/projectify/test-board-col-add",
+      "todo-name": "In Progress Board Task !2",
+      recur: "weekly",
+    });
+    const boardColAdd = new QuickAddWidget(
+      {
+        type: "action-py-quick-add",
+        attributes: {
+          $state: { type: "string", value: "$:/temp/projectify/test-board-col-add" },
+          $field: { type: "string", value: "todo-name" },
+          $tags: { type: "string", value: "[[Product roadmap]] todo" },
+          $status: { type: "string", value: "in-progress" },
+          $section: { type: "string", value: "Design" },
+        },
+      },
+      { wiki: $tw.wiki }
+    );
+    boardColAdd.invokeAction();
+    const boardAddedTid = $tw.wiki.getTiddler("In Progress Board Task");
+    expect(boardAddedTid).toBeDefined();
+    expect(boardAddedTid.fields.status).toBe("in-progress");
+    expect(boardAddedTid.fields.section).toBe("Design");
+    expect(boardAddedTid.fields.priority).toBe("2");
+    expect(boardAddedTid.fields.recur).toBe("weekly");
+    $tw.wiki.deleteTiddler("In Progress Board Task");
+
+    // 2d. Verify TodoReminder does not render inside system/temp form state tiddlers
+    $tw.wiki.addTiddler({ title: "$:/temp/projectify/test-omnibar-state", "todo-name": "Draft" });
+    const tempDueFormHtml = renderWithGlobals(
+      "{{||$:/plugins/mblackman/projectify/ui/forms/TodoDueDate}}",
+      "$:/temp/projectify/test-omnibar-state"
+    );
+    expect(tempDueFormHtml).not.toContain("py-reminder-section");
+    $tw.wiki.deleteTiddler("$:/temp/projectify/test-omnibar-state");
 
     // Test 24h explicit setting
     $tw.wiki.addTiddler({ title: "$:/config/projectify/TimeFormat", text: "24h" });
@@ -729,6 +777,23 @@ describe("Projectify Plugin ($:/plugins/mblackman/projectify)", () => {
     const endUpdatedProj = $tw.wiki.getTiddler("TestReorderProject");
     expect(Array.from(endUpdatedProj.fields.list)).toEqual(["Task Low", "Task High", "Task Medium"]);
     expect(initialOrder).toContain("py-list-end-dropzone");
+
+    // 2c. Simulate Kanban board-card-drop-actions (dropping "Task Medium" onto "Task Low" in "in-progress" column)
+    const boardDropWikitext = `\\import [all[tiddlers+shadows]tag[$:/tags/Macro]] [all[tiddlers+shadows]tag[$:/tags/Global]] [[$:/plugins/mblackman/projectify/ui/project/ProjectBoard]]\n<$let projectTag="TestReorderProject" actionTiddler="Task Medium">\n<$button id="board-card-drop-btn"><$transclude $variable="board-card-drop-actions" targetStatus="in-progress" targetCard="Task Low"/></$button>\n</$let>`;
+    const boardDropParser = $tw.wiki.parseText("text/vnd.tiddlywiki", boardDropWikitext);
+    const boardDropTree = $tw.wiki.makeWidget(boardDropParser, { document: $tw.fakeDocument });
+    const boardDropContainer = $tw.fakeDocument.createElement("div");
+    boardDropTree.render(boardDropContainer, null);
+    const boardDropBtn = findButton(boardDropTree);
+    expect(boardDropBtn).not.toBeNull();
+    boardDropBtn.invokeActions(boardDropBtn, {});
+
+    const boardUpdatedProj = $tw.wiki.getTiddler("TestReorderProject");
+    expect(Array.from(boardUpdatedProj.fields.list)).toEqual(["Task Medium", "Task Low", "Task High"]);
+    const movedMedium = $tw.wiki.getTiddler("Task Medium");
+    expect(movedMedium.fields.status).toBe("in-progress");
+    expect(movedMedium.fields.tags).toContain("TestReorderProject");
+    expect(movedMedium.fields.tags).not.toContain("Task Low");
 
     // 3. Verify ProjectCard renders description as plain text without nested <a> tags inside <a class="py-card">
     const cardHtml = renderWithGlobals(

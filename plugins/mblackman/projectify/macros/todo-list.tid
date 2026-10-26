@@ -94,10 +94,22 @@ type: text/vnd.tiddlywiki
 </$let>
 \end
 
+\procedure section-inline-add-actions(sectionName, addState, openState)
+<$action-py-quick-add
+  $state=<<addState>>
+  $field="todo-name"
+  $tags={{{ [<currentTiddler>format:titlelist[]addsuffix[ todo]] }}}
+  $section=<<sectionName>>
+/>
+<$action-deletetiddler $tiddler=<<openState>>/>
+\end
+
 \procedure todo-list-section(sectionName)
 <$let
   sectionSubFilter="tag[todo]!has[draft.of]!tag[done]section<sectionName>"
   targetSection=<<sectionName>>
+  secAddOpenState={{{ [[$:/state/projectify/section-add-open/]] [<currentTiddler>] [[/]] [<sectionName>] +[join[]] }}}
+  secAddInputState={{{ [[$:/temp/projectify/section-add-input/]] [<currentTiddler>] [[/]] [<sectionName>] +[join[]] }}}
 >
   <div class="py-project-section">
     <div class="py-section-header">
@@ -115,6 +127,36 @@ type: text/vnd.tiddlywiki
       </$button>
     </div>
     <$transclude $variable="todo-list-filtered" subFilter=<<sectionSubFilter>>/>
+    <div class="py-section-footer">
+      <%if [<secAddOpenState>get[text]match[yes]] %>
+        <div class="py-section-inline-add">
+          <$keyboard key="escape" actions="<$action-deletetiddler $tiddler=<<secAddOpenState>>/>">
+            <$py-quick-input
+              class="py-input py-inline-input"
+              tiddler=<<secAddInputState>>
+              field="todo-name"
+              placeholder={{$:/language/projectify/AddTodoToProject/Placeholder}}
+              focus="true"
+              actions="<$transclude $variable='section-inline-add-actions' sectionName=<<sectionName>> addState=<<secAddInputState>> openState=<<secAddOpenState>>/>"
+            />
+          </$keyboard>
+          <$button
+            class="py-btn btn-small btn-primary"
+            actions="<$transclude $variable='section-inline-add-actions' sectionName=<<sectionName>> addState=<<secAddInputState>> openState=<<secAddOpenState>>/>"
+          >
+            <<lingo AddTodo/Caption>>
+          </$button>
+          <$button class="py-btn btn-small">
+            <<lingo Cancel/Caption>>
+            <$action-deletetiddler $tiddler=<<secAddOpenState>>/>
+          </$button>
+        </div>
+      <%else%>
+        <$button class="tc-btn-invisible py-section-add-trigger" set=<<secAddOpenState>> setTo="yes">
+          + <<lingo AddTodo/Caption>>
+        </$button>
+      <%endif%>
+    </div>
   </div>
 </$let>
 \end
