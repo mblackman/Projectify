@@ -10,7 +10,7 @@ type: text/vnd.tiddlywiki
 </div>
 
 <$transclude
-  $variable="list-tagged-draggable"
+  $variable="py-list-tagged-draggable"
   tag="Project"
   subFilter=<<py-is-active-subfilter>>
 />

@@ -26,21 +26,13 @@ type: text/vnd.tiddlywiki
   transition: box-shadow ease-in .14s, transform ease-in .14s;
 }
 
-/* When a category sets an explicit light pastel color, keep card text legible even in dark mode */
-.py-card-wrapper.py-card-custom-bg .py-card {
-  color: #1f2937;
-}
-
-.py-card-wrapper.py-card-custom-bg .py-card-options .tc-btn-invisible svg {
-  fill: #374151;
-}
-
 .py-cards .tc-dragover .py-card-wrapper .py-card {
   background: rgba(0, 125, 255, .25);
   box-shadow: 0 0 0 4px rgba(0, 125, 255, .3);
 }
 
-.py-card {
+.py-card,
+a.py-card {
   position: relative;
   display: flex;
   flex-direction: column;
@@ -50,10 +42,32 @@ type: text/vnd.tiddlywiki
   border-radius: 8px;
   box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.2);
   border: 1px solid color-mix(in srgb, var(--tpc-muted-foreground, <<colour muted-foreground>>) 20%, transparent);
-  padding: 20px;
-  height: 150px;
+  padding: 18px 20px;
+  min-height: 150px;
   font-size: .9em;
   box-sizing: border-box;
+  gap: 8px;
+}
+
+/* When a category sets an explicit light pastel color, keep card text legible even in dark mode */
+.py-card-wrapper.py-card-custom-bg .py-card,
+.py-card-wrapper.py-card-custom-bg a.py-card,
+.py-card-wrapper.py-card-custom-bg .py-card .py-card-head h3,
+.py-card-wrapper.py-card-custom-bg .py-card .py-project-infos {
+  color: #1f2937;
+}
+
+.py-card-wrapper.py-card-custom-bg .py-card .py-description {
+  color: #374151;
+}
+
+.py-card-wrapper.py-card-custom-bg .py-card .py-project-category {
+  color: #1f2937;
+  background: rgba(0, 0, 0, .08);
+}
+
+.py-card-wrapper.py-card-custom-bg .py-card-options .tc-btn-invisible svg {
+  fill: #374151;
 }
 
 .py-card-wrapper:hover {
@@ -61,16 +75,16 @@ type: text/vnd.tiddlywiki
 }
 
 .py-card-head {
-  overflow: hidden;
-  height: 4.6em;
-  line-height: 1.2em;
+  line-height: 1.3em;
 }
 
 .py-card .py-card-head h3 {
   font-weight: bold;
   font-size: 1em;
+  line-height: 1.25em;
   margin: 0;
-  margin-right: 16px;
+  margin-right: 18px;
+  color: var(--tpc-tiddler-title-foreground, var(--tpc-foreground, <<colour foreground>>));
 }
 
 .py-card .py-card-options {
@@ -80,9 +94,23 @@ type: text/vnd.tiddlywiki
 }
 
 .py-card .py-description {
-  opacity: .75;
+  color: color-mix(in srgb, var(--tpc-foreground, <<colour foreground>>) 82%, transparent);
   font-size: .9em;
+  line-height: 1.35em;
   margin-top: 4px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  word-break: break-word;
+}
+
+.py-card .py-project-infos {
+  color: color-mix(in srgb, var(--tpc-foreground, <<colour foreground>>) 85%, transparent);
+  font-size: .9em;
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
 
 .py-card .py-project-category {
@@ -90,10 +118,10 @@ type: text/vnd.tiddlywiki
   font-weight: bold;
   text-align: center;
   padding: 2px 4px;
-  margin-bottom: -20px;
+  margin-bottom: -18px;
   margin-left: -20px;
   margin-right: -20px;
-  background: rgba(0, 0, 0, .08);
+  background: color-mix(in srgb, var(--tpc-foreground, <<colour foreground>>) 10%, transparent);
   border-bottom-left-radius: 8px;
   border-bottom-right-radius: 8px;
 }

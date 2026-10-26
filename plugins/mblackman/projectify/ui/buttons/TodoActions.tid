@@ -6,6 +6,40 @@ type: text/vnd.tiddlywiki
 
 \procedure lingo-base() $:/language/projectify/
 
+\procedure move-todo-step-actions(direction)
+<$let
+  parentTag={{{ [<projectTag>!is[blank]] :else[all[current]tags[]tag[Project]limit[1]] :else[all[current]tags[]tag[SubProject]limit[1]] :else[all[current]tags[]match[Inbox]] }}}
+>
+  <%if [<parentTag>!is[blank]] %>
+    <$set name="order" filter="[<parentTag>tagging[]]">
+      <$list filter="[<parentTag>tagging[]]">
+        <$action-deletefield $field="list-before"/>
+        <$action-deletefield $field="list-after"/>
+      </$list>
+      <%if [<direction>match[up]] %>
+        <$let
+          prevItem={{{ [enlist:raw<order>tag[todo]!has[draft.of]!tag[done]before<currentTiddler>] }}}
+        >
+          <%if [<prevItem>!is[blank]] %>
+            <$action-listops $tiddler=<<parentTag>> $field="list" $filter="+[enlist:raw<order>] +[insertbefore<currentTiddler>,<prevItem>]"/>
+            <$action-sendmessage $message="tm-auto-save-wiki"/>
+          <%endif%>
+        </$let>
+      <%else%>
+        <$let
+          nextItem={{{ [enlist:raw<order>tag[todo]!has[draft.of]!tag[done]after<currentTiddler>] }}}
+        >
+          <%if [<nextItem>!is[blank]] %>
+            <$action-listops $tiddler=<<parentTag>> $field="list" $filter="+[enlist:raw<order>] +[insertbefore<nextItem>,<currentTiddler>]"/>
+            <$action-sendmessage $message="tm-auto-save-wiki"/>
+          <%endif%>
+        </$let>
+      <%endif%>
+    </$set>
+  <%endif%>
+</$let>
+\end
+
 <$let
   popupTiddler=<<qualify "$:/state/projectify/todo-actions-dropdown">>
   cssClass="py-btn"
@@ -53,6 +87,12 @@ type: text/vnd.tiddlywiki
       </div>
       <hr/>
       <div class="py-menu-actions-grid">
+        <$button class="tc-btn-invisible tc-popup-handle" actions="<$transclude $variable='move-todo-step-actions' direction='up'/>">
+          {{$:/core/images/up-arrow}} <<lingo MoveUp/Caption>>
+        </$button>
+        <$button class="tc-btn-invisible tc-popup-handle" actions="<$transclude $variable='move-todo-step-actions' direction='down'/>">
+          {{$:/core/images/down-arrow}} <<lingo MoveDown/Caption>>
+        </$button>
         <$button class="tc-btn-invisible">
           {{$:/plugins/mblackman/projectify/images/checklist}} <<lingo AddSubTasks/Caption>>
           <$action-listops $tags="[[SubProject]]"/>

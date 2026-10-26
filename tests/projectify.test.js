@@ -437,6 +437,14 @@ describe("Projectify Plugin ($:/plugins/mblackman/projectify)", () => {
     expect(boardHtml).toContain("py-board-col-waiting");
     expect(boardHtml).toContain("py-board-col-done");
 
+    // Verify modernized TodoItem layout: priority chip and subtask 1/2 pill live in .py-todo-actions, keeping .py-todo-title-row clean
+    const subProjectItemHtml = renderWithGlobals(
+      "{{||$:/plugins/mblackman/projectify/ui/todo/TodoItem}}",
+      "Phase 1 Subproject"
+    );
+    expect(subProjectItemHtml).toContain("py-subtask-pill");
+    expect(subProjectItemHtml).toContain("1/2");
+
     // Matrix and Review dashboard tabs render cleanly
     const matrixHtml = renderWithGlobals("{{$:/plugins/mblackman/projectify/ui/dashboard/Matrix}}");
     expect(matrixHtml).toContain("py-matrix-grid");
@@ -650,5 +658,100 @@ describe("Projectify Plugin ($:/plugins/mblackman/projectify)", () => {
       $tw.wiki.deleteTiddler("TestPushActionTask");
       $tw.wiki.deleteTiddler("$:/state/projects-and-schedule");
     }
+  });
+
+  test("preserves task list order when reordering tasks with varying priorities and renders project card descriptions as plain text", () => {
+    // 1. Create a test project with 3 unscheduled tasks of different priorities
+    $tw.wiki.addTiddler({
+      title: "TestReorderProject",
+      tags: ["Project"],
+      description: "Card description with WikiWord and [[link]] that should render as plain text",
+      list: ["Task Low", "Task High", "Task Medium"],
+    });
+    $tw.wiki.addTiddler({ title: "Task Low", tags: ["TestReorderProject", "todo"], priority: "1" });
+    $tw.wiki.addTiddler({ title: "Task High", tags: ["TestReorderProject", "todo"], priority: "3" });
+    $tw.wiki.addTiddler({ title: "Task Medium", tags: ["TestReorderProject", "todo"], priority: "2" });
+
+    // Verify todo-list-filtered respects the project's list field order instead of overriding with !nsort[priority]
+    const initialOrder = renderWithGlobals(
+      "<$transclude $variable='todo-list-filtered' subFilter=<<py-unscheduled-todos-subfilter>>/>",
+      "TestReorderProject"
+    );
+    const lowIdx = initialOrder.indexOf("Task Low");
+    const highIdx = initialOrder.indexOf("Task High");
+    const medIdx = initialOrder.indexOf("Task Medium");
+    expect(lowIdx).toBeGreaterThan(-1);
+    expect(lowIdx).toBeLessThan(highIdx);
+    expect(highIdx).toBeLessThan(medIdx);
+
+    // 2. Simulate todo-list-drop-actions moving "Task Medium" before "Task Low"
+    const container = $tw.fakeDocument.createElement("div");
+    const widgetNode = $tw.wiki.makeTranscludeWidget(undefined, {
+      document: $tw.fakeDocument,
+      parseAsInline: false,
+      variables: {
+        currentTiddler: "Task Low",
+        actionTiddler: "Task Medium",
+      },
+      importPageMacros: true,
+    });
+    // Invoke todo-list-drop-actions via a temporary button trigger
+    const dropTestWikitext = `\\import [all[tiddlers+shadows]tag[$:/tags/Macro]] [all[tiddlers+shadows]tag[$:/tags/Global]]\n<$let currentTiddler="Task Low" actionTiddler="Task Medium">\n<$button id="drop-btn"><$transclude $variable="todo-list-drop-actions" tag="TestReorderProject"/></$button>\n</$let>`;
+    const parser = $tw.wiki.parseText("text/vnd.tiddlywiki", dropTestWikitext);
+    const widgetTree = $tw.wiki.makeWidget(parser, { document: $tw.fakeDocument });
+    widgetTree.render(container, null);
+    // Find button widget and invoke actions
+    function findButton(w) {
+      if (w.parseTreeNode && w.parseTreeNode.type === "button") return w;
+      for (const child of w.children || []) {
+        const found = findButton(child);
+        if (found) return found;
+      }
+      return null;
+    }
+    const btnWidget = findButton(widgetTree);
+    expect(btnWidget).not.toBeNull();
+    btnWidget.invokeActions(btnWidget, {});
+
+    const updatedProj = $tw.wiki.getTiddler("TestReorderProject");
+    expect(Array.from(updatedProj.fields.list)).toEqual(["Task Medium", "Task Low", "Task High"]);
+
+    // 2b. Simulate dropping onto the trailing end-of-list dropzone (currentTiddler="") to move "Task Medium" to the last position
+    const dropEndWikitext = `\\import [all[tiddlers+shadows]tag[$:/tags/Macro]] [all[tiddlers+shadows]tag[$:/tags/Global]]\n<$let currentTiddler="" actionTiddler="Task Medium">\n<$button id="drop-end-btn"><$transclude $variable="todo-list-drop-actions" tag="TestReorderProject"/></$button>\n</$let>`;
+    const endParser = $tw.wiki.parseText("text/vnd.tiddlywiki", dropEndWikitext);
+    const endWidgetTree = $tw.wiki.makeWidget(endParser, { document: $tw.fakeDocument });
+    const endContainer = $tw.fakeDocument.createElement("div");
+    endWidgetTree.render(endContainer, null);
+    const endBtnWidget = findButton(endWidgetTree);
+    expect(endBtnWidget).not.toBeNull();
+    endBtnWidget.invokeActions(endBtnWidget, {});
+
+    const endUpdatedProj = $tw.wiki.getTiddler("TestReorderProject");
+    expect(Array.from(endUpdatedProj.fields.list)).toEqual(["Task Low", "Task High", "Task Medium"]);
+    expect(initialOrder).toContain("py-list-end-dropzone");
+
+    // 3. Verify ProjectCard renders description as plain text without nested <a> tags inside <a class="py-card">
+    const cardHtml = renderWithGlobals(
+      "{{||$:/plugins/mblackman/projectify/ui/dashboard/ProjectCard}}",
+      "TestReorderProject"
+    );
+    expect(cardHtml).toContain("Card description with WikiWord");
+    // Should only have 1 <a> tag in ProjectCard (the outer <a class="py-card">, no nested WikiWord/link <a> tags inside description)
+    const anchorMatches = cardHtml.match(/<a /g) || [];
+    expect(anchorMatches.length).toBe(1);
+
+    // 4. Verify checkbox CSS and card CSS include mobile sizing and legibility fixes
+    const formControlCss = $tw.wiki.getTiddlerText("$:/plugins/mblackman/projectify/styles/form-control");
+    expect(formControlCss).toContain(".tc-tiddler-frame .py-checkbox svg");
+    expect(formControlCss).toContain("max-width: none;");
+
+    const cardsCss = $tw.wiki.getTiddlerText("$:/plugins/mblackman/projectify/styles/cards");
+    expect(cardsCss).toContain("a.py-card");
+    expect(cardsCss).toContain("-webkit-line-clamp: 3;");
+
+    $tw.wiki.deleteTiddler("TestReorderProject");
+    $tw.wiki.deleteTiddler("Task Low");
+    $tw.wiki.deleteTiddler("Task High");
+    $tw.wiki.deleteTiddler("Task Medium");
   });
 });

@@ -11,6 +11,7 @@ type: text/vnd.tiddlywiki
   tag="span"
   class="py-drag-handle"
   tiddler={{!!title}}
+  data-tiddler-title={{!!title}}
 >
   {{$:/plugins/mblackman/projectify/images/drag-handle}}
 </$draggable>
@@ -39,70 +40,60 @@ type: text/vnd.tiddlywiki
   subtaskState=<<qualify "$:/state/projectify/subtasks-open">>
   editState=<<qualify "$:/state/projectify/edit-todo">>
   subtaskAddState=<<qualify "$:/temp/projectify/add-subtask">>
+  itemWrapperClass={{{ [[py-todo-item-wrapper]] [all[current]tag[done]then[py-completed]] [{!!priority}!is[blank]addprefix[py-has-priority-]] +[join[ ]] }}}
+  todoRowClass={{{ [[py-todo]] [all[current]tag[done]then[py-completed]] [{!!priority}!is[blank]addprefix[py-todo-priority-]] +[join[ ]] }}}
 >
-  <div class={{{ [all[current]tag[done]then[py-todo-item-wrapper py-completed]else[py-todo-item-wrapper]] }}}>
-    <div class={{{ [all[current]tag[done]then[py-todo py-completed]else[py-todo]] }}}>
-      <div class="py-todo-main">
-        <%if [<dragHandle>!is[blank]] %>
-          <<drag-handle>>
-        <%endif%>
+  <div class=<<itemWrapperClass>>>
+    <div class=<<todoRowClass>>>
+      <%if [<dragHandle>!is[blank]] %>
+        <<drag-handle>>
+      <%endif%>
 
-        <$button class="tc-btn-invisible py-todo-check-btn">
-          <$action-py-toggle-todo $tiddler=<<currentTiddler>>/>
-          {{||$:/plugins/mblackman/projectify/ui/buttons/Checkbox}}
-        </$button>
+      <$button class="tc-btn-invisible py-todo-check-btn">
+        <$action-py-toggle-todo $tiddler=<<currentTiddler>>/>
+        {{||$:/plugins/mblackman/projectify/ui/buttons/Checkbox}}
+      </$button>
 
-        <%if [<currentTiddler>has[priority]] %>
-          {{||$:/plugins/mblackman/projectify/ui/buttons/TodoPriority}}
-        <%endif%>
-
-        <%if [<editState>is[tiddler]] %>
-          <span class="py-inline-edit-row">
-            <$keyboard key="enter" actions=<<save-inline-edit-actions>>>
-              <$keyboard key="escape" actions="<$action-deletetiddler $tiddler=<<editState>>/>">
-                <$edit-text
-                  class="py-input py-inline-input"
-                  tiddler=<<editState>>
-                  field="text"
-                  focus="true"
-                />
+      <div class="py-todo-body">
+        <div class="py-todo-title-row">
+          <%if [<editState>is[tiddler]] %>
+            <span class="py-inline-edit-row">
+              <$keyboard key="enter" actions=<<save-inline-edit-actions>>>
+                <$keyboard key="escape" actions="<$action-deletetiddler $tiddler=<<editState>>/>">
+                  <$edit-text
+                    class="py-input py-inline-input"
+                    tiddler=<<editState>>
+                    field="text"
+                    focus="true"
+                  />
+                </$keyboard>
               </$keyboard>
-            </$keyboard>
-            <$button class="py-btn btn-small btn-primary" actions=<<save-inline-edit-actions>>>
-              <<lingo Save/Caption>>
-            </$button>
-            <$button class="py-btn btn-small">
-              <<lingo Cancel/Caption>>
-              <$action-deletetiddler $tiddler=<<editState>>/>
-            </$button>
-          </span>
-        <%else%>
-          <$link to={{!!title}}>
-            {{||$:/plugins/mblackman/projectify/ui/todo/TodoCaption}}
-            <%if [subfilter<py-has-todos>] %>
-              {{||$:/plugins/mblackman/projectify/images/pie}}
-            <%endif%>
-            <%if [all[current]!text[]] %>
-              <span class="py-todo-text-icon">
-                {{$:/plugins/mblackman/projectify/images/file}}
-              </span>
-            <%endif%>
-          </$link>
-          <%if [all[current]tag[SubProject]] [subfilter<py-has-todos>] %>
-            <%if [<subtaskState>get[text]match[yes]] %>
-              <$button class="tc-btn-invisible py-subtask-toggle py-expanded" set=<<subtaskState>> setTo="no" tooltip={{$:/language/projectify/AddSubTasks/Caption}}>
-                {{$:/core/images/down-arrow}}
+              <$button class="py-btn btn-small btn-primary" actions=<<save-inline-edit-actions>>>
+                <<lingo Save/Caption>>
               </$button>
-            <%else%>
-              <$button class="tc-btn-invisible py-subtask-toggle" set=<<subtaskState>> setTo="yes" tooltip={{$:/language/projectify/AddSubTasks/Caption}}>
-                {{$:/core/images/right-arrow}}
+              <$button class="py-btn btn-small">
+                <<lingo Cancel/Caption>>
+                <$action-deletetiddler $tiddler=<<editState>>/>
               </$button>
-            <%endif%>
+            </span>
+          <%else%>
+            <$link to={{!!title}} class="py-todo-link">
+              <span class="py-todo-caption">{{||$:/plugins/mblackman/projectify/ui/todo/TodoCaption}}</span>
+              <%if [all[current]!text[]] %>
+                <span class="py-todo-text-icon">
+                  {{$:/plugins/mblackman/projectify/images/file}}
+                </span>
+              <%endif%>
+            </$link>
           <%endif%>
-        <%endif%>
+        </div>
+
+        {{||$:/plugins/mblackman/projectify/ui/todo/TodoActions}}
       </div>
 
-      {{||$:/plugins/mblackman/projectify/ui/todo/TodoActions}}
+      <div class="py-todo-menu">
+        {{||$:/plugins/mblackman/projectify/ui/buttons/TodoActions}}
+      </div>
     </div>
 
     <%if [<subtaskState>get[text]match[yes]] %>

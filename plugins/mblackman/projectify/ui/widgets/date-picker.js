@@ -1461,6 +1461,269 @@ function handleNotificationActionEvent(event) {
 	}
 }
 
+function initTouchDragReorderPolyfill() {
+	if(typeof document === "undefined" || !document.addEventListener || $tw._projectifyTouchDragInitialized) {
+		return;
+	}
+	$tw._projectifyTouchDragInitialized = true;
+
+	let activeTouch = null;
+	let activeMouseBottomDroppable = null;
+	let isForwardingBottomDrop = false;
+
+	function getNextSiblingDroppable(itemWrapper) {
+		if(!itemWrapper) return null;
+		const nextSibling = itemWrapper.nextElementSibling;
+		if(!nextSibling) return null;
+		if(nextSibling.classList.contains("tc-droppable")) {
+			return nextSibling;
+		}
+		return nextSibling.querySelector(":scope > .tc-droppable") || nextSibling.querySelector(".tc-droppable");
+	}
+
+	function resolveSmartDroppableTarget(rawDroppable, clientY) {
+		if(!rawDroppable) return null;
+		const listContainer = rawDroppable.closest(".tc-tagged-draggable-list, .tc-links-draggable-list");
+		if(!listContainer) return rawDroppable;
+
+		const itemWrapper = rawDroppable.closest(".tc-menu-list-item");
+		if(itemWrapper && typeof rawDroppable.getBoundingClientRect === "function") {
+			const rect = rawDroppable.getBoundingClientRect();
+			const midY = rect.top + rect.height * 0.55;
+			if(clientY > midY) {
+				const nextDroppable = getNextSiblingDroppable(itemWrapper);
+				if(nextDroppable) {
+					return nextDroppable;
+				}
+			}
+		}
+		return rawDroppable;
+	}
+
+	function findDroppableTarget(x, y, ghostEl) {
+		if(ghostEl) ghostEl.style.display = "none";
+		const el = document.elementFromPoint(x, y);
+		if(ghostEl) ghostEl.style.display = "";
+		if(!el || !el.closest) return null;
+		const rawDroppable = el.closest(".tc-droppable");
+		return resolveSmartDroppableTarget(rawDroppable, y);
+	}
+
+	function clearMouseBottomPreview() {
+		if(activeMouseBottomDroppable) {
+			activeMouseBottomDroppable.classList.remove("tc-dragover");
+			activeMouseBottomDroppable = null;
+		}
+	}
+
+	document.addEventListener("dragover", (e) => {
+		if(isForwardingBottomDrop) return;
+		const target = e.target && e.target.closest ? e.target.closest(".tc-menu-list-item > .tc-droppable") : null;
+		if(!target || typeof target.getBoundingClientRect !== "function") {
+			clearMouseBottomPreview();
+			return;
+		}
+		const itemWrapper = target.closest(".tc-menu-list-item");
+		// Only redirect when hovering the bottom half of the LAST item in the list
+		if(!itemWrapper || !itemWrapper.nextElementSibling || itemWrapper.nextElementSibling.classList.contains("tc-menu-list-item")) {
+			clearMouseBottomPreview();
+			return;
+		}
+		const endDroppable = getNextSiblingDroppable(itemWrapper);
+		if(!endDroppable) {
+			clearMouseBottomPreview();
+			return;
+		}
+		const rect = target.getBoundingClientRect();
+		if(e.clientY > rect.top + rect.height * 0.55) {
+			target.classList.remove("tc-dragover");
+			endDroppable.classList.add("tc-dragover");
+			activeMouseBottomDroppable = endDroppable;
+		} else {
+			if(activeMouseBottomDroppable === endDroppable) {
+				endDroppable.classList.remove("tc-dragover");
+				activeMouseBottomDroppable = null;
+			}
+			target.classList.add("tc-dragover");
+		}
+	}, true);
+
+	document.addEventListener("drop", (e) => {
+		if(isForwardingBottomDrop || !activeMouseBottomDroppable) return;
+		const target = e.target && e.target.closest ? e.target.closest(".tc-menu-list-item > .tc-droppable") : null;
+		const endDroppable = activeMouseBottomDroppable;
+		clearMouseBottomPreview();
+		if(target && endDroppable && target !== endDroppable) {
+			e.stopPropagation();
+			e.preventDefault();
+			target.classList.remove("tc-dragover");
+			isForwardingBottomDrop = true;
+			try {
+				let forwardedDrop;
+				try {
+					forwardedDrop = new DragEvent("drop", {
+						bubbles: true,
+						cancelable: true,
+						dataTransfer: e.dataTransfer
+					});
+				} catch(_err) {
+					forwardedDrop = document.createEvent("Event");
+					forwardedDrop.initEvent("drop", true, true);
+					forwardedDrop.dataTransfer = e.dataTransfer;
+				}
+				endDroppable.dispatchEvent(forwardedDrop);
+			} finally {
+				isForwardingBottomDrop = false;
+			}
+		}
+	}, true);
+
+	document.addEventListener("dragend", () => {
+		clearMouseBottomPreview();
+	}, true);
+
+	function createSyntheticDragEvent(type, clientX, clientY, title) {
+		const jsonStr = $tw.wiki ? $tw.wiki.getTiddlerAsJson(title) : JSON.stringify({title});
+		const dataTransfer = {
+			dropEffect: "move",
+			effectAllowed: "all",
+			types: ["text/vnd.tiddler", "text/plain", "Text"],
+			getData(format) {
+				if(format === "text/vnd.tiddler") return jsonStr;
+				if(format === "text/plain" || format === "Text") return title;
+				return "";
+			},
+			setData() {},
+			clearData() {}
+		};
+		let evt;
+		try {
+			evt = new Event(type, {bubbles: true, cancelable: true});
+		} catch(_e) {
+			evt = document.createEvent("Event");
+			evt.initEvent(type, true, true);
+		}
+		evt.clientX = clientX;
+		evt.clientY = clientY;
+		evt.dataTransfer = dataTransfer;
+		return evt;
+	}
+
+	function cleanupTouchDrag() {
+		if(!activeTouch) return;
+		if(activeTouch.currentDroppable) {
+			const leaveEvt = createSyntheticDragEvent("dragleave", 0, 0, activeTouch.title);
+			activeTouch.currentDroppable.dispatchEvent(leaveEvt);
+			activeTouch.currentDroppable.classList.remove("tc-dragover");
+		}
+		if(activeTouch.handleEl) {
+			activeTouch.handleEl.classList.remove("tc-dragging");
+		}
+		if(activeTouch.ghostEl && activeTouch.ghostEl.parentNode) {
+			activeTouch.ghostEl.parentNode.removeChild(activeTouch.ghostEl);
+		}
+		$tw.dragInProgress = null;
+		activeTouch = null;
+	}
+
+	document.addEventListener("touchstart", (e) => {
+		if(e.touches.length !== 1) return;
+		const el = e.target && e.target.closest ? e.target.closest(".py-drag-handle, .py-reorder-projects .tc-draggable, .py-reorder-projects a.tc-tiddlylink") : null;
+		if(!el) return;
+		let title = el.getAttribute("data-tiddler-title") || (el.dataset && el.dataset.tiddlerTitle);
+		if(!title && el.tagName === "A" && el.getAttribute("href")) {
+			const href = el.getAttribute("href");
+			if(href.startsWith("#")) {
+				try {
+					title = decodeURIComponent(href.slice(1));
+				} catch(_err) {
+					title = href.slice(1);
+				}
+			}
+		}
+		if(!title) return;
+
+		const touch = e.touches[0];
+		activeTouch = {
+			handleEl: el,
+			title: title,
+			startX: touch.clientX,
+			startY: touch.clientY,
+			started: false,
+			currentDroppable: null,
+			ghostEl: null
+		};
+	}, {passive: true});
+
+	document.addEventListener("touchmove", (e) => {
+		if(!activeTouch || e.touches.length !== 1) return;
+		const touch = e.touches[0];
+		const dx = touch.clientX - activeTouch.startX;
+		const dy = touch.clientY - activeTouch.startY;
+
+		if(!activeTouch.started) {
+			if(Math.hypot(dx, dy) < 6) return;
+			activeTouch.started = true;
+			$tw.dragInProgress = activeTouch.handleEl;
+			activeTouch.handleEl.classList.add("tc-dragging");
+
+			const ghost = document.createElement("div");
+			ghost.className = "py-touch-drag-ghost";
+			const tid = $tw.wiki && $tw.wiki.getTiddler(activeTouch.title);
+			ghost.textContent = (tid && tid.fields.caption) ? tid.fields.caption : activeTouch.title;
+			document.body.appendChild(ghost);
+			activeTouch.ghostEl = ghost;
+		}
+
+		if(e.cancelable) {
+			e.preventDefault();
+		}
+
+		if(activeTouch.ghostEl) {
+			activeTouch.ghostEl.style.left = `${touch.clientX + 12}px`;
+			activeTouch.ghostEl.style.top = `${touch.clientY - 18}px`;
+		}
+
+		const droppable = findDroppableTarget(touch.clientX, touch.clientY, activeTouch.ghostEl);
+		if(droppable !== activeTouch.currentDroppable) {
+			if(activeTouch.currentDroppable) {
+				const leaveEvt = createSyntheticDragEvent("dragleave", touch.clientX, touch.clientY, activeTouch.title);
+				activeTouch.currentDroppable.dispatchEvent(leaveEvt);
+				activeTouch.currentDroppable.classList.remove("tc-dragover");
+			}
+			activeTouch.currentDroppable = droppable;
+			if(droppable) {
+				const enterEvt = createSyntheticDragEvent("dragenter", touch.clientX, touch.clientY, activeTouch.title);
+				droppable.dispatchEvent(enterEvt);
+			}
+		} else if(droppable) {
+			const overEvt = createSyntheticDragEvent("dragover", touch.clientX, touch.clientY, activeTouch.title);
+			droppable.dispatchEvent(overEvt);
+		}
+	}, {passive: false});
+
+	document.addEventListener("touchend", (e) => {
+		if(!activeTouch) return;
+		if(activeTouch.started) {
+			const touch = (e.changedTouches && e.changedTouches[0]) || {clientX: activeTouch.startX, clientY: activeTouch.startY};
+			const droppable = findDroppableTarget(touch.clientX, touch.clientY, activeTouch.ghostEl) || activeTouch.currentDroppable;
+			if(droppable) {
+				const dropEvt = createSyntheticDragEvent("drop", touch.clientX, touch.clientY, activeTouch.title);
+				droppable.dispatchEvent(dropEvt);
+			}
+		}
+		cleanupTouchDrag();
+	}, {passive: true});
+
+	document.addEventListener("touchcancel", () => {
+		cleanupTouchDrag();
+	}, {passive: true});
+}
+
+if($tw.browser) {
+	initTouchDragReorderPolyfill();
+}
+
 if($tw.wiki && !$tw.wiki.tiddlerExists("$:/status/projectify/LocaleTimeFormat")) {
 	$tw.wiki.addTiddler({
 		title: "$:/status/projectify/LocaleTimeFormat",

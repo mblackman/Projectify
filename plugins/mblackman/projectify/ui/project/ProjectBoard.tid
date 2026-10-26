@@ -26,36 +26,47 @@ type: text/vnd.tiddlywiki
     </div>
     <div class="py-board-cards">
       <$let dragHandle="yes">
-        <$list filter=<<colFilter>> template="$:/plugins/mblackman/projectify/ui/todo/TodoItem"/>
+        <$list
+          filter=<<colFilter>>
+          template="$:/plugins/mblackman/projectify/ui/todo/TodoItem"
+          emptyMessage="<div class='py-empty-quadrant'>—</div>"
+        />
       </$let>
     </div>
   </$droppable>
 </div>
 \end
 
-<div class="py-board">
-  <$transclude
-    $variable="board-column"
-    colStatus="todo"
-    colLabel={{$:/language/projectify/Status/Todo}}
-    colFilter="[all[tiddlers]tag<currentTiddler>tag[todo]!has[draft.of]!tag[done]!status[in-progress]!status[waiting]!status[someday]!nsort[priority]]"
-  />
-  <$transclude
-    $variable="board-column"
-    colStatus="in-progress"
-    colLabel={{$:/language/projectify/Status/InProgress}}
-    colFilter="[all[tiddlers]tag<currentTiddler>tag[todo]!has[draft.of]!tag[done]status[in-progress]!nsort[priority]]"
-  />
-  <$transclude
-    $variable="board-column"
-    colStatus="waiting"
-    colLabel={{$:/language/projectify/Status/Waiting}}
-    colFilter="[all[tiddlers]tag<currentTiddler>tag[todo]!has[draft.of]!tag[done]status[waiting]!nsort[priority]] [all[tiddlers]tag<currentTiddler>tag[todo]!has[draft.of]!tag[done]status[someday]!nsort[priority]] +[unique[]]"
-  />
-  <$transclude
-    $variable="board-column"
-    colStatus="done"
-    colLabel={{$:/language/projectify/Status/Done}}
-    colFilter="[all[tiddlers]tag<currentTiddler>tag[todo]!has[draft.of]tag[done]!sort[completed]limit[25]]"
-  />
-</div>
+<$let
+  todoColFilter="[all[tiddlers]tag<currentTiddler>tag[todo]!has[draft.of]!tag[done]!status[in-progress]!status[waiting]!status[someday]!nsort[priority]]"
+  inProgressColFilter="[all[tiddlers]tag<currentTiddler>tag[todo]!has[draft.of]!tag[done]status[in-progress]!nsort[priority]]"
+  waitingColFilter="[all[tiddlers]tag<currentTiddler>tag[todo]!has[draft.of]!tag[done]status[waiting]!nsort[priority]] [all[tiddlers]tag<currentTiddler>tag[todo]!has[draft.of]!tag[done]status[someday]!nsort[priority]] +[unique[]]"
+  doneColFilter="[all[tiddlers]tag<currentTiddler>tag[todo]!has[draft.of]tag[done]!sort[completed]limit[25]]"
+>
+  <div class="py-board">
+    <$transclude
+      $variable="board-column"
+      colStatus="todo"
+      colLabel={{$:/language/projectify/Status/Todo}}
+      colFilter=<<todoColFilter>>
+    />
+    <$transclude
+      $variable="board-column"
+      colStatus="in-progress"
+      colLabel={{$:/language/projectify/Status/InProgress}}
+      colFilter=<<inProgressColFilter>>
+    />
+    <$transclude
+      $variable="board-column"
+      colStatus="waiting"
+      colLabel={{$:/language/projectify/Status/Waiting}}
+      colFilter=<<waitingColFilter>>
+    />
+    <$transclude
+      $variable="board-column"
+      colStatus="done"
+      colLabel={{$:/language/projectify/Status/Done}}
+      colFilter=<<doneColFilter>>
+    />
+  </div>
+</$let>

@@ -248,7 +248,7 @@ type: text/vnd.tiddlywiki
 \end
 
 \procedure py-unscheduled-todos-subfilter()
-tag[todo]!has[draft.of]!tag[done]!has[due]!nsort[priority]
+tag[todo]!has[draft.of]!tag[done]!has[due]
 \end
 
 \procedure py-scheduled-todos-subfilter()

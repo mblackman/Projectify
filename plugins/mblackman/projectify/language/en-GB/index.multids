@@ -63,6 +63,8 @@ Matrix/Backlog: Neither Urgent nor Priority
 Matrix/Backlog/Hint: Backlog / Later
 More: More
 MoreActions/Hint: More actions
+MoveDown/Caption: Move down
+MoveUp/Caption: Move up
 NewProject: Create new project
 NewProjectCategory: Category (optional)
 NewProjectDescription: Description (optional)

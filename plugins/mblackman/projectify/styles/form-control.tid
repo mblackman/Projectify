@@ -145,29 +145,49 @@ input.py-input.input-large {
   color: var(--tpc-muted-foreground, <<colour muted-foreground>>);
   fill: currentColor;
   cursor: pointer;
-  transition: all ease-in .2s;
+  transition: color ease-in .2s;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  line-height: 1;
 }
 
-.py-todo .py-checkbox {
-  margin-right: 6px;
+.py-checkbox > span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+}
+
+.py-checkbox svg,
+.tc-tiddler-frame .py-checkbox svg {
+  width: 18px;
+  height: 18px;
+  max-width: none;
+  flex-shrink: 0;
+  display: block;
 }
 
 .py-checkbox .todo-hover {
   display: none;
 }
 
-.py-checkbox:hover .todo-hover {
-  display: inline-flex;
-}
+@media (hover: hover) {
+  .py-checkbox:hover .todo-hover {
+    display: inline-flex;
+  }
 
-.py-checkbox:hover .todo {
-  display: none;
-}
+  .py-checkbox:hover .todo {
+    display: none;
+  }
 
-.py-checkbox:hover {
-  color: #2da562;
+  .py-checkbox:hover {
+    color: #2da562;
+  }
 }
 
 .py-checkbox .done {

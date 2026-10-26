@@ -21,16 +21,60 @@ type: text/vnd.tiddlywiki
   <$action-deletefield $tiddler=<<actionTiddler>> $field="section"/>
 <%endif%>
 <!-- Save the current ordering of the tiddlers with this tag -->
-<$let order={{{ [<tag>tagging[]format:titlelist[]join[ ]] }}}>
+<$set name="order" filter="[<tag>tagging[]]">
 <!-- Remove any list-after or list-before fields from the tiddlers with this tag -->
 <$list filter="[<tag>tagging[]]">
   <$action-deletefield $field="list-before"/>
   <$action-deletefield $field="list-after"/>
 </$list>
 <!-- Save the new order to the Tag Tiddler -->
-<$action-listops $tiddler=<<tag>> $field="list" $filter="+[enlist<order>] +[insertbefore:currentTiddler<actionTiddler>]"/>
+<$action-listops $tiddler=<<tag>> $field="list" $filter="+[enlist:raw<order>] +[insertbefore<actionTiddler>,<currentTiddler>]"/>
 <$action-sendmessage $message="tm-auto-save-wiki"/>
-</$let>
+</$set>
+\end
+
+\define py-list-tagged-draggable(tag, subFilter, itemTemplate)
+\whitespace trim
+<span class="tc-tagged-draggable-list">
+  <$set name="tag" value=<<__tag__>>>
+    <$list filter="[<__tag__>tagging[]$subFilter$]">
+      <div class="tc-menu-list-item">
+        <$droppable
+          actions="<$macrocall $name='list-tagged-draggable-drop-actions' tag=<<__tag__>>/>"
+          enable=<<tv-enable-drag-and-drop>>
+        >
+          <div class="tc-droppable-placeholder"/>
+          <div>
+            <$transclude tiddler=<<__itemTemplate__>>>
+              <div class="py-reorder-project-row">
+                <$draggable
+                  tag="span"
+                  class="py-drag-handle"
+                  tiddler={{!!title}}
+                  data-tiddler-title={{!!title}}
+                >
+                  {{$:/plugins/mblackman/projectify/images/drag-handle}}
+                </$draggable>
+                <$link to={{!!title}}><$view field="title"/></$link>
+              </div>
+            </$transclude>
+          </div>
+        </$droppable>
+      </div>
+    </$list>
+    <$tiddler tiddler="">
+      <$droppable
+        actions="<$macrocall $name='list-tagged-draggable-drop-actions' tag=<<__tag__>>/>"
+        enable=<<tv-enable-drag-and-drop>>
+        tag="div"
+        class="py-list-end-dropzone"
+      >
+        <div class="tc-droppable-placeholder"/>
+        <div class="py-list-end-dropzone-spacer"/>
+      </$droppable>
+    </$tiddler>
+  </$set>
+</span>
 \end
 
 \procedure todo-list-filtered(subFilter)
@@ -41,7 +85,7 @@ type: text/vnd.tiddlywiki
 >
   <div class="py-todos">
     <$transclude
-      $variable="list-tagged-draggable"
+      $variable="py-list-tagged-draggable"
       tag=<<projectTag>>
       subFilter=<<subFilter>>
       itemTemplate="$:/plugins/mblackman/projectify/ui/todo/TodoItem"

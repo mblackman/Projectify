@@ -51,15 +51,53 @@ type: text/vnd.tiddlywiki
 .py-drag-handle {
   color: var(--tpc-muted-foreground, <<colour muted-foreground>>);
   fill: currentColor;
-  width: 18px;
+  width: 24px;
+  height: 24px;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   cursor: grab;
   flex-shrink: 0;
+  border-radius: 6px;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  transition: background-color 0.14s ease, color 0.14s ease;
 }
 
-.py-drag-handle svg {
+.py-drag-handle:hover,
+.py-drag-handle:active {
+  background: color-mix(in srgb, var(--tpc-muted-foreground, <<colour muted-foreground>>) 14%, transparent);
+  color: var(--tpc-foreground, <<colour foreground>>);
+}
+
+.py-drag-handle:active {
+  cursor: grabbing;
+}
+
+.py-drag-handle svg,
+.tc-tiddler-frame .py-drag-handle svg {
+  width: 17px;
+  height: 17px;
+  max-width: none;
+  flex-shrink: 0;
   vertical-align: middle;
+}
+
+@media (max-width: {{$:/themes/tiddlywiki/vanilla/metrics/sidebarbreakpoint}}) {
+  .py-drag-handle {
+    width: 30px;
+    height: 30px;
+    margin-left: -4px;
+    margin-top: -2px !important;
+    margin-bottom: -4px;
+  }
+
+  .py-drag-handle svg,
+  .tc-tiddler-frame .py-drag-handle svg {
+    width: 19px;
+    height: 19px;
+  }
 }
 
 .py-banner {

@@ -4,7 +4,24 @@ tags:
 title: $:/plugins/mblackman/projectify/ui/todo/TodoActions
 type: text/vnd.tiddlywiki
 
+\whitespace trim
 <span class="py-todo-actions">
+  <%if [<currentTiddler>has[priority]] %>
+    {{||$:/plugins/mblackman/projectify/ui/buttons/TodoPriority}}
+  <%endif%>
+
+  <%if [all[current]tag[SubProject]] [subfilter<py-has-todos>] %>
+    <$button
+      class={{{ [<subtaskState>get[text]match[yes]then[tc-btn-invisible py-badge py-subtask-pill py-expanded]else[tc-btn-invisible py-badge py-subtask-pill]] }}}
+      set=<<subtaskState>>
+      setTo={{{ [<subtaskState>get[text]match[yes]then[no]else[yes]] }}}
+      tooltip={{$:/language/projectify/AddSubTasks/Caption}}
+    >
+      {{||$:/plugins/mblackman/projectify/images/pie}}
+      <span><$count filter="[function[py.completed-descendant-todos],<currentTiddler>]"/>/<$count filter="[function[py.descendant-todos],<currentTiddler>]"/></span>
+    </$button>
+  <%endif%>
+
   <$list filter="[function[py.open-blockers]]" variable="blocker">
     <$link
       to=<<blocker>>
@@ -22,14 +39,14 @@ type: text/vnd.tiddlywiki
         class="py-badge py-badge-blocking"
         title={{{ [[$:/language/projectify/Blocking/Caption]get[text]addsuffix[: ]] [<blockedList>] +[join[]] }}}
       >
-        {{$:/plugins/mblackman/projectify/images/lock}} <$count filter="[function[py.blocking-todos]]"/>
+        {{$:/plugins/mblackman/projectify/images/lock}}<span><$count filter="[function[py.blocking-todos]]"/></span>
       </span>
     </$let>
   <%endif%>
 
   <%if [{!!recur}!is[blank]] %>
     <span class="py-badge py-badge-recur" title={{!!recur}}>
-      {{$:/plugins/mblackman/projectify/images/repeat}} <$view field="recur"/>
+      {{$:/plugins/mblackman/projectify/images/repeat}}<span><$view field="recur"/></span>
     </span>
   <%endif%>
 
@@ -49,7 +66,7 @@ type: text/vnd.tiddlywiki
     <%if [subfilter<py-is-not-scheduled>] %>
       <$let timeTemplate={{{ [function[py.time-template]] }}}>
         <span class="py-badge py-badge-scheduled" title={{$:/language/projectify/StartDate/Tab}}>
-          {{$:/plugins/mblackman/projectify/images/sun}} <$view field="scheduled" format="date" template={{$:/language/projectify/DateFormat}}/><%if [subfilter<py-has-scheduled-time>] %> <$view field="scheduled" format="date" template=<<timeTemplate>>/><%endif%>
+          {{$:/plugins/mblackman/projectify/images/sun}}<span><$view field="scheduled" format="date" template={{$:/language/projectify/DateFormat}}/><%if [subfilter<py-has-scheduled-time>] %>&#32;<$view field="scheduled" format="date" template=<<timeTemplate>>/><%endif%></span>
         </span>
       </$let>
     <%endif%>
@@ -58,5 +75,4 @@ type: text/vnd.tiddlywiki
   <%if [subfilter<py-is-scheduled>] %>
     {{||$:/plugins/mblackman/projectify/ui/buttons/TodoDueDate}}
   <%endif%>
-  {{||$:/plugins/mblackman/projectify/ui/buttons/TodoActions}}
 </span>
