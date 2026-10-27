@@ -37,7 +37,7 @@ describe("Projectify Plugin ($:/plugins/mblackman/projectify)", () => {
     expect(pluginTiddler).toBeDefined();
     expect(pluginTiddler.fields.name).toBe("Projectify");
     expect(pluginTiddler.fields["core-version"]).toBe(">=5.4.0");
-    expect(pluginTiddler.fields.version).toBe("0.18.0");
+    expect(pluginTiddler.fields.version).toBe("0.19.0");
     expect(pluginTiddler.fields["plugin-type"]).toBe("plugin");
     expect(pluginTiddler.fields.list).toEqual(["readme", "doc/Help", "changelog", "LICENSE"]);
   });

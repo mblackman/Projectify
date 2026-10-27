@@ -130,6 +130,7 @@ type: text/vnd.tiddlywiki
   background: color-mix(in srgb, var(--tpc-muted-foreground, <<colour muted-foreground>>) 15%, transparent);
   color: var(--tpc-foreground, <<colour foreground>>);
   font-weight: 700;
+  font-variant-numeric: tabular-nums;
   padding: 3px 8px;
   font-size: 11.5px;
   text-align: center;
@@ -144,8 +145,8 @@ type: text/vnd.tiddlywiki
 }
 
 .py-count.py-count-alert {
-  background: #df3f3f;
-  color: #ffffff;
+  background: var(--suite-status-danger-accent, #df3f3f);
+  color: var(--suite-fg-on-accent, #ffffff);
 }
 
 .py-count.info {
@@ -171,5 +172,5 @@ type: text/vnd.tiddlywiki
   width: 8px;
   height: 8px;
   border-radius: 4px;
-  background: #df3f3f;
+  background: var(--suite-status-danger-accent, #df3f3f);
 }

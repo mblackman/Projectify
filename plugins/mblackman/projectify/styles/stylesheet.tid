@@ -6,6 +6,82 @@ type: text/vnd.tiddlywiki
 
 \rules only filteredtranscludeinline transcludeinline macrodef macrocallinline
 
+/* Standalone-safe fallback contract (specificity 0,0,0 via :where).
+   Automatically overridden when Slipstream ($:/plugins/mblackman/slipstream) is active. */
+:where(:root, .tc-page-container) {
+  --suite-bg-canvas: var(--mn-bg-app, var(--tpc-page-background, <<colour page-background>>));
+  --suite-surface-primary: var(--mn-bg-surface, var(--tpc-tiddler-background, <<colour tiddler-background>>));
+  --suite-surface-card: var(--mn-bg-card, color-mix(in srgb, var(--tpc-tiddler-background, <<colour tiddler-background>>) 96.5%, var(--tpc-foreground, <<colour foreground>>) 3.5%));
+  --suite-surface-subtle: var(--mn-bg-subtle, color-mix(in srgb, var(--tpc-tiddler-background, <<colour tiddler-background>>) 93%, var(--tpc-foreground, <<colour foreground>>) 7%));
+  --suite-surface-elevated: var(--mn-bg-elevated, color-mix(in srgb, var(--tpc-tiddler-background, <<colour tiddler-background>>) 90%, var(--tpc-foreground, <<colour foreground>>) 10%));
+  --suite-surface-input: var(--tpc-tiddler-background, <<colour tiddler-background>>);
+  --suite-surface-hover: var(--mn-bg-hover, color-mix(in srgb, var(--tpc-foreground, <<colour foreground>>) 5.5%, var(--tpc-tiddler-background, <<colour tiddler-background>>)));
+  --suite-surface-active: var(--mn-bg-active, color-mix(in srgb, var(--tpc-foreground, <<colour foreground>>) 9%, var(--tpc-tiddler-background, <<colour tiddler-background>>)));
+  --suite-surface-selected: var(--mn-accent-soft, color-mix(in srgb, var(--tpc-primary, <<colour primary>>) 12%, var(--tpc-tiddler-background, <<colour tiddler-background>>)));
+  --suite-surface-dropzone: color-mix(in srgb, var(--tpc-primary, <<colour primary>>) 8%, var(--suite-surface-subtle));
+
+  --suite-fg-primary: var(--mn-fg-primary, var(--tpc-foreground, <<colour foreground>>));
+  --suite-fg-secondary: var(--mn-fg-secondary, color-mix(in srgb, var(--tpc-foreground, <<colour foreground>>) 72%, var(--tpc-muted-foreground, <<colour muted-foreground>>) 28%));
+  --suite-fg-muted: var(--mn-fg-muted, color-mix(in srgb, var(--tpc-foreground, <<colour foreground>>) 58%, var(--tpc-muted-foreground, <<colour muted-foreground>>) 42%));
+  --suite-fg-on-accent: #ffffff;
+
+  --suite-border-hairline: var(--mn-border-hairline, color-mix(in srgb, var(--suite-fg-primary) 7%, transparent));
+  --suite-border-subtle: var(--mn-border-subtle, color-mix(in srgb, var(--suite-fg-primary) 12%, transparent));
+  --suite-border-strong: var(--mn-border-strong, color-mix(in srgb, var(--suite-fg-primary) 22%, transparent));
+
+  --suite-radius-xs: 6px;
+  --suite-radius-sm: 8px;
+  --suite-radius-md: 10px;
+  --suite-radius-lg: 14px;
+  --suite-radius-pill: 9999px;
+
+  --suite-shadow-xs: 0 1px 2px rgba(15, 23, 42, 0.04);
+  --suite-shadow-sm: var(--mn-shadow-card, 0 2px 8px -2px rgba(15, 23, 42, 0.06), 0 1px 3px -1px rgba(15, 23, 42, 0.04));
+  --suite-shadow-lg: var(--mn-shadow-popover, 0 12px 32px -4px rgba(15, 23, 42, 0.16), 0 4px 12px -2px rgba(15, 23, 42, 0.08));
+
+  --suite-control-height-sm: 30px;
+  --suite-control-height-md: 36px;
+  --suite-touch-target: 36px;
+
+  --suite-font-sans: var(--mn-font-sans, -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif);
+  --suite-font-mono: var(--mn-font-mono, "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace);
+
+  --suite-accent: var(--mn-accent, var(--tpc-primary, <<colour primary>>));
+  --suite-accent-hover: var(--mn-accent-hover, color-mix(in srgb, var(--suite-accent) 86%, var(--suite-fg-primary)));
+  --suite-accent-bg: var(--mn-accent-soft, color-mix(in srgb, var(--suite-accent) 12%, var(--suite-surface-primary)));
+  --suite-accent-border: color-mix(in srgb, var(--suite-accent) 30%, transparent);
+
+  --suite-status-success-accent: #10b981;
+  --suite-status-success-fg: color-mix(in srgb, #059669 82%, var(--suite-fg-primary));
+  --suite-status-success-bg: color-mix(in srgb, #10b981 13%, var(--suite-surface-primary));
+  --suite-status-success-border: color-mix(in srgb, #10b981 32%, transparent);
+
+  --suite-status-warning-accent: #f59e0b;
+  --suite-status-warning-fg: color-mix(in srgb, #d97706 82%, var(--suite-fg-primary));
+  --suite-status-warning-bg: color-mix(in srgb, #f59e0b 14%, var(--suite-surface-primary));
+  --suite-status-warning-border: color-mix(in srgb, #f59e0b 35%, transparent);
+
+  --suite-status-danger-accent: var(--mn-danger, var(--tpc-alert-highlight, #ef4444));
+  --suite-status-danger-fg: color-mix(in srgb, var(--suite-status-danger-accent) 85%, var(--suite-fg-primary));
+  --suite-status-danger-bg: color-mix(in srgb, var(--suite-status-danger-accent) 12%, var(--suite-surface-primary));
+  --suite-status-danger-border: color-mix(in srgb, var(--suite-status-danger-accent) 32%, transparent);
+
+  --suite-status-info-accent: #3b82f6;
+  --suite-status-info-fg: color-mix(in srgb, #2563eb 82%, var(--suite-fg-primary));
+  --suite-status-info-bg: color-mix(in srgb, #3b82f6 12%, var(--suite-surface-primary));
+  --suite-status-info-border: color-mix(in srgb, #3b82f6 30%, transparent);
+
+  --suite-focus-ring: 0 0 0 3px color-mix(in srgb, var(--suite-accent) 28%, transparent);
+}
+
+@media (max-width: 640px) {
+  :where(:root, .tc-page-container) {
+    --suite-control-height-sm: 36px;
+    --suite-control-height-md: 44px;
+    --suite-touch-target: 44px;
+  }
+}
+
 .py-projects-heading {
   display: flex;
   justify-content: space-between;
@@ -45,7 +121,7 @@ type: text/vnd.tiddlywiki
 .tc-titlebar .py-checkbox .done svg {
   width: 26px;
   height: 26px;
-  fill: #2da562;
+  fill: var(--suite-status-success-accent);
 }
 
 .py-reorder-projects:not([hidden]) {
@@ -217,8 +293,8 @@ a.py-todo-link {
   }
 
   .py-todo-menu .py-btn {
-    min-width: 38px;
-    min-height: 38px;
+    min-width: var(--suite-touch-target, 44px);
+    min-height: var(--suite-touch-target, 44px);
     margin: -6px -4px;
     padding: 8px;
   }
@@ -347,6 +423,7 @@ a.py-todo-link {
 .py-todo-actions .py-btn.py-due-date {
   padding: 2px 7px;
   border-radius: 999px;
+  font-variant-numeric: tabular-nums;
 }
 
 .py-due-recur-icon {
@@ -357,10 +434,10 @@ a.py-todo-link {
 }
 
 .py-due-date.py-overdue {
-  color: #ffffff;
-  fill: #ffffff;
-  background: #e73939;
-  border-color: #e73939;
+  color: var(--suite-fg-on-accent, #ffffff);
+  fill: var(--suite-fg-on-accent, #ffffff);
+  background: var(--suite-status-danger-accent);
+  border-color: var(--suite-status-danger-accent);
   font-weight: 600;
 }
 
@@ -549,24 +626,24 @@ a.py-todo-link {
 .py-drop-down .py-priority-3,
 .py-drop-down .py-priority-3 svg,
 .py-btn.py-priority-3 {
-  fill: #e73939;
-  color: #e73939;
+  fill: var(--suite-status-danger-accent);
+  color: var(--suite-status-danger-fg);
 }
 
 .py-priority-2, .py-priority-2 svg,
 .py-drop-down .py-priority-2,
 .py-drop-down .py-priority-2 svg,
 .py-btn.py-priority-2 {
-  fill: #e77a39;
-  color: #e77a39;
+  fill: var(--suite-status-warning-accent);
+  color: var(--suite-status-warning-fg);
 }
 
 .py-priority-1, .py-priority-1 svg,
 .py-drop-down .py-priority-1,
 .py-drop-down .py-priority-1 svg,
 .py-btn.py-priority-1 {
-  fill: #2563eb;
-  color: #2563eb;
+  fill: var(--suite-status-info-accent);
+  color: var(--suite-status-info-fg);
 }
 
 .py-project-category-manager-table {
@@ -593,7 +670,7 @@ a.py-todo-link {
 }
 
 .py-checkbox .py-state-waiting {
-  color: #e77a39;
+  color: var(--suite-status-warning-accent);
   display: inline-flex;
 }
 
@@ -810,8 +887,8 @@ a.py-todo-link {
 }
 
 .tc-drop-down.py-drop-down .py-time-header .py-time-clear:hover {
-  color: #e73939;
-  background: color-mix(in srgb, #e73939 12%, transparent);
+  color: var(--suite-status-danger-fg);
+  background: var(--suite-status-danger-bg);
 }
 
 .py-time-presets {
@@ -1013,17 +1090,17 @@ a.py-todo-link {
 
 .py-badge-blocked,
 a.py-badge-blocked {
-  color: #e73939;
-  fill: #e73939;
-  background: color-mix(in srgb, #e73939 14%, transparent);
-  border: 1px solid color-mix(in srgb, #e73939 28%, transparent);
+  color: var(--suite-status-danger-fg);
+  fill: var(--suite-status-danger-fg);
+  background: var(--suite-status-danger-bg);
+  border: 1px solid var(--suite-status-danger-border);
   text-decoration: none;
   max-width: min(155px, 100%);
   min-width: 0;
 }
 
 a.py-badge-blocked:hover {
-  background: color-mix(in srgb, #e73939 22%, transparent);
+  background: color-mix(in srgb, var(--suite-status-danger-accent) 22%, transparent);
   text-decoration: none;
 }
 
@@ -1042,9 +1119,10 @@ a.py-badge-blocked:hover {
 }
 
 .py-badge-blocking {
-  color: #e77a39;
-  fill: #e77a39;
-  background: color-mix(in srgb, #e77a39 14%, transparent);
+  color: var(--suite-status-warning-fg);
+  fill: var(--suite-status-warning-fg);
+  background: var(--suite-status-warning-bg);
+  border: 1px solid var(--suite-status-warning-border);
 }
 
 .py-select-blocker {
@@ -1076,13 +1154,13 @@ a.py-badge-blocked:hover {
 }
 
 .py-banner-blocked {
-  background: color-mix(in srgb, #e73939 10%, var(--tpc-tiddler-background, <<colour tiddler-background>>));
-  border: 1px solid color-mix(in srgb, #e73939 30%, transparent);
+  background: var(--suite-status-danger-bg);
+  border: 1px solid var(--suite-status-danger-border);
 }
 
 .py-banner-blocking {
-  background: color-mix(in srgb, #e77a39 10%, var(--tpc-tiddler-background, <<colour tiddler-background>>));
-  border: 1px solid color-mix(in srgb, #e77a39 30%, transparent);
+  background: var(--suite-status-warning-bg);
+  border: 1px solid var(--suite-status-warning-border);
 }
 
 .py-dependency-banner-label {
@@ -1093,13 +1171,13 @@ a.py-badge-blocked:hover {
 }
 
 .py-banner-blocked .py-dependency-banner-label {
-  color: #e73939;
-  fill: #e73939;
+  color: var(--suite-status-danger-fg);
+  fill: var(--suite-status-danger-fg);
 }
 
 .py-banner-blocking .py-dependency-banner-label {
-  color: #e77a39;
-  fill: #e77a39;
+  color: var(--suite-status-warning-fg);
+  fill: var(--suite-status-warning-fg);
 }
 
 .py-dependency-banner-items {
@@ -1338,9 +1416,9 @@ input.py-input.py-inline-input {
 }
 
 .py-board-column {
-  background: color-mix(in srgb, var(--tpc-muted-foreground, <<colour muted-foreground>>) 8%, var(--tpc-tiddler-background, <<colour tiddler-background>>));
-  border: 1px solid color-mix(in srgb, var(--tpc-muted-foreground, <<colour muted-foreground>>) 22%, transparent);
-  border-radius: 10px;
+  background: var(--suite-surface-subtle);
+  border: 1px solid var(--suite-border-subtle);
+  border-radius: var(--suite-radius-md, 10px);
   padding: 10px;
   min-height: 160px;
   min-width: 0;
@@ -1416,32 +1494,32 @@ input.py-input.py-inline-input {
 }
 
 .py-board-cards .py-todo-item-wrapper {
-  background: var(--tpc-tiddler-background, <<colour tiddler-background>>);
-  border: 1px solid color-mix(in srgb, var(--tpc-muted-foreground, <<colour muted-foreground>>) 22%, transparent);
-  border-radius: 8px;
+  background: var(--suite-surface-card);
+  border: 1px solid var(--suite-border-subtle);
+  border-radius: var(--suite-radius-md, 10px);
   padding: 10px 10px 10px 12px;
   margin-bottom: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  box-shadow: var(--suite-shadow-xs);
   min-width: 0;
   overflow-wrap: break-word;
   transition: box-shadow 0.14s ease, border-color 0.14s ease;
 }
 
 .py-board-cards .py-todo-item-wrapper:hover {
-  border-color: color-mix(in srgb, var(--tpc-primary, <<colour primary>>) 42%, transparent);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.09);
+  border-color: var(--suite-border-strong);
+  box-shadow: var(--suite-shadow-sm);
 }
 
 .py-board-cards .py-todo-item-wrapper.py-has-priority-3 {
-  border-left: 3px solid #e73939;
+  border-left: 3px solid var(--suite-status-danger-accent);
 }
 
 .py-board-cards .py-todo-item-wrapper.py-has-priority-2 {
-  border-left: 3px solid #e77a39;
+  border-left: 3px solid var(--suite-status-warning-accent);
 }
 
 .py-board-cards .py-todo-item-wrapper.py-has-priority-1 {
-  border-left: 3px solid #2563eb;
+  border-left: 3px solid var(--suite-status-info-accent);
 }
 
 .py-board-cards .py-subtasks-indent .py-todo-item-wrapper {
@@ -1553,7 +1631,7 @@ input.py-input.py-inline-input {
     white-space: nowrap;
     font-size: 0.8em;
     padding: 5px 10px;
-    min-height: 34px;
+    min-height: var(--suite-touch-target, 44px);
   }
 
   .py-board-mobile-switcher .py-board-tab .py-count {
@@ -1640,7 +1718,7 @@ input.py-input.py-inline-input {
 }
 
 .py-quadrant-do-first {
-  border-top: 3px solid #e73939;
+  border-top: 3px solid var(--suite-status-danger-accent);
 }
 
 .py-quadrant-schedule {
@@ -1648,7 +1726,7 @@ input.py-input.py-inline-input {
 }
 
 .py-quadrant-delegate {
-  border-top: 3px solid #e77a39;
+  border-top: 3px solid var(--suite-status-warning-accent);
 }
 
 .py-quadrant-backlog {
@@ -1827,8 +1905,8 @@ input.py-input.py-inline-input {
 }
 
 .tc-drop-down.py-drop-down .py-reminder-header .py-reminder-cancel:hover {
-  color: #e73939;
-  background: color-mix(in srgb, #e73939 12%, transparent);
+  color: var(--suite-status-danger-fg);
+  background: var(--suite-status-danger-bg);
 }
 
 .py-reminder-chips {
@@ -1867,7 +1945,7 @@ input.py-input.py-inline-input {
 }
 
 .py-push-status-active {
-  border-color: color-mix(in srgb, #2da562 45%, transparent);
+  border-color: var(--suite-status-success-border);
 }
 
 /* Touch drag-and-drop ghost pill and mobile popup ergonomics */

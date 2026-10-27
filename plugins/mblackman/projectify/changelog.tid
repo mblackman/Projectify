@@ -1,9 +1,19 @@
 caption: ChangeLog
 created: 20201208093546936
-modified: 20261025180600000
+modified: 20261026182000000
 tags:
 title: $:/plugins/mblackman/projectify/changelog
 type: text/vnd.tiddlywiki
+
+! Release 0.19.0
+
+!! Unified Suite Design System & Dark-Mode Polish
+
+* ''Zero-Dependency Suite Token Architecture (`--suite-*`)'':
+** Added standalone-safe `--suite-*` custom property mappings across all cards, omnibar inputs, buttons, badges, and empty-state dropzones so Projectify automatically inherits Slipstream's theme tokens while falling back cleanly to TiddlyWiki 5.4 `--tpc-*` palette variables when installed standalone
+* ''Dark-Mode Project Category Cards & Control Standardization'':
+** Updated colored Project cards to blend category colors (`--py-card-bg`) at `14%` into `--suite-surface-card` via `color-mix()`, preserving crisp text legibility in both light and dark palettes
+** Standardized `.py-btn` and `.py-composite-input.py-omnibar` radii (`--suite-radius-sm` / `--suite-radius-md`), heights (`36px` desktop / `44px` mobile), and `:focus-visible` rings across the suite
 
 ! Release 0.18.0
 

@@ -11,9 +11,10 @@ type: text/vnd.tiddlywiki
   text-align: center;
   padding: 40px 20px;
   margin: 0 auto;
-  background: var(--tpc-message-background, <<colour message-background>>);
-  color: var(--tpc-message-foreground, <<colour message-foreground>>);
-  border-radius: 12px;
+  background: var(--suite-surface-subtle, var(--tpc-message-background, <<colour message-background>>));
+  color: var(--suite-fg-primary, var(--tpc-message-foreground, <<colour message-foreground>>));
+  border: 1px dashed var(--suite-border-strong, transparent);
+  border-radius: var(--suite-radius-lg, 14px);
 }
 
 .py-welcome .icon {
