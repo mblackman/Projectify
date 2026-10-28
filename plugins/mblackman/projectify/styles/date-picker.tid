@@ -25,37 +25,52 @@ type: text/vnd.tiddlywiki
 .py-date-picker .pika-single {
   margin: 0;
   border: 0;
-  padding: 6px;
+  padding: 4px 2px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
   color: var(--tpc-foreground, <<colour foreground>>);
   background: transparent;
 }
 
 .py-date-picker .pika-lendar {
-  margin: 0;
+  margin: 0 !important;
   border: 0;
-  width: 100%;
+  width: 100% !important;
+  max-width: 100%;
+  float: none !important;
+  box-sizing: border-box;
 }
 
 .py-date-picker .pika-lendar .pika-table {
   margin: 0;
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
 }
 
 .py-date-picker .pika-lendar .pika-table th {
   background: transparent;
-  font-weight: bold;
+  font-weight: 600;
+  font-size: 11px;
+  padding: 2px 0;
+  text-align: center;
   color: var(--tpc-muted-foreground, <<colour muted-foreground>>);
 }
 
 .py-date-picker .pika-lendar button,
 .py-date-picker .pika-button {
-  border-radius: 0;
+  border-radius: 5px;
   background-color: transparent;
   color: var(--tpc-foreground, <<colour foreground>>);
   text-align: center;
+  font-size: 12px;
+  box-sizing: border-box;
 }
 
 .py-date-picker .pika-button {
-  padding: 6px 8px !important;
+  padding: 5px 0 !important;
+  width: 100%;
 }
 
 .py-date-picker .pika-prev,

@@ -7,7 +7,7 @@ type: text/vnd.tiddlywiki
 \procedure lingo-base() $:/language/projectify/
 
 <$button class="tc-btn-invisible">
-  {{$:/plugins/mblackman/projectify/images/front}} <<lingo ConvertIntoProject>>
+  {{$:/plugins/mblackman/projectify/images/front}} <span class="py-menu-action-label"><<lingo ConvertIntoProject>></span>
   <$action-listops $tags=<<py-convert-todo-into-project>>/>
   <$action-sendmessage $message="tm-auto-save-wiki"/>
 </$button>

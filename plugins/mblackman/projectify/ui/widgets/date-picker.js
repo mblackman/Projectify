@@ -67,7 +67,7 @@ function getNextMonday() {
 }
 
 function isEndOfDayDate(date) {
-	if(!(date instanceof Date) || Number.isNaN(date.getTime())) {
+	if(!date || typeof date.getTime !== "function" || Number.isNaN(date.getTime())) {
 		return true;
 	}
 	return (
@@ -91,7 +91,7 @@ function formatDateWithOptionalTime(date, existingDate, timeToken) {
 			return $tw.utils.formatDateString(withTime, "[UTC]YYYY0MM0DD0hh0mm0ss0XXX");
 		}
 	}
-	if(existingDate instanceof Date && !Number.isNaN(existingDate.getTime()) && !isEndOfDayDate(existingDate)) {
+	if(existingDate && typeof existingDate.getTime === "function" && !Number.isNaN(existingDate.getTime()) && !isEndOfDayDate(existingDate)) {
 		const preserved = new Date(
 			date.getFullYear(),
 			date.getMonth(),
@@ -405,46 +405,60 @@ class TimePickerWidget extends AbstractDatePickerWidget {
 		}
 	}
 
+	formatTimeBadgeLabel(timeStr, use12h) {
+		if(!timeStr) return "";
+		const parts = timeStr.split(":");
+		const h = parseInt(parts[0], 10);
+		const mm = parts[1] || "00";
+		if(Number.isNaN(h)) return timeStr;
+		if(use12h) {
+			const suffix = h < 12 ? "AM" : "PM";
+			const h12 = h % 12 === 0 ? 12 : h % 12;
+			return `${h12}:${mm} ${suffix}`;
+		}
+		return `${String(h).padStart(2, "0")}:${mm}`;
+	}
+
+	stepTimeByMinutes(deltaMinutes) {
+		const currentStr = this.getCurrentTimeString();
+		let totalMinutes = 12 * 60;
+		if(currentStr) {
+			const parts = currentStr.split(":");
+			const h = parseInt(parts[0], 10);
+			const m = parseInt(parts[1] || "0", 10);
+			if(!Number.isNaN(h) && !Number.isNaN(m)) {
+				totalMinutes = h * 60 + m + deltaMinutes;
+			}
+		} else {
+			totalMinutes = 12 * 60 + deltaMinutes;
+		}
+		const wrapped = ((totalMinutes % 1440) + 1440) % 1440;
+		const nextH = String(Math.floor(wrapped / 60)).padStart(2, "0");
+		const nextM = String(wrapped % 60).padStart(2, "0");
+		this.setSpecificTime(`${nextH}:${nextM}`);
+		this.syncUiState();
+	}
+
 	syncUiState() {
 		const currentStr = this.getCurrentTimeString();
+		const use12h = is12HourTimePreferred(this.wiki);
 		if(this.clearBtnNode) {
 			this.clearBtnNode.hidden = !currentStr;
+		}
+		if(this.badgeNode) {
+			this.badgeNode.textContent = currentStr ? this.formatTimeBadgeLabel(currentStr, use12h) : "";
+			this.badgeNode.hidden = !currentStr;
 		}
 		if(this.presetButtons) {
 			this.presetButtons.forEach(({btn, time}) => {
 				const baseCls = "tc-btn-invisible py-time-chip tc-popup-handle";
 				btn.className = currentStr === time ? `${baseCls} py-active` : baseCls;
+				btn.setAttribute("aria-pressed", currentStr === time ? "true" : "false");
 			});
 		}
-		if(this.hourSelectNode && this.minuteSelectNode) {
-			if(currentStr) {
-				const parts = currentStr.split(":");
-				const hh = parts[0] || "";
-				const mm = parts[1] || "00";
-				this.hourSelectNode.value = hh;
-				if(this.minuteOptions && !this.minuteOptions.includes(mm)) {
-					this.minuteOptions.push(mm);
-					const customOpt = this.document.createElement("option");
-					customOpt.value = mm;
-					customOpt.textContent = mm;
-					this.minuteSelectNode.appendChild(customOpt);
-				}
-				this.minuteSelectNode.value = mm;
-			} else {
-				this.hourSelectNode.value = "";
-				this.minuteSelectNode.value = "00";
-			}
+		if(this.timeInputNode && this.timeInputNode.value !== currentStr) {
+			this.timeInputNode.value = currentStr;
 		}
-	}
-
-	formatHourOptionLabel(h, use12h) {
-		const hh = String(h).padStart(2, "0");
-		const suffix = h < 12 ? "AM" : "PM";
-		const h12 = h % 12 === 0 ? 12 : h % 12;
-		if(use12h) {
-			return `${h12}:00 ${suffix}`;
-		}
-		return `${hh}:00`;
 	}
 
 	createDomNode() {
@@ -453,15 +467,21 @@ class TimePickerWidget extends AbstractDatePickerWidget {
 		const wrap = this.document.createElement("div");
 		wrap.className = "py-time-picker-control tc-popup-handle";
 
-		// 1. Header row: Clock icon + "Time" label + Clear button
+		// 1. Header row: Clock icon + "Time" label + active time badge + Clear button
 		const header = this.document.createElement("div");
 		header.className = "py-time-header tc-popup-handle";
 
-		const labelSpan = this.document.createElement("span");
-		labelSpan.className = "py-inline-label tc-popup-handle";
+		const labelGroup = this.document.createElement("span");
+		labelGroup.className = "py-inline-label tc-popup-handle";
 		const clockIconTid = this.wiki.getTiddlerText("$:/plugins/mblackman/projectify/images/clock", "");
 		const timeCaption = this.wiki.getTiddlerText("$:/language/projectify/Time", "Time");
-		labelSpan.innerHTML = `${clockIconTid} <span class="tc-popup-handle">${timeCaption}</span>`;
+		labelGroup.innerHTML = `${clockIconTid} <span class="tc-popup-handle">${timeCaption}</span>`;
+
+		const badgeSpan = this.document.createElement("span");
+		badgeSpan.className = "py-time-badge tc-popup-handle";
+		badgeSpan.hidden = true;
+		this.badgeNode = badgeSpan;
+		labelGroup.appendChild(badgeSpan);
 
 		const clearBtn = this.document.createElement("button");
 		clearBtn.setAttribute("type", "button");
@@ -479,11 +499,11 @@ class TimePickerWidget extends AbstractDatePickerWidget {
 			this.syncUiState();
 		});
 
-		header.appendChild(labelSpan);
+		header.appendChild(labelGroup);
 		header.appendChild(clearBtn);
 		wrap.appendChild(header);
 
-		// 2. Mobile-friendly 4-chip quick preset grid
+		// 2. 4-chip quick preset grid
 		const presetsGrid = this.document.createElement("div");
 		presetsGrid.className = "py-time-presets tc-popup-handle";
 		const presets = [
@@ -515,66 +535,50 @@ class TimePickerWidget extends AbstractDatePickerWidget {
 		});
 		wrap.appendChild(presetsGrid);
 
-		// 3. Touch-friendly Hour & Minute <select> wheels (keeps popup open on mobile & desktop)
+		// 3. Unified native <input type="time"> + [-15m] / [+15m] quick-nudge stepper row
 		const customRow = this.document.createElement("div");
 		customRow.className = "py-time-custom-row tc-popup-handle";
 
-		const hourSelect = this.document.createElement("select");
-		hourSelect.className = "py-select-compact py-time-select py-time-hour-select tc-popup-handle";
-		hourSelect.setAttribute("aria-label", "Hour");
-		const placeholderOpt = this.document.createElement("option");
-		placeholderOpt.value = "";
-		placeholderOpt.textContent = use12h ? "— Default (12:00 PM) —" : "— Default (12:00) —";
-		hourSelect.appendChild(placeholderOpt);
-		for(let h = 0; h < 24; h++) {
-			const opt = this.document.createElement("option");
-			const hh = String(h).padStart(2, "0");
-			opt.value = hh;
-			opt.textContent = this.formatHourOptionLabel(h, use12h);
-			hourSelect.appendChild(opt);
-		}
-		this.hourSelectNode = hourSelect;
-
-		const sep = this.document.createElement("span");
-		sep.className = "py-time-sep tc-popup-handle";
-		sep.textContent = ":";
-
-		const minuteSelect = this.document.createElement("select");
-		minuteSelect.className = "py-select-compact py-time-select py-time-minute-select tc-popup-handle";
-		minuteSelect.setAttribute("aria-label", "Minute");
-		this.minuteOptions = [];
-		for(let m = 0; m < 60; m += 5) {
-			const opt = this.document.createElement("option");
-			const mm = String(m).padStart(2, "0");
-			opt.value = mm;
-			opt.textContent = mm;
-			minuteSelect.appendChild(opt);
-			this.minuteOptions.push(mm);
-		}
-		this.minuteSelectNode = minuteSelect;
-
-		const onSelectChange = () => {
-			const hh = hourSelect.value;
-			const mm = minuteSelect.value || "00";
-			if(!hh) {
-				this.setSpecificTime("");
-			} else {
-				this.setSpecificTime(`${hh}:${mm}`);
-			}
-			this.syncUiState();
-		};
-
-		hourSelect.addEventListener("change", onSelectChange);
-		minuteSelect.addEventListener("change", () => {
-			if(!hourSelect.value) {
-				hourSelect.value = "12";
-			}
-			onSelectChange();
+		const stepMinusBtn = this.document.createElement("button");
+		stepMinusBtn.setAttribute("type", "button");
+		stepMinusBtn.className = "tc-btn-invisible py-time-step-btn tc-popup-handle";
+		stepMinusBtn.textContent = "−15m";
+		stepMinusBtn.title = "15 minutes earlier";
+		stepMinusBtn.setAttribute("aria-label", "15 minutes earlier");
+		stepMinusBtn.addEventListener("click", (e) => {
+			e.preventDefault();
+			this.stepTimeByMinutes(-15);
 		});
 
-		customRow.appendChild(hourSelect);
-		customRow.appendChild(sep);
-		customRow.appendChild(minuteSelect);
+		const timeInput = this.document.createElement("input");
+		timeInput.setAttribute("type", "time");
+		timeInput.setAttribute("step", "300");
+		timeInput.setAttribute("aria-label", timeCaption);
+		timeInput.className = "py-input py-time-input tc-popup-handle";
+		this.timeInputNode = timeInput;
+
+		const onTimeInputChange = () => {
+			const val = (timeInput.value || "").trim();
+			this.setSpecificTime(val);
+			this.syncUiState();
+		};
+		timeInput.addEventListener("change", onTimeInputChange);
+		timeInput.addEventListener("input", onTimeInputChange);
+
+		const stepPlusBtn = this.document.createElement("button");
+		stepPlusBtn.setAttribute("type", "button");
+		stepPlusBtn.className = "tc-btn-invisible py-time-step-btn tc-popup-handle";
+		stepPlusBtn.textContent = "+15m";
+		stepPlusBtn.title = "15 minutes later";
+		stepPlusBtn.setAttribute("aria-label", "15 minutes later");
+		stepPlusBtn.addEventListener("click", (e) => {
+			e.preventDefault();
+			this.stepTimeByMinutes(15);
+		});
+
+		customRow.appendChild(stepMinusBtn);
+		customRow.appendChild(timeInput);
+		customRow.appendChild(stepPlusBtn);
 		wrap.appendChild(customRow);
 
 		this.syncUiState();
@@ -1746,12 +1750,14 @@ function initTouchDragReorderPolyfill() {
 
 		domNode.style.position = "fixed";
 		domNode.style.zIndex = "2000";
-		domNode.style.right = "auto";
-		domNode.style.bottom = "auto";
+		domNode.style.inset = "auto";
+		domNode.style.margin = "0";
+		domNode.style.left = "0px";
+		domNode.style.top = "0px";
 
 		const dropDown = domNode.querySelector(".tc-drop-down") || domNode;
-		const popupWidth = Math.max(dropDown.offsetWidth || 0, domNode.offsetWidth || 0, 210);
-		const popupHeight = Math.max(dropDown.offsetHeight || 0, domNode.offsetHeight || 0, 120);
+		const popupWidth = Math.max(dropDown.offsetWidth || 0, domNode.offsetWidth || 0, 180);
+		const popupHeight = Math.max(dropDown.offsetHeight || 0, domNode.offsetHeight || 0, 80);
 		const vw = window.innerWidth || document.documentElement.clientWidth || 390;
 		const vh = window.innerHeight || document.documentElement.clientHeight || 844;
 		const margin = 10;
@@ -1777,8 +1783,7 @@ function initTouchDragReorderPolyfill() {
 	const shouldUseFixedViewportPopup = (domNode) => {
 		if(!domNode || !domNode.closest) return false;
 		if(domNode.closest(".py-board")) return true;
-		const isMobileViewport = (window.innerWidth || document.documentElement.clientWidth || 1024) <= 960;
-		if(isMobileViewport && (domNode.classList.contains("py-drop-down") || domNode.querySelector(".py-drop-down"))) {
+		if(domNode.classList.contains("py-drop-down") || domNode.querySelector(".py-drop-down")) {
 			return true;
 		}
 		return false;
@@ -1844,16 +1849,34 @@ function initTouchDragReorderPolyfill() {
 		}
 	};
 
-	document.addEventListener("click", (e) => {
-		const toggleBtn = e.target && e.target.closest ? e.target.closest(".py-calendar-toggle, .py-time-toggle") : null;
-		if(toggleBtn) {
-			const dropDown = toggleBtn.closest(".py-todo-actions-drop-down");
+	document.addEventListener("toggle", (e) => {
+		const details = e.target;
+		if(!details || details.tagName !== "DETAILS" || !details.classList.contains("py-menu-disclosure")) {
+			return;
+		}
+		if(details.open) {
+			const dropDown = details.closest(".py-drop-down");
 			if(dropDown) {
-				dropDown.querySelectorAll("details.py-menu-disclosure[open]").forEach((d) => {
-					d.removeAttribute("open");
+				dropDown.querySelectorAll("details.py-menu-disclosure[open]").forEach((sibling) => {
+					if(sibling !== details) {
+						sibling.removeAttribute("open");
+					}
 				});
 			}
 		}
+		repositionOpenBoardPopups();
+		requestAnimationFrame(() => {
+			repositionOpenBoardPopups();
+		});
+	}, true);
+
+	if(typeof window !== "undefined" && window.addEventListener) {
+		window.addEventListener("resize", () => {
+			repositionOpenBoardPopups();
+		}, {passive: true});
+	}
+
+	document.addEventListener("click", (e) => {
 		requestAnimationFrame(() => {
 			repositionOpenBoardPopups();
 		});

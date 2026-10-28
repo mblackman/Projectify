@@ -9,8 +9,9 @@ type: text/vnd.tiddlywiki
     <$button
       class={{{ [{!!priority}match<priority>then[tc-btn-invisible py-priority-btn py-active py-priority-]else[tc-btn-invisible py-priority-btn py-priority-]] [<priority>] +[join[]] }}}
       tooltip={{{ [[P]] [<priority>] +[join[]] }}}
+      aria-label={{{ [[P]] [<priority>] +[join[]] }}}
     >
-      {{$:/plugins/mblackman/projectify/images/flag}}
+      {{$:/plugins/mblackman/projectify/images/flag}}<span class="py-priority-label">P<$text text=<<priority>>/></span>
       <$action-setfield priority=<<priority>>/>
       <$action-sendmessage $message="tm-auto-save-wiki"/>
     </$button>
@@ -19,6 +20,7 @@ type: text/vnd.tiddlywiki
   <$button
     class={{{ [{!!priority}is[blank]then[tc-btn-invisible py-priority-btn py-active]else[tc-btn-invisible py-priority-btn]] }}}
     tooltip={{$:/language/projectify/Clear}}
+    aria-label={{$:/language/projectify/Clear}}
   >
     {{$:/plugins/mblackman/projectify/images/slash-circle}}
     <$action-deletefield $field="priority"/>

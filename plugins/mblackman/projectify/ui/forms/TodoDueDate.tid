@@ -12,18 +12,34 @@ type: text/vnd.tiddlywiki
 </div>
 
 <%if [all[current]is[tiddler]!is[system]] %>
-  <div class="py-recur-inline tc-popup-handle">
-    <label class="py-inline-label tc-popup-handle">
-      {{$:/plugins/mblackman/projectify/images/repeat}} <<lingo Repeat>>
-    </label>
-    <$select field="recur" default="" class="py-select-compact tc-popup-handle">
-      <option value=""><<lingo Repeat/None>></option>
-      <option value="daily">daily</option>
-      <option value="weekdays">weekdays</option>
-      <option value="weekly">weekly</option>
-      <option value="monthly">monthly</option>
-      <option value="yearly">yearly</option>
-    </$select>
+  <div class="py-recur-section tc-popup-handle">
+    <div class="py-time-header tc-popup-handle">
+      <span class="py-inline-label tc-popup-handle">
+        {{$:/plugins/mblackman/projectify/images/repeat}} <<lingo Repeat>>
+      </span>
+      <%if [{!!recur}!is[blank]] %>
+        <$button class="tc-btn-invisible py-time-clear tc-popup-handle">
+          <$action-deletefield $field="recur"/>
+          × <<lingo Clear>>
+        </$button>
+      <%endif%>
+    </div>
+    <div class="py-recur-chips tc-popup-handle" role="group" aria-label="Repeat frequency">
+      <$list filter="daily:Daily weekdays:Weekdays weekly:Weekly monthly:Monthly yearly:Yearly" variable="recurItem">
+        <$let
+          recurVal={{{ [<recurItem>split[:]first[]] }}}
+          recurLabel={{{ [<recurItem>split[:]last[]] }}}
+          nextRecur={{{ [{!!recur}match<recurVal>then[]else<recurVal>] }}}
+        >
+          <$button
+            class={{{ [{!!recur}match<recurVal>then[tc-btn-invisible py-time-chip py-recur-chip py-active tc-popup-handle]else[tc-btn-invisible py-time-chip py-recur-chip tc-popup-handle]] }}}
+          >
+            <$action-setfield recur=<<nextRecur>>/>
+            <$text text=<<recurLabel>>/>
+          </$button>
+        </$let>
+      </$list>
+    </div>
   </div>
   <%if [{$:/config/projectify/EnablePushNotifications}!match[no]] %>
     {{||$:/plugins/mblackman/projectify/ui/forms/TodoReminder}}
@@ -33,25 +49,23 @@ type: text/vnd.tiddlywiki
 
 <$let
   modeTiddler=<<qualify "$:/state/projectify/date-picker-mode">>
-  calendarToggleTiddler=<<qualify "$:/state/projectify/date-picker-calendar">>
-  timeToggleTiddler=<<qualify "$:/state/projectify/date-picker-time-open">>
+  accordionGroup={{{ [<disclosureGroup>!is[blank]else<qualify "$:/state/projectify/date-disclosure">] }}}
   dateField={{{ [<modeTiddler>get[text]match[scheduled]then[scheduled]else[due]] }}}
-  showCalendar={{{ [<compactCalendar>match[yes]then<calendarToggleTiddler>get[text]else[yes]] }}}
+  hasAnyDate={{{ [subfilter<py-is-scheduled>then[yes]] [subfilter<py-has-start-date>then[yes]] +[limit[1]] }}}
   hasAdvancedTimeOrRecur={{{ [subfilter<py-has-due-time>then[yes]] [subfilter<py-has-scheduled-time>then[yes]] [{!!recur}!is[blank]then[yes]] +[limit[1]] }}}
-  showTimePanel={{{ [<compactCalendar>match[yes]then<timeToggleTiddler>get[text]else[no]] }}}
 >
   <%if [{$:/config/projectify/EnableScheduledDates}!match[no]] %>
     <div class="py-date-mode-tabs tc-popup-handle">
       <$button
         class={{{ [<dateField>match[due]then[tc-btn-invisible py-date-mode-tab py-active tc-popup-handle]else[tc-btn-invisible py-date-mode-tab tc-popup-handle]] }}}
       >
-        <<lingo DueDate/Tab>>
+        <<lingo DueDate/Tab>><%if [subfilter<py-is-scheduled>] %><span class="py-disclosure-dot"></span><%endif%>
         <$action-setfield $tiddler=<<modeTiddler>> text="due"/>
       </$button>
       <$button
         class={{{ [<dateField>match[scheduled]then[tc-btn-invisible py-date-mode-tab py-active tc-popup-handle]else[tc-btn-invisible py-date-mode-tab tc-popup-handle]] }}}
       >
-        <<lingo StartDate/Tab>>
+        <<lingo StartDate/Tab>><%if [subfilter<py-has-start-date>] %><span class="py-disclosure-dot"></span><%endif%>
         <$action-setfield $tiddler=<<modeTiddler>> text="scheduled"/>
       </$button>
     </div>
@@ -62,59 +76,43 @@ type: text/vnd.tiddlywiki
     <$py-date-tomorrow field=<<dateField>>>{{$:/plugins/mblackman/projectify/images/calendar-event}} <<lingo Tomorrow>></$py-date-tomorrow>
     <$py-date-next-week field=<<dateField>>>{{$:/plugins/mblackman/projectify/images/calendar}} <<lingo NextWeek>></$py-date-next-week>
     <$py-date-clear field=<<dateField>>>{{$:/plugins/mblackman/projectify/images/slash-circle}} <<lingo Clear>></$py-date-clear>
-    <%if [<compactCalendar>match[yes]] %>
-      <$button
-        class={{{ [<showCalendar>match[yes]then[tc-btn-invisible py-calendar-toggle py-active tc-popup-handle]else[tc-btn-invisible py-calendar-toggle tc-popup-handle]] }}}
-        tooltip={{$:/language/projectify/Calendar}}
-        aria-label={{$:/language/projectify/Calendar}}
-      >
-        {{$:/plugins/mblackman/projectify/images/calendar}} <<lingo Calendar>>
-        <%if [<showCalendar>match[yes]] %>
-          <$action-setfield $tiddler=<<calendarToggleTiddler>> text="no"/>
-        <%else%>
-          <$action-setfield $tiddler=<<calendarToggleTiddler>> text="yes"/>
-          <$action-setfield $tiddler=<<timeToggleTiddler>> text="no"/>
-        <%endif%>
-      </$button>
-      <$button
-        class={{{ [<showTimePanel>match[yes]then[tc-btn-invisible py-time-toggle py-active tc-popup-handle]else[tc-btn-invisible py-time-toggle tc-popup-handle]] }}}
-        tooltip={{$:/language/projectify/Time}}
-        aria-label={{$:/language/projectify/Time}}
-      >
-        {{$:/plugins/mblackman/projectify/images/clock}} <<lingo Time>> / <<lingo Repeat>><%if [<hasAdvancedTimeOrRecur>match[yes]] %><span class="py-disclosure-dot"></span><%endif%>
-        <%if [<showTimePanel>match[yes]] %>
-          <$action-setfield $tiddler=<<timeToggleTiddler>> text="no"/>
-        <%else%>
-          <$action-setfield $tiddler=<<timeToggleTiddler>> text="yes"/>
-          <$action-setfield $tiddler=<<calendarToggleTiddler>> text="no"/>
-        <%endif%>
-      </$button>
-    <%endif%>
   </div>
 
-  <%if [<showCalendar>match[yes]] %>
-    <div class="py-calendar-container tc-popup-handle">
-      <$py-date-calendar field=<<dateField>>/>
-    </div>
-  <%endif%>
-
   <%if [<compactCalendar>match[yes]] %>
-    <%if [<showTimePanel>match[yes]] %>
-      <div class="py-time-panel-drawer tc-popup-handle">
-        <<todo-time-recur-remind-panel>>
-      </div>
-    <%endif%>
-  <%else%>
-    <details class="py-menu-disclosure tc-popup-handle">
+    <details class="py-menu-disclosure tc-popup-handle" name=<<accordionGroup>>>
       <summary class="py-menu-disclosure-summary tc-popup-handle">
         <span class="py-disclosure-summary-label tc-popup-handle">
-          {{$:/plugins/mblackman/projectify/images/clock}} <<lingo Time>> / <<lingo Repeat>>
-          <%if [<hasAdvancedTimeOrRecur>match[yes]] %><span class="py-disclosure-dot"></span><%endif%>
+          {{$:/plugins/mblackman/projectify/images/calendar}} <<lingo Calendar>>
+          <%if [<hasAnyDate>match[yes]] %><span class="py-disclosure-dot"></span><%endif%>
         </span>
       </summary>
-      <div class="py-menu-disclosure-body tc-popup-handle">
-        <<todo-time-recur-remind-panel>>
+      <div class="py-menu-disclosure-body py-calendar-container tc-popup-handle">
+        <$py-date-calendar field=<<dateField>>/>
+      </div>
+    </details>
+  <%else%>
+    <details class="py-menu-disclosure tc-popup-handle" name=<<accordionGroup>> open>
+      <summary class="py-menu-disclosure-summary tc-popup-handle">
+        <span class="py-disclosure-summary-label tc-popup-handle">
+          {{$:/plugins/mblackman/projectify/images/calendar}} <<lingo Calendar>>
+          <%if [<hasAnyDate>match[yes]] %><span class="py-disclosure-dot"></span><%endif%>
+        </span>
+      </summary>
+      <div class="py-menu-disclosure-body py-calendar-container tc-popup-handle">
+        <$py-date-calendar field=<<dateField>>/>
       </div>
     </details>
   <%endif%>
+
+  <details class="py-menu-disclosure tc-popup-handle" name=<<accordionGroup>>>
+    <summary class="py-menu-disclosure-summary tc-popup-handle">
+      <span class="py-disclosure-summary-label tc-popup-handle">
+        {{$:/plugins/mblackman/projectify/images/clock}} <<lingo Time>> / <<lingo Repeat>>
+        <%if [<hasAdvancedTimeOrRecur>match[yes]] %><span class="py-disclosure-dot"></span><%endif%>
+      </span>
+    </summary>
+    <div class="py-menu-disclosure-body py-time-panel-drawer tc-popup-handle">
+      <<todo-time-recur-remind-panel>>
+    </div>
+  </details>
 </$let>

@@ -819,4 +819,66 @@ describe("Projectify Plugin ($:/plugins/mblackman/projectify)", () => {
     $tw.wiki.deleteTiddler("Task High");
     $tw.wiki.deleteTiddler("Task Medium");
   });
+
+  test("renders streamlined TodoActions and TodoDueDate dropdown menus with mutually exclusive <details name> disclosures and labeled priorities", () => {
+    const dueFormHtml = renderWithGlobals(
+      "{{||$:/plugins/mblackman/projectify/ui/forms/TodoDueDate}}",
+      "Schedule meeting with John"
+    );
+    // Standalone TodoDueDate has 2 mutually exclusive <details> (Calendar open by default, Time/Repeat closed)
+    const standaloneDetails = dueFormHtml.match(/<details [^>]*class="py-menu-disclosure[^"]*"[^>]*>/g) || [];
+    expect(standaloneDetails.length).toBe(2);
+    expect(standaloneDetails[0]).toContain("open");
+    expect(standaloneDetails[0]).toContain('name="');
+    expect(standaloneDetails[1]).not.toContain("open");
+
+    // Verify unified time picker (presets, -15m/+15m steppers, native <input type="time">) and recurrence chips
+    expect(dueFormHtml).toContain('type="time"');
+    expect(dueFormHtml).toContain("py-time-input");
+    expect(dueFormHtml).toContain("py-time-step-btn");
+    expect(dueFormHtml).toContain("−15m");
+    expect(dueFormHtml).toContain("+15m");
+    expect(dueFormHtml).toContain("py-recur-chips");
+    expect(dueFormHtml).toContain("Weekdays");
+
+    // Verify stepTimeByMinutes helper on TimePickerWidget
+    const TimePickerWidget = $tw.modules.applyMethods("widget")["py-time-picker"];
+    const tpInstance = new TimePickerWidget(
+      {
+        type: "py-time-picker",
+        attributes: {
+          tiddler: { type: "string", value: "Schedule meeting with John" },
+          field: { type: "string", value: "due" }
+        }
+      },
+      { wiki: $tw.wiki }
+    );
+    tpInstance.computeAttributes();
+    tpInstance.execute();
+    tpInstance.setSpecificTime("14:50");
+    tpInstance.stepTimeByMinutes(15);
+    expect(tpInstance.getCurrentTimeString()).toBe("15:05");
+    tpInstance.setSpecificTime("");
+    expect(tpInstance.getCurrentTimeString()).toBe("");
+
+    // Compact TodoActions menu renders 3 mutually exclusive <details> with the same name attribute, all closed by default
+    const compactMenuHtml = renderWithGlobals(
+      `<$let disclosureGroup="shared-menu-acc" compactCalendar="yes">{{||$:/plugins/mblackman/projectify/ui/forms/TodoPriority}}{{||$:/plugins/mblackman/projectify/ui/forms/TodoDueDate}}<details class="py-menu-disclosure tc-popup-handle" name=<<disclosureGroup>>><summary>Context</summary></details></$let>`,
+      "Schedule meeting with John"
+    );
+    expect(compactMenuHtml).toContain('<span class="py-priority-label">P3</span>');
+    expect(compactMenuHtml).toContain('<span class="py-priority-label">P2</span>');
+    expect(compactMenuHtml).toContain('<span class="py-priority-label">P1</span>');
+
+    const compactDetails = compactMenuHtml.match(/<details [^>]*name="shared-menu-acc"[^>]*>/g) || [];
+    expect(compactDetails.length).toBe(3);
+    compactDetails.forEach((tag) => {
+      expect(tag).not.toContain("open");
+    });
+
+    const stylesheetText = $tw.wiki.getTiddlerText("$:/plugins/mblackman/projectify/styles/stylesheet");
+    const datePickerCss = $tw.wiki.getTiddlerText("$:/plugins/mblackman/projectify/styles/date-picker");
+    expect(stylesheetText).toContain("overflow-x: hidden;");
+    expect(datePickerCss).toContain("table-layout: fixed;");
+  });
 });

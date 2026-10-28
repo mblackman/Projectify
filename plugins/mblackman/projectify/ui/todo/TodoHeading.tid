@@ -25,27 +25,30 @@ type: text/vnd.tiddlywiki
         <<lingo More>> {{$:/core/images/down-arrow}}
       </$button>
 
-      <$reveal state=<<popupTiddler>> type="popup" class="tc-drop-down py-drop-down" position="below">
+      <$reveal state=<<popupTiddler>> type="popup" class="tc-drop-down py-drop-down py-todo-actions-drop-down" position="below">
         <%if [subfilter<py-is-not-subproject>] %>
           <$button class="tc-btn-invisible">
             {{$:/plugins/mblackman/projectify/images/checklist}} <<lingo AddSubTasks/Caption>>
             <$action-listops $tags="[[SubProject]]"/>
             <$action-sendmessage $message="tm-auto-save-wiki"/>
           </$button>
+          <hr/>
         <%endif%>
 
         <%if [{$:/config/projectify/EnableContexts}!match[no]] %>
+          <div class="py-drop-down-section tc-popup-handle">
+            <label class="py-label tc-popup-handle">{{$:/plugins/mblackman/projectify/images/sliders}} <<lingo Context/Filter>></label>
+            {{||$:/plugins/mblackman/projectify/ui/forms/TodoContext}}
+          </div>
           <hr/>
-          {{||$:/plugins/mblackman/projectify/ui/forms/TodoContext}}
         <%endif%>
 
-        <hr/>
         <div class="py-dependency-picker tc-popup-handle">
           <label class="py-label tc-popup-handle">{{$:/plugins/mblackman/projectify/images/lock}} <<lingo BlockedBy/Caption>></label>
           <$select field="blocked-by" default="" class="py-select-compact py-select-full tc-popup-handle">
             <option value="">—</option>
             <$list filter="[all[tiddlers]tag[todo]!has[draft.of]!tag[done]!title<currentTiddler>sort[title]]" variable="blocker">
-              <option value={{{ [<blocker>format:titlelist[]] }}}><$text text=<<blocker>>/></option>
+              <option value={{{ [<blocker>format:titlelist[]] }}}><$text text={{{ [<blocker>get[caption]!is[blank]else<blocker>] }}}/></option>
             </$list>
           </$select>
         </div>

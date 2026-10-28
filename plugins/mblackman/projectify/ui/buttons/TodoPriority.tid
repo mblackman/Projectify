@@ -18,7 +18,7 @@ type: text/vnd.tiddlywiki
   </$button>
 
   <$reveal state=<<popupTiddler>> type="popup" position="belowleft" animate="no">
-    <div class="tc-drop-down py-drop-down">
+    <div class="tc-drop-down py-drop-down py-priority-drop-down">
       {{||$:/plugins/mblackman/projectify/ui/forms/TodoPriority}}
     </div>
   </$reveal>
