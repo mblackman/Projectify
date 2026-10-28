@@ -37,7 +37,7 @@ describe("Projectify Plugin ($:/plugins/mblackman/projectify)", () => {
     expect(pluginTiddler).toBeDefined();
     expect(pluginTiddler.fields.name).toBe("Projectify");
     expect(pluginTiddler.fields["core-version"]).toBe(">=5.4.0");
-    expect(pluginTiddler.fields.version).toBe("0.19.0");
+    expect(pluginTiddler.fields.version).toBe("0.20.0");
     expect(pluginTiddler.fields["plugin-type"]).toBe("plugin");
     expect(pluginTiddler.fields.list).toEqual(["readme", "doc/Help", "changelog", "LICENSE"]);
   });
@@ -65,6 +65,7 @@ describe("Projectify Plugin ($:/plugins/mblackman/projectify)", () => {
       "$:/plugins/mblackman/projectify/ui/project/ProjectBoard",
       "$:/plugins/mblackman/projectify/ui/forms/TodoStatus",
       "$:/plugins/mblackman/projectify/ui/forms/TodoContext",
+      "$:/plugins/mblackman/projectify/ui/forms/TodoProject",
       "$:/plugins/mblackman/projectify/ui/forms/TodoReminder",
       "$:/plugins/mblackman/projectify/ui/config/Notifications",
       "$:/config/projectify/notifications/TodoDueRule",
@@ -880,5 +881,85 @@ describe("Projectify Plugin ($:/plugins/mblackman/projectify)", () => {
     const datePickerCss = $tw.wiki.getTiddlerText("$:/plugins/mblackman/projectify/styles/date-picker");
     expect(stylesheetText).toContain("overflow-x: hidden;");
     expect(datePickerCss).toContain("table-layout: fixed;");
+  });
+
+  test("enforces ARIA combobox/toggle semantics, IME-safe Enter submit, live smart token preview, temp locale status, and one-click project refiling", () => {
+    // 1. Startup locale time status uses $:/temp/ so it does not dirty the wiki saver
+    expect($tw.wiki.tiddlerExists("$:/temp/projectify/LocaleTimeFormat")).toBe(true);
+    expect($tw.wiki.tiddlerExists("$:/status/projectify/LocaleTimeFormat")).toBe(false);
+
+    // 2. TodoItem checkbox, TodoStatus, and TodoPriority expose aria-pressed and aria-label
+    const todoItemHtml = renderWithGlobals(
+      "{{||$:/plugins/mblackman/projectify/ui/todo/TodoItem}}",
+      "Schedule meeting with John"
+    );
+    expect(todoItemHtml).toContain('aria-label="Toggle Schedule meeting with John"');
+    expect(todoItemHtml).toContain('aria-pressed="false"');
+
+    const statusFormHtml = renderWithGlobals(
+      "{{||$:/plugins/mblackman/projectify/ui/forms/TodoStatus}}",
+      "Schedule meeting with John"
+    );
+    expect(statusFormHtml).toContain('aria-pressed="true"');
+    expect(statusFormHtml).toContain('aria-pressed="false"');
+
+    // 3. QuickInputWidget renders combobox ARIA attributes, live smart token preview, and guards IME composition on Enter
+    const QuickInputWidget = $tw.modules.applyMethods("widget")["py-quick-input"];
+    $tw.wiki.addTiddler({
+      title: "$:/temp/projectify/test-ime-input",
+      "todo-name": "Ship v1.0 !3 @today #Inbox @work"
+    });
+    let submitted = false;
+    const widget = new QuickInputWidget(
+      {
+        type: "py-quick-input",
+        attributes: {
+          tiddler: { type: "string", value: "$:/temp/projectify/test-ime-input" },
+          field: { type: "string", value: "todo-name" },
+          actions: { type: "string", value: "<$action-setfield $tiddler='$:/temp/projectify/test-ime-submitted' text='yes'/>" }
+        }
+      },
+      { wiki: $tw.wiki, document: $tw.fakeDocument }
+    );
+    const parent = $tw.fakeDocument.createElement("div");
+    widget.render(parent, null);
+
+    expect(widget.inputNode.getAttribute("role")).toBe("combobox");
+    expect(widget.inputNode.getAttribute("aria-autocomplete")).toBe("list");
+    expect(widget.inputNode.getAttribute("aria-expanded")).toBe("false");
+    expect(widget.inputNode.getAttribute("enterkeyhint")).toBe("done");
+    expect(widget.previewNode.hidden).toBe(false);
+    expect(widget.previewNode.children.length).toBeGreaterThanOrEqual(4);
+
+    // IME composing Enter must NOT trigger submitActions
+    widget.handleKeyDown({
+      key: "Enter",
+      isComposing: true,
+      preventDefault: () => { submitted = true; },
+      stopPropagation: () => {}
+    });
+    expect(submitted).toBe(false);
+    expect($tw.wiki.getTiddler("$:/temp/projectify/test-ime-submitted")).toBeUndefined();
+
+    // Non-composing Enter triggers submitActions
+    widget.handleKeyDown({
+      key: "Enter",
+      isComposing: false,
+      preventDefault: () => { submitted = true; },
+      stopPropagation: () => {}
+    });
+    expect(submitted).toBe(true);
+    expect($tw.wiki.getTiddlerText("$:/temp/projectify/test-ime-submitted")).toBe("yes");
+
+    // 4. TodoProject form refiles a task from Inbox to a Project without side effects on render
+    const refileHtml = renderWithGlobals(
+      "{{||$:/plugins/mblackman/projectify/ui/forms/TodoProject}}",
+      "Buy milk"
+    );
+    expect(refileHtml).toContain("py-project-refile-inline");
+    expect(refileHtml).toContain("Product roadmap");
+
+    $tw.wiki.deleteTiddler("$:/temp/projectify/test-ime-input");
+    $tw.wiki.deleteTiddler("$:/temp/projectify/test-ime-submitted");
   });
 });

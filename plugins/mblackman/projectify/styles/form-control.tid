@@ -35,6 +35,8 @@ type: text/vnd.tiddlywiki
 }
 
 .py-btn:focus-visible {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
   box-shadow: var(--suite-focus-ring, 0 0 0 0.2rem color-mix(in srgb, var(--tpc-primary, <<colour primary>>) 30%, transparent));
 }
 
@@ -144,10 +146,10 @@ type: text/vnd.tiddlywiki
   display: none;
 }
 
-@media (max-width: {{$:/themes/tiddlywiki/vanilla/metrics/sidebarbreakpoint}}) {
+@media (max-width: 640px), (max-width: {{$:/themes/tiddlywiki/vanilla/metrics/sidebarbreakpoint}}) {
   .py-composite-input.py-omnibar {
     flex-wrap: wrap;
-    border-radius: 12px;
+    border-radius: var(--suite-radius-md, 10px);
     padding: 8px 10px;
   }
 
@@ -159,7 +161,26 @@ type: text/vnd.tiddlywiki
     width: 100%;
     justify-content: flex-end;
     padding-top: 4px;
-    border-top: 1px solid color-mix(in srgb, var(--tpc-muted-foreground, <<colour muted-foreground>>) 15%, transparent);
+    border-top: 1px solid var(--suite-border-hairline, color-mix(in srgb, var(--tpc-muted-foreground, <<colour muted-foreground>>) 15%, transparent));
+  }
+}
+
+@container (max-width: 640px) {
+  .py-composite-input.py-omnibar {
+    flex-wrap: wrap;
+    border-radius: var(--suite-radius-md, 10px);
+    padding: 8px 10px;
+  }
+
+  .py-composite-input.py-omnibar .py-quick-input-wrapper {
+    flex: 1 1 100%;
+  }
+
+  .py-composite-input.py-omnibar .py-omnibar-controls {
+    width: 100%;
+    justify-content: flex-end;
+    padding-top: 4px;
+    border-top: 1px solid var(--suite-border-hairline, color-mix(in srgb, var(--tpc-muted-foreground, <<colour muted-foreground>>) 15%, transparent));
   }
 }
 
@@ -217,9 +238,35 @@ select.py-input,
 input.py-input:focus,
 select.py-input:focus,
 .py-form select:focus {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
   box-shadow: var(--suite-focus-ring, 0 0 0.2rem 0 var(--tpc-primary, <<colour primary>>));
-  outline: 0;
   border-color: var(--suite-accent, var(--tpc-primary, <<colour primary>>));
+}
+
+.tc-tiddler-frame select.py-input,
+select.py-input,
+.py-form select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 2.25rem;
+  background-image: linear-gradient(45deg, transparent 50%, var(--suite-fg-muted, var(--tpc-muted-foreground, <<colour muted-foreground>>)) 50%),
+                    linear-gradient(135deg, var(--suite-fg-muted, var(--tpc-muted-foreground, <<colour muted-foreground>>)) 50%, transparent 50%);
+  background-position:
+    calc(100% - 16px) calc(50% - 2px),
+    calc(100% - 11px) calc(50% - 2px);
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+}
+
+@media (max-width: 640px), (pointer: coarse) {
+  .tc-tiddler-frame input.py-input,
+  .tc-tiddler-frame select.py-input,
+  input.py-input,
+  select.py-input,
+  .py-form select {
+    font-size: max(1rem, 16px);
+  }
 }
 
 input.py-input.input-larger {
@@ -293,11 +340,11 @@ input.py-input.input-large {
 }
 
 .py-popup {
-  background: var(--tpc-tiddler-background, <<colour tiddler-background>>);
-  color: var(--tpc-foreground, <<colour foreground>>);
-  border-radius: 8px;
-  box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.3);
-  border: 1px solid color-mix(in srgb, var(--tpc-muted-foreground, <<colour muted-foreground>>) 25%, transparent);
+  background: var(--suite-surface-elevated, var(--tpc-tiddler-background, <<colour tiddler-background>>));
+  color: var(--suite-fg-primary, var(--tpc-foreground, <<colour foreground>>));
+  border-radius: var(--suite-radius-md, 10px);
+  box-shadow: var(--suite-shadow-lg, 0 4px 16px 0 rgba(0, 0, 0, 0.3));
+  border: 1px solid var(--suite-border-subtle, color-mix(in srgb, var(--tpc-muted-foreground, <<colour muted-foreground>>) 25%, transparent));
   padding: 5px 20px;
   width: 350px;
   max-width: 90vw;

@@ -134,6 +134,8 @@ type: text/vnd.tiddlywiki
     <div class="py-board-mobile-switcher" role="tablist">
       <button
         type="button"
+        role="tab"
+        aria-selected="true"
         class="py-btn btn-small py-board-tab py-active"
         data-col-target="todo"
       >
@@ -141,6 +143,8 @@ type: text/vnd.tiddlywiki
       </button>
       <button
         type="button"
+        role="tab"
+        aria-selected="false"
         class="py-btn btn-small py-board-tab"
         data-col-target="in-progress"
       >
@@ -148,6 +152,8 @@ type: text/vnd.tiddlywiki
       </button>
       <button
         type="button"
+        role="tab"
+        aria-selected="false"
         class="py-btn btn-small py-board-tab"
         data-col-target="waiting"
       >
@@ -155,6 +161,8 @@ type: text/vnd.tiddlywiki
       </button>
       <button
         type="button"
+        role="tab"
+        aria-selected="false"
         class="py-btn btn-small py-board-tab"
         data-col-target="done"
       >

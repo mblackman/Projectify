@@ -1,9 +1,29 @@
 caption: ChangeLog
 created: 20201208093546936
-modified: 20261026182000000
+modified: 20261028171600000
 tags:
 title: $:/plugins/mblackman/projectify/changelog
 type: text/vnd.tiddlywiki
+
+! Release 0.20.0
+
+!! Smart Token Preview, Project Refiling, Container Queries & Accessibility
+
+* ''Live Smart-Token Preview Bar (`QuickInputWidget`)'':
+** Added live inline token feedback pills (`.py-smart-token-preview` / `.py-token-pill`) below task capture inputs showing recognized `#Project`, `!P1`–`!P3`, `📅 Due`, `☀️ Start`, and `@context` tokens as you type
+* ''One-Click Project Refiling (`TodoProject`)'':
+** Added a Move-to-Project picker in both the inline hover action bar / mobile overflow menu (`TodoActions`) and the task tiddler header (`TodoHeading`) to refile tasks between Inbox and any active Project in two clicks
+* ''Configurable Task Row Density'':
+** Added a Comfortable (`8px`) vs. Compact (`4px`) task list density setting in Control Panel > Projectify (`$:/config/projectify/Density`) powered by `--suite-row-padding-y` and `.suite-density-compact`
+* ''Streamlined Progressive Disclosure Menus & Time/Repeat Drawer'':
+** Refined task `...` actions and Date Picker popups with compact icon + label grids, mutually exclusive progressive disclosure drawers, and a unified `Time / Repeat` drawer
+* ''Container Queries (`@container`) & Responsive Layout'':
+** Added `container-type: inline-size` on `.py-todos` and `.py-board-container` with `@container (max-width: 680px)` rules so narrow side-by-side tiddler columns automatically collapse into the compact mobile menu layout, and updated fixed popup positioning to account for CSS containment offsets
+* ''Accessibility, Keyboard Navigation & Performance'':
+** Added WAI-ARIA `role="combobox"`, `aria-expanded`, `aria-controls`, `aria-activedescendant`, `enterkeyhint="done"`, and IME composition guards (`event.isComposing`) on task inputs; `aria-label` and `aria-pressed` on task completion and status/priority/context toggles; and `role="tablist"` / `role="tab"` / `aria-selected` on mobile Kanban column switchers
+** Preserved DOM sequential focus order on Kanban cards by removing CSS `order` swaps and `display: contents`
+** Replaced `O(N^2)` `contains:blocked-by` filter scans with TiddlyWiki's reverse-indexed `listed[blocked-by]` operator (`O(N)`)
+** Moved automatic locale clock detection to `$:/temp/projectify/LocaleTimeFormat` so booting the wiki never dirties TiddlyWiki's saver
 
 ! Release 0.19.0
 

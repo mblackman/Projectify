@@ -41,6 +41,9 @@ Categories: Categories
 Dashboard: Dashboard
 DateFormat: DDth mmm
 DefaultDashboardTab: Default dashboard tab
+Density/Comfortable: Comfortable
+Density/Compact: Compact
+Density/Label: List density
 DeleteSection/Hint: Delete section
 DragTodoTip: Drag & drop any tiddler below to add it as a task to this project.
 DueDate/Tab: Due (Deadline)
@@ -64,6 +67,7 @@ Matrix/Backlog/Hint: Backlog / Later
 More: More
 MoreActions/Hint: More actions
 MoveDown/Caption: Move down
+MoveToProject/Caption: Project
 MoveUp/Caption: Move up
 NewProject: Create new project
 NewProjectCategory: Category (optional)

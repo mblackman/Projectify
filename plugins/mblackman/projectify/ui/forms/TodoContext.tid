@@ -21,6 +21,7 @@ type: text/vnd.tiddlywiki
       <$list filter="[{$:/config/projectify/DefaultContexts}enlist-input[]] [subfilter<py-all-contexts>] +[unique[]]" variable="ctx">
         <$button
           class={{{ [all[current]get[context]enlist-input[]match<ctx>then[tc-btn-invisible py-context-chip py-active tc-popup-handle]else[tc-btn-invisible py-context-chip tc-popup-handle]] }}}
+          aria-pressed={{{ [all[current]get[context]enlist-input[]match<ctx>then[true]else[false]] }}}
           actions=<<toggle-context-actions>>
         >
           <$text text=<<ctx>>/>

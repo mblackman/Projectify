@@ -33,18 +33,43 @@ type: text/vnd.tiddlywiki
   --suite-radius-sm: 8px;
   --suite-radius-md: 10px;
   --suite-radius-lg: 14px;
+  --suite-radius-xl: 18px;
   --suite-radius-pill: 9999px;
 
   --suite-shadow-xs: 0 1px 2px rgba(15, 23, 42, 0.04);
   --suite-shadow-sm: var(--mn-shadow-card, 0 2px 8px -2px rgba(15, 23, 42, 0.06), 0 1px 3px -1px rgba(15, 23, 42, 0.04));
+  --suite-shadow-md: 0 6px 16px -4px rgba(15, 23, 42, 0.10), 0 2px 6px -1px rgba(15, 23, 42, 0.05);
   --suite-shadow-lg: var(--mn-shadow-popover, 0 12px 32px -4px rgba(15, 23, 42, 0.16), 0 4px 12px -2px rgba(15, 23, 42, 0.08));
+  --suite-scrim: var(--mn-scrim, rgba(15, 23, 42, 0.45));
+
+  --suite-space-1: 0.25rem;
+  --suite-space-2: 0.5rem;
+  --suite-space-3: 0.75rem;
+  --suite-space-4: 1rem;
+  --suite-space-5: 1.25rem;
+  --suite-space-6: 1.5rem;
+  --suite-space-8: 2rem;
+
+  --suite-card-padding-sm: 0.625rem 0.75rem;
+  --suite-card-padding-md: 0.875rem 1rem;
+  --suite-card-padding-lg: 1.125rem 1.25rem;
+  --suite-card-gap: 0.75rem;
+  --suite-section-gap: 1.25rem;
+  --suite-row-padding-y: 0.5rem;
 
   --suite-control-height-sm: 30px;
   --suite-control-height-md: 36px;
+  --suite-control-height-lg: 44px;
   --suite-touch-target: 36px;
 
   --suite-font-sans: var(--mn-font-sans, -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif);
   --suite-font-mono: var(--mn-font-mono, "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace);
+
+  --suite-text-xs: 0.75rem;
+  --suite-text-sm: 0.84rem;
+  --suite-text-base: 0.9375rem;
+  --suite-text-lg: 1.125rem;
+  --suite-text-xl: 1.375rem;
 
   --suite-accent: var(--mn-accent, var(--tpc-primary, <<colour primary>>));
   --suite-accent-hover: var(--mn-accent-hover, color-mix(in srgb, var(--suite-accent) 86%, var(--suite-fg-primary)));
@@ -74,7 +99,13 @@ type: text/vnd.tiddlywiki
   --suite-focus-ring: 0 0 0 3px color-mix(in srgb, var(--suite-accent) 28%, transparent);
 }
 
-@media (max-width: 640px) {
+:where([data-suite-density="compact"], .suite-density-compact) {
+  --suite-row-padding-y: 0.25rem;
+  --suite-card-padding-sm: 0.45rem 0.625rem;
+  --suite-card-gap: 0.5rem;
+}
+
+@media (max-width: 640px), (pointer: coarse) {
   :where(:root, .tc-page-container) {
     --suite-control-height-sm: 36px;
     --suite-control-height-md: 44px;
@@ -101,7 +132,7 @@ type: text/vnd.tiddlywiki
   display: inline-block;
 }
 
-@media (max-width: {{$:/themes/tiddlywiki/vanilla/metrics/sidebarbreakpoint}}) {
+@media (max-width: 640px), (max-width: {{$:/themes/tiddlywiki/vanilla/metrics/sidebarbreakpoint}}) {
   .py-projects-heading {
     margin-bottom: 10px;
   }
@@ -139,21 +170,25 @@ type: text/vnd.tiddlywiki
   padding-left: 0;
 }
 
+.py-todos:not(.py-board-cards) {
+  container-type: inline-size;
+}
+
 .py-projects .py-project,
 .py-todos .tc-menu-list-item {
-  border-bottom: 1px solid color-mix(in srgb, var(--tpc-muted-foreground, <<colour muted-foreground>>) 22%, transparent);
+  border-bottom: 1px solid var(--suite-border-subtle, color-mix(in srgb, var(--tpc-muted-foreground, <<colour muted-foreground>>) 22%, transparent));
 }
 
 .py-projects,
 .py-todos .tc-menu-list-item:first-child {
-  border-top: 1px solid color-mix(in srgb, var(--tpc-muted-foreground, <<colour muted-foreground>>) 22%, transparent);
+  border-top: 1px solid var(--suite-border-subtle, color-mix(in srgb, var(--tpc-muted-foreground, <<colour muted-foreground>>) 22%, transparent));
 }
 
 .py-todo {
   display: flex;
   align-items: flex-start;
   gap: 8px;
-  padding: 8px 0;
+  padding: var(--suite-row-padding-y, 8px) 0;
 }
 
 .py-todo > .py-drag-handle {
@@ -180,7 +215,7 @@ type: text/vnd.tiddlywiki
   flex-shrink: 0;
 }
 
-@media (max-width: {{$:/themes/tiddlywiki/vanilla/metrics/sidebarbreakpoint}}) {
+@media (max-width: 640px), (pointer: coarse), (max-width: {{$:/themes/tiddlywiki/vanilla/metrics/sidebarbreakpoint}}) {
   .py-todo > .py-todo-check-btn {
     margin: -11px -7px -11px -7px;
     padding: 13px 11px;
@@ -201,6 +236,21 @@ type: text/vnd.tiddlywiki
   gap: 6px;
   min-width: 0;
   line-height: 1.4;
+}
+
+@container (min-width: 600px) {
+  .py-todos:not(.py-board-cards) .py-todo-body {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 5px 12px;
+  }
+
+  .py-todos:not(.py-board-cards) .py-todo-title-row {
+    flex: 1 1 240px;
+    align-items: center;
+  }
 }
 
 @media (min-width: {{$:/themes/tiddlywiki/vanilla/metrics/sidebarbreakpoint}}) {
@@ -287,7 +337,7 @@ a.py-todo-link {
   }
 }
 
-@media (max-width: {{$:/themes/tiddlywiki/vanilla/metrics/sidebarbreakpoint}}) {
+@media (max-width: 640px), (pointer: coarse), (max-width: {{$:/themes/tiddlywiki/vanilla/metrics/sidebarbreakpoint}}) {
   .py-todo-menu .py-btn.py-todo-quick-edit {
     display: none;
   }
@@ -526,7 +576,7 @@ a.py-todo-link {
   white-space: nowrap;
 }
 
-@media (max-width: {{$:/themes/tiddlywiki/vanilla/metrics/sidebarbreakpoint}}) {
+@media (max-width: 640px), (max-width: {{$:/themes/tiddlywiki/vanilla/metrics/sidebarbreakpoint}}) {
   .py-tabs.tc-tab-buttons button {
     font-size: .78em;
     padding: 6px 8px;
@@ -563,7 +613,10 @@ a.py-todo-link {
   max-width: min(280px, calc(100vw - 20px));
   margin: 0;
   padding: 4px;
-  border-radius: 10px;
+  background: var(--suite-surface-elevated, var(--tpc-tiddler-background, <<colour tiddler-background>>));
+  color: var(--suite-fg-primary, var(--tpc-foreground, <<colour foreground>>));
+  border: 1px solid var(--suite-border-subtle, color-mix(in srgb, var(--tpc-muted-foreground, <<colour muted-foreground>>) 22%, transparent));
+  border-radius: var(--suite-radius-md, 10px);
   box-shadow: var(--suite-shadow-lg, 0 8px 24px rgba(0, 0, 0, 0.18));
   box-sizing: border-box;
   overflow-x: hidden;
@@ -1230,7 +1283,7 @@ a.py-badge-blocked:hover {
   min-width: 0;
 }
 
-@media (max-width: {{$:/themes/tiddlywiki/vanilla/metrics/sidebarbreakpoint}}) {
+@media (max-width: 640px), (max-width: {{$:/themes/tiddlywiki/vanilla/metrics/sidebarbreakpoint}}) {
   .py-badge-blocked,
   a.py-badge-blocked {
     max-width: min(125px, 100%);
@@ -1527,6 +1580,10 @@ input.py-input.py-inline-input {
 }
 
 /* Kanban Board View */
+.py-board-container {
+  container-type: inline-size;
+}
+
 .py-board-mobile-switcher {
   display: none;
 }
@@ -1662,25 +1719,28 @@ input.py-input.py-inline-input {
 
 .py-board-cards .py-todo-item-wrapper > .py-todo {
   display: flex;
-  flex-wrap: wrap;
   align-items: flex-start;
   gap: 6px;
   padding: 0;
 }
 
 .py-board-cards .py-todo-item-wrapper > .py-todo > .py-todo-body {
-  display: contents;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1 1 0%;
+  min-width: 0;
 }
 
 .py-board-cards .py-todo-item-wrapper > .py-todo > .py-todo-body > .py-todo-title-row {
-  flex: 1 1 0%;
+  width: 100%;
   min-width: 0;
   align-items: flex-start;
   font-weight: 500;
 }
 
 .py-board-cards .py-todo-item-wrapper > .py-todo > .py-todo-menu {
-  order: 2;
+  flex-shrink: 0;
   margin-left: auto;
   margin-right: -4px;
   margin-top: -2px;
@@ -1691,8 +1751,7 @@ input.py-input.py-inline-input {
 }
 
 .py-board-cards .py-todo-item-wrapper > .py-todo > .py-todo-body > .py-todo-actions {
-  order: 3;
-  flex: 1 1 100%;
+  width: 100%;
   justify-content: flex-start;
   gap: 4px;
   margin-top: 2px;
@@ -1734,7 +1793,73 @@ input.py-input.py-inline-input {
   min-width: 0;
 }
 
-@media (max-width: {{$:/themes/tiddlywiki/vanilla/metrics/sidebarbreakpoint}}) {
+@container (max-width: 680px) {
+  .py-board-mobile-switcher {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding: 4px 0 6px 0;
+    margin-top: 6px;
+  }
+
+  .py-board-mobile-switcher::-webkit-scrollbar {
+    display: none;
+  }
+
+  .py-board-mobile-switcher .py-board-tab {
+    flex: 0 0 auto;
+    white-space: nowrap;
+    font-size: 0.8em;
+    padding: 5px 10px;
+    min-height: var(--suite-touch-target, 44px);
+  }
+
+  .py-board-mobile-switcher .py-board-tab .py-count {
+    font-size: 10.5px;
+    padding: 1px 6px;
+    min-width: 18px;
+  }
+
+  .py-board {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    gap: 12px;
+    padding-bottom: 6px;
+    margin-top: 6px;
+  }
+
+  .py-board::-webkit-scrollbar {
+    display: none;
+  }
+
+  .py-board-column {
+    flex: 0 0 85%;
+    max-width: 85%;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+    min-height: 180px;
+  }
+
+  .py-board::after {
+    content: "";
+    flex: 0 0 calc(15% - 12px);
+    min-width: 1px;
+  }
+
+  .py-board-column.py-board-col-active {
+    border-color: color-mix(in srgb, var(--tpc-primary, <<colour primary>>) 55%, transparent);
+    box-shadow: 0 2px 8px color-mix(in srgb, var(--tpc-primary, <<colour primary>>) 12%, transparent);
+  }
+}
+
+@media (max-width: 640px), (max-width: {{$:/themes/tiddlywiki/vanilla/metrics/sidebarbreakpoint}}) {
   .py-board-mobile-switcher {
     display: flex;
     align-items: center;
@@ -1801,15 +1926,27 @@ input.py-input.py-inline-input {
 }
 
 /* Eisenhower Matrix & Review Dashboards */
+.py-matrix-dashboard,
+.py-review-dashboard {
+  container-type: inline-size;
+}
+
 .py-matrix-grid,
 .py-review-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
+  gap: var(--suite-card-gap, 14px);
   margin: 12px 0;
 }
 
-@media (max-width: {{$:/themes/tiddlywiki/vanilla/metrics/sidebarbreakpoint}}) {
+@container (max-width: 640px) {
+  .py-matrix-grid,
+  .py-review-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px), (max-width: {{$:/themes/tiddlywiki/vanilla/metrics/sidebarbreakpoint}}) {
   .py-matrix-grid,
   .py-review-grid {
     grid-template-columns: 1fr;
@@ -1818,10 +1955,11 @@ input.py-input.py-inline-input {
 
 .py-matrix-quadrant,
 .py-review-panel {
-  border: 1px solid color-mix(in srgb, var(--tpc-muted-foreground, <<colour muted-foreground>>) 24%, transparent);
-  border-radius: 8px;
-  padding: 12px;
-  background: var(--tpc-tiddler-background, <<colour tiddler-background>>);
+  border: 1px solid var(--suite-border-subtle, color-mix(in srgb, var(--tpc-muted-foreground, <<colour muted-foreground>>) 24%, transparent));
+  border-radius: var(--suite-radius-md, 10px);
+  padding: var(--suite-card-padding-md, 14px 16px);
+  background: var(--suite-surface-card, var(--tpc-tiddler-background, <<colour tiddler-background>>));
+  box-shadow: var(--suite-shadow-xs);
 }
 
 .py-matrix-quadrant-header {
@@ -1886,12 +2024,28 @@ input.py-input.py-inline-input {
 }
 
 .py-select-compact {
+  appearance: none;
+  -webkit-appearance: none;
   font-size: 0.85em;
-  padding: 3px 8px;
-  border-radius: 1em;
-  border: 1px solid color-mix(in srgb, var(--tpc-muted-foreground, <<colour muted-foreground>>) 40%, transparent);
-  background: var(--tpc-tiddler-background, <<colour tiddler-background>>);
-  color: var(--tpc-foreground, <<colour foreground>>);
+  padding: 4px 2rem 4px 10px;
+  border-radius: var(--suite-radius-sm, 8px);
+  border: 1px solid var(--suite-border-subtle, color-mix(in srgb, var(--tpc-muted-foreground, <<colour muted-foreground>>) 40%, transparent));
+  background-color: var(--suite-surface-input, var(--tpc-tiddler-background, <<colour tiddler-background>>));
+  color: var(--suite-fg-primary, var(--tpc-foreground, <<colour foreground>>));
+  background-image: linear-gradient(45deg, transparent 50%, var(--suite-fg-muted, var(--tpc-muted-foreground, <<colour muted-foreground>>)) 50%),
+                    linear-gradient(135deg, var(--suite-fg-muted, var(--tpc-muted-foreground, <<colour muted-foreground>>)) 50%, transparent 50%);
+  background-position:
+    calc(100% - 14px) calc(50% - 2px),
+    calc(100% - 9px) calc(50% - 2px);
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+}
+
+.py-select-compact:focus-visible {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  border-color: var(--suite-accent, var(--tpc-primary, <<colour primary>>));
+  box-shadow: var(--suite-focus-ring);
 }
 
 /* Modern Help & Reference Documentation Grid */
@@ -1903,10 +2057,11 @@ input.py-input.py-inline-input {
 }
 
 .py-doc-card {
-  background: color-mix(in srgb, var(--tpc-muted-foreground, <<colour muted-foreground>>) 7%, var(--tpc-tiddler-background, <<colour tiddler-background>>));
-  border: 1px solid color-mix(in srgb, var(--tpc-muted-foreground, <<colour muted-foreground>>) 22%, transparent);
-  border-radius: 8px;
-  padding: 12px 14px;
+  background: var(--suite-surface-card, color-mix(in srgb, var(--tpc-muted-foreground, <<colour muted-foreground>>) 7%, var(--tpc-tiddler-background, <<colour tiddler-background>>)));
+  border: 1px solid var(--suite-border-subtle, color-mix(in srgb, var(--tpc-muted-foreground, <<colour muted-foreground>>) 22%, transparent));
+  border-radius: var(--suite-radius-md, 10px);
+  padding: var(--suite-card-padding-md, 12px 14px);
+  box-shadow: var(--suite-shadow-xs);
 }
 
 .py-doc-card h4 {
@@ -1926,7 +2081,7 @@ input.py-input.py-inline-input {
   line-height: 1.4;
 }
 
-/* Smart Quick-Add Autocomplete Menu */
+/* Smart Quick-Add Autocomplete Menu & Live Token Preview */
 .py-quick-input-wrapper {
   position: relative;
   width: 100%;
@@ -1934,6 +2089,51 @@ input.py-input.py-inline-input {
 
 .py-inline-subtask-form .py-quick-input-wrapper {
   width: auto;
+}
+
+.py-smart-token-preview {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.py-smart-token-preview[hidden] {
+  display: none !important;
+}
+
+.py-token-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 1px 7px;
+  border-radius: var(--suite-radius-pill, 9999px);
+  font-size: var(--suite-text-xs, 0.75rem);
+  font-weight: 600;
+  line-height: 1.35;
+  background: var(--suite-accent-bg, color-mix(in srgb, var(--tpc-primary, <<colour primary>>) 12%, transparent));
+  color: var(--suite-accent, var(--tpc-primary, <<colour primary>>));
+  border: 1px solid var(--suite-accent-border, color-mix(in srgb, var(--tpc-primary, <<colour primary>>) 30%, transparent));
+  font-variant-numeric: tabular-nums;
+}
+
+.py-token-pill.py-priority-3 {
+  background: var(--suite-status-danger-bg);
+  color: var(--suite-status-danger-fg);
+  border-color: var(--suite-status-danger-border);
+}
+
+.py-token-pill.py-priority-2 {
+  background: var(--suite-status-warning-bg);
+  color: var(--suite-status-warning-fg);
+  border-color: var(--suite-status-warning-border);
+}
+
+.py-token-pill.py-priority-1 {
+  background: var(--suite-status-info-bg);
+  color: var(--suite-status-info-fg);
+  border-color: var(--suite-status-info-border);
 }
 
 .py-autocomplete-menu {
@@ -1945,11 +2145,12 @@ input.py-input.py-inline-input {
   max-width: min(360px, calc(100vw - 32px));
   max-height: 220px;
   overflow-y: auto;
-  background: var(--tpc-tiddler-background, <<colour tiddler-background>>);
-  color: var(--tpc-foreground, <<colour foreground>>);
-  border: 1px solid color-mix(in srgb, var(--tpc-muted-foreground, <<colour muted-foreground>>) 30%, transparent);
-  border-radius: 8px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.22);
+  overscroll-behavior: contain;
+  background: var(--suite-surface-elevated, var(--tpc-tiddler-background, <<colour tiddler-background>>));
+  color: var(--suite-fg-primary, var(--tpc-foreground, <<colour foreground>>));
+  border: 1px solid var(--suite-border-subtle, color-mix(in srgb, var(--tpc-muted-foreground, <<colour muted-foreground>>) 30%, transparent));
+  border-radius: var(--suite-radius-md, 10px);
+  box-shadow: var(--suite-shadow-lg, 0 6px 20px rgba(0, 0, 0, 0.22));
   padding: 4px;
 }
 
@@ -2095,7 +2296,7 @@ input.py-input.py-inline-input {
   color: var(--tpc-primary, <<colour primary>>);
 }
 
-@media (max-width: {{$:/themes/tiddlywiki/vanilla/metrics/sidebarbreakpoint}}) {
+@media (max-width: 640px), (pointer: coarse), (max-width: {{$:/themes/tiddlywiki/vanilla/metrics/sidebarbreakpoint}}) {
   .tc-drop-down.py-drop-down {
     max-width: calc(100vw - 20px);
     box-sizing: border-box;
@@ -2103,31 +2304,32 @@ input.py-input.py-inline-input {
 
   .tc-drop-down.py-date-picker,
   .tc-drop-down.py-todo-actions-drop-down {
-    width: min(268px, calc(100vw - 20px));
+    width: min(296px, calc(100vw - 20px));
   }
 
   .tc-drop-down .py-status-selector .tc-btn-invisible,
   .tc-drop-down .py-priorities .tc-btn-invisible {
-    min-height: 32px;
-    padding: 5px 4px;
+    min-height: var(--suite-control-height-sm, 36px);
+    padding: 6px 4px;
   }
 
   .tc-drop-down.py-drop-down .py-quick-dates .tc-btn-invisible,
   .tc-drop-down.py-drop-down .py-menu-actions-grid .tc-btn-invisible,
   .py-menu-disclosure-summary {
-    min-height: 32px;
-    padding: 5px 8px;
+    min-height: var(--suite-control-height-sm, 36px);
+    padding: 6px 8px;
   }
 
   .tc-drop-down.py-drop-down .py-time-presets .py-time-chip,
   .tc-drop-down.py-drop-down .py-recur-chips .py-time-chip,
-  .tc-drop-down.py-drop-down .py-time-custom-row .py-time-step-btn {
-    min-height: 32px;
+  .tc-drop-down.py-drop-down .py-time-custom-row .py-time-step-btn,
+  .tc-drop-down.py-drop-down .py-reminder-chips .py-reminder-chip {
+    min-height: var(--suite-control-height-sm, 36px);
   }
 
   .tc-drop-down.py-drop-down input.py-input.py-time-input {
     font-size: 1rem;
-    min-height: 34px;
+    min-height: var(--suite-control-height-sm, 36px);
   }
 
   input.py-input.py-subtask-input,

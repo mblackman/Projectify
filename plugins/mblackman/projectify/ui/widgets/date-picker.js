@@ -41,7 +41,11 @@ function is12HourTimePreferred(wiki) {
 		const pref = (targetWiki.getTiddlerText("$:/config/projectify/TimeFormat", "auto") || "auto").trim().toLowerCase();
 		if(pref === "12h" || pref === "12") return true;
 		if(pref === "24h" || pref === "24") return false;
-		const statusVal = (targetWiki.getTiddlerText("$:/status/projectify/LocaleTimeFormat", "") || "").trim().toLowerCase();
+		const statusVal = (
+			targetWiki.getTiddlerText("$:/temp/projectify/LocaleTimeFormat", "") ||
+			targetWiki.getTiddlerText("$:/status/projectify/LocaleTimeFormat", "") ||
+			""
+		).trim().toLowerCase();
 		if(statusVal === "12h") return true;
 		if(statusVal === "24h") return false;
 	}
@@ -375,6 +379,7 @@ class TimePickerWidget extends AbstractDatePickerWidget {
 			changedAttributes.tiddler ||
 			changedAttributes.field ||
 			changedTiddlers["$:/config/projectify/TimeFormat"] ||
+			changedTiddlers["$:/temp/projectify/LocaleTimeFormat"] ||
 			changedTiddlers["$:/status/projectify/LocaleTimeFormat"]
 		) {
 			this.refreshSelf();
@@ -397,9 +402,9 @@ class TimePickerWidget extends AbstractDatePickerWidget {
 	}
 
 	syncLocaleTimeStatus() {
-		if(this.wiki && !this.wiki.tiddlerExists("$:/status/projectify/LocaleTimeFormat")) {
+		if(this.wiki && !this.wiki.tiddlerExists("$:/temp/projectify/LocaleTimeFormat")) {
 			this.wiki.addTiddler({
-				title: "$:/status/projectify/LocaleTimeFormat",
+				title: "$:/temp/projectify/LocaleTimeFormat",
 				text: detectDeviceLocaleUses12Hour() ? "12h" : "24h"
 			});
 		}
@@ -1063,16 +1068,30 @@ class QuickInputWidget extends Widget {
 		this.wrapperNode = this.document.createElement("div");
 		this.wrapperNode.className = "py-quick-input-wrapper";
 
+		this.listboxId = "py-autocomplete-list-" + Math.random().toString(36).slice(2, 9);
+
 		this.inputNode = this.document.createElement("input");
 		this.inputNode.setAttribute("type", "text");
 		this.inputNode.setAttribute("autocomplete", "off");
+		this.inputNode.setAttribute("enterkeyhint", "done");
+		this.inputNode.setAttribute("role", "combobox");
+		this.inputNode.setAttribute("aria-autocomplete", "list");
+		this.inputNode.setAttribute("aria-expanded", "false");
+		this.inputNode.setAttribute("aria-controls", this.listboxId);
+		this.inputNode.setAttribute("aria-label", this.ariaLabel || this.placeholder || "Add task");
 		this.inputNode.className = this.inputClass;
 		if(this.placeholder) {
 			this.inputNode.setAttribute("placeholder", this.placeholder);
 		}
 		this.inputNode.value = this.getFieldValue();
 
+		this.previewNode = this.document.createElement("div");
+		this.previewNode.className = "py-smart-token-preview";
+		this.previewNode.setAttribute("aria-live", "polite");
+		this.previewNode.hidden = true;
+
 		this.menuNode = this.document.createElement("div");
+		this.menuNode.id = this.listboxId;
 		this.menuNode.className = "py-autocomplete-menu";
 		this.menuNode.setAttribute("role", "listbox");
 		this.menuNode.hidden = true;
@@ -1083,6 +1102,7 @@ class QuickInputWidget extends Widget {
 
 		this.inputNode.addEventListener("input", () => {
 			this.saveFieldValue(this.inputNode.value);
+			this.updateTokenPreview();
 			this.updateSuggestions();
 		});
 		this.inputNode.addEventListener("click", () => {
@@ -1098,7 +1118,9 @@ class QuickInputWidget extends Widget {
 		});
 
 		this.wrapperNode.appendChild(this.inputNode);
+		this.wrapperNode.appendChild(this.previewNode);
 		this.wrapperNode.appendChild(this.menuNode);
+		this.updateTokenPreview();
 		parent.insertBefore(this.wrapperNode, nextSibling);
 		this.domNodes.push(this.wrapperNode);
 
@@ -1115,6 +1137,7 @@ class QuickInputWidget extends Widget {
 		this.stateTiddler = this.getAttribute("tiddler", this.getVariable("currentTiddler"));
 		this.fieldAttr = this.getAttribute("field", "todo-name");
 		this.placeholder = this.getAttribute("placeholder", "");
+		this.ariaLabel = this.getAttribute("aria-label", "");
 		this.inputClass = this.getAttribute("class", "py-input");
 		this.autoFocus = this.getAttribute("focus", "false");
 		this.submitActions = this.getAttribute("actions", "");
@@ -1135,12 +1158,62 @@ class QuickInputWidget extends Widget {
 			const newVal = this.getFieldValue();
 			if(this.inputNode.value !== newVal) {
 				this.inputNode.value = newVal;
+				this.updateTokenPreview();
 				if(!newVal) {
 					this.closeMenu();
 				}
 			}
 		}
 		return this.refreshChildren(changedTiddlers);
+	}
+
+	updateTokenPreview() {
+		if(!this.previewNode || !this.inputNode) return;
+		const val = (this.inputNode.value || "").trim();
+		if(!val) {
+			this.previewNode.hidden = true;
+			while(this.previewNode.firstChild) {
+				this.previewNode.removeChild(this.previewNode.firstChild);
+			}
+			return;
+		}
+		const parsed = parseSmartQuickAddTokens(val, this.wiki);
+		const pills = [];
+		if(parsed.project) {
+			pills.push({text: `#${parsed.project}`, cls: "py-token-project"});
+		}
+		if(parsed.priority) {
+			pills.push({text: `!P${parsed.priority}`, cls: `py-token-priority py-priority-${parsed.priority}`});
+		}
+		if(parsed.due) {
+			const dueDt = $tw.utils.parseDate(parsed.due);
+			const dateStr = dueDt ? $tw.utils.formatDateString(dueDt, "DD MMM") : "Due";
+			pills.push({text: `📅 ${dateStr}`, cls: "py-token-due"});
+		}
+		if(parsed.scheduled) {
+			const schedDt = $tw.utils.parseDate(parsed.scheduled);
+			const schedStr = schedDt ? $tw.utils.formatDateString(schedDt, "DD MMM") : "Start";
+			pills.push({text: `☀️ ${schedStr}`, cls: "py-token-scheduled"});
+		}
+		if(Array.isArray(parsed.contexts) && parsed.contexts.length > 0) {
+			parsed.contexts.forEach((ctx) => {
+				pills.push({text: ctx, cls: "py-token-context"});
+			});
+		}
+		while(this.previewNode.firstChild) {
+			this.previewNode.removeChild(this.previewNode.firstChild);
+		}
+		if(pills.length === 0) {
+			this.previewNode.hidden = true;
+			return;
+		}
+		pills.forEach((p) => {
+			const span = this.document.createElement("span");
+			span.className = "py-token-pill " + p.cls;
+			span.textContent = p.text;
+			this.previewNode.appendChild(span);
+		});
+		this.previewNode.hidden = false;
 	}
 
 	getFieldValue() {
@@ -1294,8 +1367,11 @@ class QuickInputWidget extends Widget {
 		let activeEl = null;
 		this.suggestions.forEach((item, idx) => {
 			const btn = this.document.createElement("button");
+			const optId = `${this.listboxId}-opt-${idx}`;
+			btn.id = optId;
 			btn.setAttribute("type", "button");
 			btn.setAttribute("role", "option");
+			btn.setAttribute("aria-selected", idx === this.activeIndex ? "true" : "false");
 			btn.className = "tc-btn-invisible py-autocomplete-item tc-popup-handle" + (idx === this.activeIndex ? " py-active" : "");
 			if(idx === this.activeIndex) {
 				activeEl = btn;
@@ -1328,6 +1404,12 @@ class QuickInputWidget extends Widget {
 			this.menuNode.appendChild(btn);
 		});
 		this.menuNode.hidden = false;
+		if(this.inputNode) {
+			this.inputNode.setAttribute("aria-expanded", "true");
+			if(activeEl && activeEl.id) {
+				this.inputNode.setAttribute("aria-activedescendant", activeEl.id);
+			}
+		}
 		if(activeEl) {
 			if(typeof activeEl.scrollIntoView === "function") {
 				activeEl.scrollIntoView({block: "nearest"});
@@ -1350,6 +1432,10 @@ class QuickInputWidget extends Widget {
 		if(this.menuNode) {
 			this.menuNode.hidden = true;
 		}
+		if(this.inputNode) {
+			this.inputNode.setAttribute("aria-expanded", "false");
+			this.inputNode.removeAttribute("aria-activedescendant");
+		}
 	}
 
 	applySuggestion(item) {
@@ -1364,6 +1450,7 @@ class QuickInputWidget extends Widget {
 
 		this.inputNode.value = nextVal;
 		this.saveFieldValue(nextVal);
+		this.updateTokenPreview();
 		this.closeMenu();
 		this.inputNode.focus();
 		if(this.inputNode.setSelectionRange) {
@@ -1372,6 +1459,10 @@ class QuickInputWidget extends Widget {
 	}
 
 	handleKeyDown(event) {
+		// IME composition guard: do not intercept Enter/Tab/Arrow keys while an IME composition session is active
+		if(event.isComposing || event.keyCode === 229) {
+			return;
+		}
 		const isMenuOpen = this.menuNode && !this.menuNode.hidden && this.suggestions.length > 0;
 		if(isMenuOpen) {
 			if(event.key === "ArrowDown") {
@@ -1755,6 +1846,10 @@ function initTouchDragReorderPolyfill() {
 		domNode.style.left = "0px";
 		domNode.style.top = "0px";
 
+		const originRect = typeof domNode.getBoundingClientRect === "function"
+			? domNode.getBoundingClientRect()
+			: {left: 0, top: 0};
+
 		const dropDown = domNode.querySelector(".tc-drop-down") || domNode;
 		const popupWidth = Math.max(dropDown.offsetWidth || 0, domNode.offsetWidth || 0, 180);
 		const popupHeight = Math.max(dropDown.offsetHeight || 0, domNode.offsetHeight || 0, 80);
@@ -1776,8 +1871,8 @@ function initTouchDragReorderPolyfill() {
 			}
 		}
 
-		domNode.style.left = `${Math.round(left)}px`;
-		domNode.style.top = `${Math.round(top)}px`;
+		domNode.style.left = `${Math.round(left - (originRect.left || 0))}px`;
+		domNode.style.top = `${Math.round(top - (originRect.top || 0))}px`;
 	};
 
 	const shouldUseFixedViewportPopup = (domNode) => {
@@ -1837,6 +1932,7 @@ function initTouchDragReorderPolyfill() {
 				const st = tab.getAttribute("data-col-target");
 				const isMatch = activeStatus ? st === activeStatus : i === activeIndex;
 				tab.classList.toggle("py-active", Boolean(isMatch));
+				tab.setAttribute("aria-selected", isMatch ? "true" : "false");
 			});
 		}
 		if(board) {
@@ -1946,9 +2042,9 @@ if($tw.browser) {
 	initTouchDragReorderPolyfill();
 }
 
-if($tw.wiki && !$tw.wiki.tiddlerExists("$:/status/projectify/LocaleTimeFormat")) {
+if($tw.wiki && !$tw.wiki.tiddlerExists("$:/temp/projectify/LocaleTimeFormat")) {
 	$tw.wiki.addTiddler({
-		title: "$:/status/projectify/LocaleTimeFormat",
+		title: "$:/temp/projectify/LocaleTimeFormat",
 		text: detectDeviceLocaleUses12Hour() ? "12h" : "24h"
 	});
 }

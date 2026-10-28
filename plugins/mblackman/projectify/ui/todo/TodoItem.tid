@@ -40,7 +40,7 @@ type: text/vnd.tiddlywiki
   subtaskState=<<qualify "$:/state/projectify/subtasks-open">>
   editState=<<qualify "$:/state/projectify/edit-todo">>
   subtaskAddState=<<qualify "$:/temp/projectify/add-subtask">>
-  itemWrapperClass={{{ [[py-todo-item-wrapper]] [all[current]tag[done]then[py-completed]] [{!!priority}!is[blank]addprefix[py-has-priority-]] +[join[ ]] }}}
+  itemWrapperClass={{{ [[py-todo-item-wrapper]] [all[current]tag[done]then[py-completed]] [{!!priority}!is[blank]addprefix[py-has-priority-]] [{$:/config/projectify/Density}match[compact]then[suite-density-compact]] +[join[ ]] }}}
   todoRowClass={{{ [[py-todo]] [all[current]tag[done]then[py-completed]] [{!!priority}!is[blank]addprefix[py-todo-priority-]] +[join[ ]] }}}
 >
   <div class=<<itemWrapperClass>>>
@@ -49,7 +49,11 @@ type: text/vnd.tiddlywiki
         <<drag-handle>>
       <%endif%>
 
-      <$button class="tc-btn-invisible py-todo-check-btn">
+      <$button
+        class="tc-btn-invisible py-todo-check-btn"
+        aria-label={{{ [{!!caption}!is[blank]else{!!title}addprefix[Toggle ]] }}}
+        aria-pressed={{{ [all[current]tag[done]then[true]else[false]] }}}
+      >
         <$action-py-toggle-todo $tiddler=<<currentTiddler>>/>
         {{||$:/plugins/mblackman/projectify/ui/buttons/Checkbox}}
       </$button>

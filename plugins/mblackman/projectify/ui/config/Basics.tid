@@ -56,3 +56,4 @@ caption: {{$:/language/ControlPanel/Basics/Caption}}
 |<<lingo Config/ShowMatrixTab>> |<$transclude $variable="select-yes-no" configTiddler="$:/config/projectify/ShowMatrixTab"/> |
 |<<lingo Config/ShowReviewTab>> |<$transclude $variable="select-yes-no" configTiddler="$:/config/projectify/ShowReviewTab"/> |
 |<<lingo Config/EnablePushNotifications>> |<$transclude $variable="select-yes-no" configTiddler="$:/config/projectify/EnablePushNotifications"/> |
+|<<lingo Density/Label>> |<$select tiddler="$:/config/projectify/Density" default="comfortable"><option value="comfortable">{{$:/language/projectify/Density/Comfortable}}</option><option value="compact">{{$:/language/projectify/Density/Compact}}</option></$select> |

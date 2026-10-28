@@ -35,6 +35,11 @@ type: text/vnd.tiddlywiki
           <hr/>
         <%endif%>
 
+        <div class="py-drop-down-section tc-popup-handle">
+          {{||$:/plugins/mblackman/projectify/ui/forms/TodoProject}}
+        </div>
+        <hr/>
+
         <%if [{$:/config/projectify/EnableContexts}!match[no]] %>
           <div class="py-drop-down-section tc-popup-handle">
             <label class="py-label tc-popup-handle">{{$:/plugins/mblackman/projectify/images/sliders}} <<lingo Context/Filter>></label>

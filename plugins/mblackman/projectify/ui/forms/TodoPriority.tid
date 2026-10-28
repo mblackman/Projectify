@@ -4,12 +4,13 @@ tags:
 title: $:/plugins/mblackman/projectify/ui/forms/TodoPriority
 type: text/vnd.tiddlywiki
 
-<div class="py-priorities">
+<div class="py-priorities" role="group" aria-label={{$:/language/projectify/Priority/Hint}}>
   <$list filter="3 2 1" variable="priority">
     <$button
       class={{{ [{!!priority}match<priority>then[tc-btn-invisible py-priority-btn py-active py-priority-]else[tc-btn-invisible py-priority-btn py-priority-]] [<priority>] +[join[]] }}}
       tooltip={{{ [[P]] [<priority>] +[join[]] }}}
       aria-label={{{ [[P]] [<priority>] +[join[]] }}}
+      aria-pressed={{{ [{!!priority}match<priority>then[true]else[false]] }}}
     >
       {{$:/plugins/mblackman/projectify/images/flag}}<span class="py-priority-label">P<$text text=<<priority>>/></span>
       <$action-setfield priority=<<priority>>/>
@@ -21,6 +22,7 @@ type: text/vnd.tiddlywiki
     class={{{ [{!!priority}is[blank]then[tc-btn-invisible py-priority-btn py-active]else[tc-btn-invisible py-priority-btn]] }}}
     tooltip={{$:/language/projectify/Clear}}
     aria-label={{$:/language/projectify/Clear}}
+    aria-pressed={{{ [{!!priority}is[blank]then[true]else[false]] }}}
   >
     {{$:/plugins/mblackman/projectify/images/slash-circle}}
     <$action-deletefield $field="priority"/>

@@ -71,11 +71,12 @@ type: text/vnd.tiddlywiki
         <details class="py-menu-disclosure tc-popup-handle" name=<<disclosureGroup>>>
           <summary class="py-menu-disclosure-summary tc-popup-handle">
             <span class="py-disclosure-summary-label tc-popup-handle">
-              {{$:/plugins/mblackman/projectify/images/sliders}} <<lingo Context/Filter>> &amp; <<lingo BlockedBy/Caption>>
+              {{$:/plugins/mblackman/projectify/images/sliders}} <<lingo MoveToProject/Caption>>, <<lingo Context/Filter>> &amp; <<lingo BlockedBy/Caption>>
               <%if [<hasContextOrBlocker>match[yes]] %><span class="py-disclosure-dot"></span><%endif%>
             </span>
           </summary>
           <div class="py-menu-disclosure-body tc-popup-handle">
+            {{||$:/plugins/mblackman/projectify/ui/forms/TodoProject}}
             <%if [{$:/config/projectify/EnableContexts}!match[no]] %>
               {{||$:/plugins/mblackman/projectify/ui/forms/TodoContext}}
             <%endif%>

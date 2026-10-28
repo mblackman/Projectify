@@ -85,7 +85,7 @@ type: text/vnd.tiddlywiki
   vertical-align: middle;
 }
 
-@media (max-width: {{$:/themes/tiddlywiki/vanilla/metrics/sidebarbreakpoint}}) {
+@media (max-width: 640px), (pointer: coarse), (max-width: {{$:/themes/tiddlywiki/vanilla/metrics/sidebarbreakpoint}}) {
   .py-drag-handle {
     width: 38px;
     height: 38px;

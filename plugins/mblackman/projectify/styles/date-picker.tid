@@ -15,11 +15,11 @@ type: text/vnd.tiddlywiki
 }
 
 .py-date-picker .py-date-clear {
-  color: #e73939;
+  color: var(--suite-status-danger-fg, #ef4444);
 }
 
 .py-date-picker .py-date-clear svg {
-  fill: #e73939;
+  fill: var(--suite-status-danger-fg, #ef4444);
 }
 
 .py-date-picker .pika-single {
@@ -88,10 +88,11 @@ type: text/vnd.tiddlywiki
 
 .py-date-picker .pika-lendar .is-selected .pika-button,
 .py-date-picker .pika-lendar .has-event .pika-button {
-  background: var(--tpc-muted-foreground, <<colour muted-foreground>>);
-  color: var(--tpc-tiddler-background, <<colour tiddler-background>>);
+  background: var(--suite-accent, var(--tpc-primary, <<colour primary>>));
+  color: var(--suite-fg-on-accent, #ffffff);
+  font-weight: 600;
   box-shadow: none;
-  border-radius: 3px;
+  border-radius: 5px;
 }
 
 .py-date-picker .pika-label {

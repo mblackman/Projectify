@@ -1,0 +1,45 @@
+created: 20261028120000000
+modified: 20261028120000000
+tags:
+title: $:/plugins/mblackman/projectify/ui/forms/TodoProject
+type: text/vnd.tiddlywiki
+
+\procedure lingo-base() $:/language/projectify/
+
+\procedure refile-todo-project-actions()
+<$let
+  targetProj={{{ [<refileState>get[text]] }}}
+>
+  <%if [<targetProj>!is[blank]] %>
+    <$action-listops
+      $tiddler=<<currentTiddler>>
+      $tags={{{ [[todo]] [all[current]tags[]] -Inbox -[tag[Project]] -[tag[SubProject]] [<targetProj>] +[format:titlelist[]join[ ]] }}}
+    />
+    <$action-deletetiddler $tiddler=<<refileState>>/>
+    <$action-sendmessage $message="tm-auto-save-wiki"/>
+  <%endif%>
+</$let>
+\end
+
+<$let
+  refileState=<<qualify "$:/temp/projectify/refile-project">>
+  currentProj={{{ [all[current]tags[]tag[SubProject]limit[1]] :else[all[current]tags[]tag[Project]limit[1]] :else[all[current]tags[]match[Inbox]] }}}
+  projectCandidates="[all[tiddlers]tag[Project]!has[draft.of]!title[Inbox]!tag[done]sort[title]] [all[tiddlers]tag[SubProject]!has[draft.of]!tag[done]!title<currentTiddler>sort[title]] +[unique[]]"
+>
+  <div class="py-recur-inline py-blocker-inline py-project-refile-inline tc-popup-handle">
+    <label class="py-inline-label tc-popup-handle">
+      {{$:/plugins/mblackman/projectify/images/AllProjects}} <<lingo MoveToProject/Caption>>
+    </label>
+    <$select
+      tiddler=<<refileState>>
+      default=<<currentProj>>
+      actions=<<refile-todo-project-actions>>
+      class="py-select-compact py-select-full tc-popup-handle"
+    >
+      <option value="Inbox">{{$:/language/projectify/Inbox}}</option>
+      <$list filter=<<projectCandidates>> variable="proj">
+        <option value=<<proj>>><$text text={{{ [<proj>get[caption]!is[blank]else<proj>] }}}/></option>
+      </$list>
+    </$select>
+  </div>
+</$let>

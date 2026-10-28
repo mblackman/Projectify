@@ -30,7 +30,7 @@ type: text/vnd.tiddlywiki
 \end
 
 \function py.blocking-todos()
-[all[tiddlers]tag[todo]!has[draft.of]!tag[done]] :filter[get[blocked-by]enlist-input[]match<..currentTiddler>]
+[all[current]listed[blocked-by]tag[todo]!has[draft.of]!tag[done]]
 \end
 
 \function py.is-not-future-scheduled()
@@ -236,7 +236,7 @@ type: text/vnd.tiddlywiki
 \end
 
 \function py.is-12h-time()
-[{$:/config/projectify/TimeFormat}match[12h]] [{$:/config/projectify/TimeFormat}!match[24h]then{$:/status/projectify/LocaleTimeFormat}match[12h]] +[limit[1]]
+[{$:/config/projectify/TimeFormat}match[12h]] [{$:/config/projectify/TimeFormat}!match[24h]then{$:/temp/projectify/LocaleTimeFormat}match[12h]] [{$:/config/projectify/TimeFormat}!match[24h]then{$:/status/projectify/LocaleTimeFormat}match[12h]] +[limit[1]]
 \end
 
 \function py.time-template()
