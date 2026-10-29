@@ -1148,8 +1148,20 @@ a.py-todo-link {
   white-space: nowrap;
 }
 
-.tc-drop-down.py-drop-down .py-menu-actions-grid .tc-btn-invisible:last-child:nth-child(odd) {
+.tc-drop-down.py-drop-down .py-menu-actions-grid .tc-btn-invisible:last-child:nth-child(odd),
+.tc-drop-down.py-drop-down .py-menu-actions-grid .tc-btn-invisible.py-menu-action-full {
   grid-column: 1 / -1;
+}
+
+.tc-drop-down.py-drop-down .tc-btn-invisible.py-menu-action-danger {
+  color: var(--suite-status-danger-fg);
+  fill: var(--suite-status-danger-fg);
+}
+
+.tc-drop-down.py-drop-down .tc-btn-invisible.py-menu-action-danger:hover:not(:disabled, [aria-disabled="true"]) {
+  color: var(--suite-status-danger-fg);
+  fill: var(--suite-status-danger-fg);
+  background: var(--suite-status-danger-bg);
 }
 
 .tc-drop-down.py-date-picker,

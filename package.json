@@ -1,6 +1,6 @@
 {
   "name": "projectify",
-  "version": "0.20.0",
+  "version": "0.21.0",
   "description": "Simple and beautiful project management for TiddlyWiki v5.4.0+",
   "main": "npm run build-all",
   "scripts": {

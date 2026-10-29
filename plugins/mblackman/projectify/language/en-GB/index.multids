@@ -45,6 +45,8 @@ Density/Comfortable: Comfortable
 Density/Compact: Compact
 Density/Label: List density
 DeleteSection/Hint: Delete section
+DeleteTodo/Caption: Delete task
+DeleteTodo/Hint: Permanently delete this task
 DragTodoTip: Drag & drop any tiddler below to add it as a task to this project.
 DueDate/Tab: Due (Deadline)
 EditCategories: Edit categories

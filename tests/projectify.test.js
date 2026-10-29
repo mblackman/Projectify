@@ -37,7 +37,7 @@ describe("Projectify Plugin ($:/plugins/mblackman/projectify)", () => {
     expect(pluginTiddler).toBeDefined();
     expect(pluginTiddler.fields.name).toBe("Projectify");
     expect(pluginTiddler.fields["core-version"]).toBe(">=5.4.0");
-    expect(pluginTiddler.fields.version).toBe("0.20.0");
+    expect(pluginTiddler.fields.version).toBe("0.21.0");
     expect(pluginTiddler.fields["plugin-type"]).toBe("plugin");
     expect(pluginTiddler.fields.list).toEqual(["readme", "doc/Help", "changelog", "LICENSE"]);
   });
@@ -66,6 +66,7 @@ describe("Projectify Plugin ($:/plugins/mblackman/projectify)", () => {
       "$:/plugins/mblackman/projectify/ui/forms/TodoStatus",
       "$:/plugins/mblackman/projectify/ui/forms/TodoContext",
       "$:/plugins/mblackman/projectify/ui/forms/TodoProject",
+      "$:/plugins/mblackman/projectify/ui/forms/TodoDelete",
       "$:/plugins/mblackman/projectify/ui/forms/TodoReminder",
       "$:/plugins/mblackman/projectify/ui/config/Notifications",
       "$:/config/projectify/notifications/TodoDueRule",
@@ -961,5 +962,79 @@ describe("Projectify Plugin ($:/plugins/mblackman/projectify)", () => {
 
     $tw.wiki.deleteTiddler("$:/temp/projectify/test-ime-input");
     $tw.wiki.deleteTiddler("$:/temp/projectify/test-ime-submitted");
+  });
+
+  test("renders Delete task action in TodoActions and TodoHeading dropdowns and cleans up references on action-py-delete-todo", () => {
+    const deleteFormHtml = renderWithGlobals(
+      "{{||$:/plugins/mblackman/projectify/ui/forms/TodoDelete}}",
+      "Schedule meeting with John"
+    );
+    expect(deleteFormHtml).toContain("py-menu-action-danger");
+    expect(deleteFormHtml).toContain("Delete task");
+
+    const todoActionsTiddler = $tw.wiki.getTiddlerText("$:/plugins/mblackman/projectify/ui/buttons/TodoActions");
+    const todoHeadingTiddler = $tw.wiki.getTiddlerText("$:/plugins/mblackman/projectify/ui/todo/TodoHeading");
+    expect(todoActionsTiddler).toContain("$:/plugins/mblackman/projectify/ui/forms/TodoDelete");
+    expect(todoHeadingTiddler).toContain("$:/plugins/mblackman/projectify/ui/forms/TodoDelete");
+
+    // Set up a recurring task inside a project that also blocks another task
+    $tw.wiki.addTiddler({
+      title: "DeleteCleanupProject",
+      tags: ["Project"],
+      list: ["RecurringToRemove", "DependentTask"]
+    });
+    $tw.wiki.addTiddler({
+      title: "RecurringToRemove",
+      tags: ["DeleteCleanupProject", "todo"],
+      due: "20261030235959999",
+      recur: "daily"
+    });
+    $tw.wiki.addTiddler({
+      title: "DependentTask",
+      tags: ["DeleteCleanupProject", "todo"],
+      "blocked-by": "[[RecurringToRemove]]"
+    });
+
+    const DeleteWidget = $tw.modules.applyMethods("widget")["action-py-delete-todo"];
+    expect(DeleteWidget).toBeDefined();
+
+    const dispatchedEvents = [];
+    const origDispatch = $tw.rootWidget.dispatchEvent.bind($tw.rootWidget);
+    $tw.rootWidget.dispatchEvent = (evt) => {
+      dispatchedEvents.push(evt);
+      return origDispatch(evt);
+    };
+
+    try {
+      const deleteAction = new DeleteWidget(
+        {
+          type: "action-py-delete-todo",
+          attributes: { $tiddler: { type: "string", value: "RecurringToRemove" } }
+        },
+        { wiki: $tw.wiki }
+      );
+      deleteAction.invokeAction();
+
+      expect($tw.wiki.getTiddler("RecurringToRemove")).toBeUndefined();
+      const updatedProj = $tw.wiki.getTiddler("DeleteCleanupProject");
+      expect(Array.from(updatedProj.fields.list)).toEqual(["DependentTask"]);
+      const updatedDep = $tw.wiki.getTiddler("DependentTask");
+      expect(updatedDep.fields["blocked-by"]).toBeUndefined();
+      expect(
+        dispatchedEvents.some(
+          (e) => e.type === "tm-pwa-cancel-notification" && e.paramObject?.id === "projectify-remind:RecurringToRemove"
+        )
+      ).toBe(true);
+      expect(
+        dispatchedEvents.some(
+          (e) => e.type === "tm-close-tiddler" && e.param === "RecurringToRemove"
+        )
+      ).toBe(true);
+    } finally {
+      $tw.rootWidget.dispatchEvent = origDispatch;
+      $tw.wiki.deleteTiddler("DeleteCleanupProject");
+      $tw.wiki.deleteTiddler("RecurringToRemove");
+      $tw.wiki.deleteTiddler("DependentTask");
+    }
   });
 });

@@ -1,0 +1,16 @@
+created: 20261029120000000
+modified: 20261029120000000
+tags:
+title: $:/plugins/mblackman/projectify/ui/forms/TodoDelete
+type: text/vnd.tiddlywiki
+
+\procedure lingo-base() $:/language/projectify/
+
+<$button
+  class="tc-btn-invisible py-menu-action-full py-menu-action-danger"
+  tooltip={{$:/language/projectify/DeleteTodo/Hint}}
+  aria-label={{$:/language/projectify/DeleteTodo/Caption}}
+>
+  {{$:/core/images/delete-button}} <span class="py-menu-action-label"><<lingo DeleteTodo/Caption>></span>
+  <$action-py-delete-todo $tiddler=<<currentTiddler>>/>
+</$button>

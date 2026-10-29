@@ -22,7 +22,7 @@ type: text/vnd.tiddlywiki
 \end
 
 \function py.open-blockers()
-[all[current]get[blocked-by]enlist-input[]!tag[done]]
+[all[current]get[blocked-by]enlist-input[]is[tiddler]!tag[done]]
 \end
 
 \function py.has-open-blocker()
@@ -39,7 +39,7 @@ type: text/vnd.tiddlywiki
 
 \function py.is-actionable-todo()
 [all[current]tag[todo]!has[draft.of]!tag[done]!status[waiting]!status[someday]]
-:filter[get[blocked-by]enlist-input[]!tag[done]count[]match[0]]
+:filter[get[blocked-by]enlist-input[]is[tiddler]!tag[done]count[]match[0]]
 :filter[function[py.is-not-future-scheduled]]
 \end
 
@@ -125,14 +125,14 @@ type: text/vnd.tiddlywiki
 
 \procedure py-next-open-todo()
 [all[tiddlers]tag<currentTiddler>tag[todo]!has[draft.of]!tag[done]!status[waiting]!status[someday]]
-:filter[get[blocked-by]enlist-input[]!tag[done]count[]match[0]]
+:filter[get[blocked-by]enlist-input[]is[tiddler]!tag[done]count[]match[0]]
 :filter[function[py.is-not-future-scheduled]]
 +[limit[1]]
 \end
 
 \procedure py-parallel-open-todos()
 [all[tiddlers]tag<currentTiddler>tag[todo]!has[draft.of]!tag[done]!status[waiting]!status[someday]]
-:filter[get[blocked-by]enlist-input[]!tag[done]count[]match[0]]
+:filter[get[blocked-by]enlist-input[]is[tiddler]!tag[done]count[]match[0]]
 :filter[function[py.is-not-future-scheduled]]
 \end
 
@@ -301,7 +301,7 @@ todo [all<actionTiddler>tags[]] -Inbox -[tag[Project]] -[tag[SubProject]] [<curr
 
 \procedure py-waiting-or-blocked-todos()
 [all[tiddlers]tag[todo]!has[draft.of]!tag[done]status[waiting]]
-[all[tiddlers]tag[todo]!has[draft.of]!tag[done]] :filter[get[blocked-by]enlist-input[]!tag[done]limit[1]]
+[all[tiddlers]tag[todo]!has[draft.of]!tag[done]] :filter[get[blocked-by]enlist-input[]is[tiddler]!tag[done]limit[1]]
 +[unique[]sort[title]]
 \end
 

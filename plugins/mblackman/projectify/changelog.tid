@@ -1,9 +1,17 @@
 caption: ChangeLog
 created: 20201208093546936
-modified: 20261028171600000
+modified: 20261029120000000
 tags:
 title: $:/plugins/mblackman/projectify/changelog
 type: text/vnd.tiddlywiki
+
+! Release 0.21.0
+
+!! Task Deletion in Dropdown Menus
+
+* ''Delete Task Action (`TodoDelete` / `action-py-delete-todo`)'':
+** Added a `Delete task` action to both the inline/board task `...` dropdown (`TodoActions`) and the task tiddler header `More` dropdown (`TodoHeading`), making it easy to permanently remove recurring or one-off tasks
+** Deleting a task automatically cleans up parent project/Inbox `list` ordering, removes stale `blocked-by` dependency references on other tasks, closes the task tiddler if open in the story river, and cancels any pending TiddlyPWA reminders/focus timers
 
 ! Release 0.20.0
 

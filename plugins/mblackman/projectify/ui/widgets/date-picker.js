@@ -884,6 +884,106 @@ class ActionToggleTodoWidget extends Widget {
 	}
 }
 
+class ActionDeleteTodoWidget extends Widget {
+	render(parent, nextSibling) {
+		this.computeAttributes();
+		this.execute();
+	}
+
+	execute() {
+		this.tiddlerTitle = this.getAttribute("$tiddler", this.getAttribute("tiddler", this.getVariable("currentTiddler")));
+	}
+
+	refresh(changedTiddlers) {
+		const changedAttributes = this.computeAttributes();
+		if(Object.keys(changedAttributes).length > 0) {
+			this.refreshSelf();
+			return true;
+		}
+		return this.refreshChildren(changedTiddlers);
+	}
+
+	allowActionPropagation() {
+		return false;
+	}
+
+	invokeAction(triggeringWidget, event) {
+		this.computeAttributes();
+		this.execute();
+		const title = this.tiddlerTitle;
+		if(!title) {
+			return true;
+		}
+		const existing = this.wiki.getTiddler(title);
+		if(!existing) {
+			return true;
+		}
+
+		// Remove from any parent project / Inbox list field
+		const currentTags = (existing.fields.tags || []).slice();
+		currentTags.forEach((tagTitle) => {
+			const tagTid = this.wiki.getTiddler(tagTitle);
+			if(tagTid && Array.isArray(tagTid.fields.list) && tagTid.fields.list.includes(title)) {
+				const nextList = tagTid.fields.list.filter((item) => item !== title);
+				this.wiki.addTiddler(
+					new $tw.Tiddler(
+						this.wiki.getCreationFields(),
+						tagTid,
+						{title: tagTitle, list: nextList},
+						this.wiki.getModificationFields()
+					)
+				);
+			}
+		});
+
+		// Clean up any blocked-by references on dependent tasks
+		const dependentTitles = this.wiki.filterTiddlers("[all[tiddlers]has[blocked-by]!has[draft.of]]");
+		dependentTitles.forEach((depTitle) => {
+			if(depTitle === title) {
+				return;
+			}
+			const depTid = this.wiki.getTiddler(depTitle);
+			if(!depTid) {
+				return;
+			}
+			const blockers = $tw.utils.parseStringArray(depTid.getFieldString("blocked-by")) || [];
+			if(blockers.includes(title)) {
+				const nextBlockers = blockers.filter((b) => b !== title);
+				this.wiki.addTiddler(
+					new $tw.Tiddler(
+						this.wiki.getCreationFields(),
+						depTid,
+						{
+							title: depTitle,
+							"blocked-by": nextBlockers.length > 0 ? $tw.utils.stringifyList(nextBlockers) : undefined
+						},
+						this.wiki.getModificationFields()
+					)
+				);
+			}
+		});
+
+		this.wiki.deleteTiddler(title);
+
+		if($tw.rootWidget) {
+			$tw.rootWidget.dispatchEvent({
+				type: "tm-pwa-cancel-notification",
+				paramObject: {id: `projectify-remind:${title}`}
+			});
+			$tw.rootWidget.dispatchEvent({
+				type: "tm-pwa-cancel-notification",
+				paramObject: {id: `projectify-focus:${title}`}
+			});
+			$tw.rootWidget.dispatchEvent({
+				type: "tm-close-tiddler",
+				param: title
+			});
+			$tw.rootWidget.dispatchEvent({type: "tm-auto-save-wiki"});
+		}
+		return true;
+	}
+}
+
 class ActionQuickAddTodoWidget extends Widget {
 	render(parent, nextSibling) {
 		this.computeAttributes();
@@ -2062,6 +2162,7 @@ exports["py-date-calendar"] = CalendarWidget;
 exports["py-time-picker"] = TimePickerWidget;
 exports["py-quick-input"] = QuickInputWidget;
 exports["action-py-toggle-todo"] = ActionToggleTodoWidget;
+exports["action-py-delete-todo"] = ActionDeleteTodoWidget;
 exports["action-py-quick-add"] = ActionQuickAddTodoWidget;
 exports["action-py-reschedule-overdue"] = ActionRescheduleOverdueWidget;
 exports["handleNotificationActionEvent"] = handleNotificationActionEvent;

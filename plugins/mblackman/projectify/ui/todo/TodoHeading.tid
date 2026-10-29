@@ -60,6 +60,7 @@ type: text/vnd.tiddlywiki
 
         <hr/>
         {{||$:/plugins/mblackman/projectify/ui/forms/TodoConvert}}
+        {{||$:/plugins/mblackman/projectify/ui/forms/TodoDelete}}
       </$reveal>
     </$let>
   </div>

@@ -117,6 +117,7 @@ type: text/vnd.tiddlywiki
             {{$:/core/images/down-arrow}} <span class="py-menu-action-label"><<lingo MoveDown/Caption>></span>
           </$button>
           {{||$:/plugins/mblackman/projectify/ui/forms/TodoConvert}}
+          {{||$:/plugins/mblackman/projectify/ui/forms/TodoDelete}}
         </div>
       </div>
     </$let>
