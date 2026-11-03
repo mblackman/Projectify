@@ -4,7 +4,7 @@ tags: $:/tags/NotificationRule
 title: $:/config/projectify/notifications/TodoScheduledRule
 rule-id: projectify.todo-scheduled
 enabled: yes
-filter: [all[tiddlers]tag[todo]!has[draft.of]!tag[done]!status[someday]has[scheduled]!has[due]]
+filter: [all[tiddlers]tag[todo]!has[draft.of]!tag[done]!status[someday]has[scheduled]!has[due]] -[all[tiddlers]tag[Project]!has[draft.of]tag[done]tagging[]] -[all[tiddlers]tag[SubProject]!has[draft.of]tag[done]tagging[]] -[all[tiddlers]tag[Project]!has[draft.of]tag[done]tagging[]tag[SubProject]!has[draft.of]tagging[]] -[all[tiddlers]tag[SubProject]!has[draft.of]tag[done]tagging[]tag[SubProject]!has[draft.of]tagging[]] -[all[tiddlers]tag[Project]!has[draft.of]tag[done]tagging[]tag[SubProject]!has[draft.of]tagging[]tag[SubProject]!has[draft.of]tagging[]]
 date-field: scheduled
 default-time: 12:00
 offset-minutes: -719

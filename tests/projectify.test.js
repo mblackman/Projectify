@@ -37,7 +37,7 @@ describe("Projectify Plugin ($:/plugins/mblackman/projectify)", () => {
     expect(pluginTiddler).toBeDefined();
     expect(pluginTiddler.fields.name).toBe("Projectify");
     expect(pluginTiddler.fields["core-version"]).toBe(">=5.4.0");
-    expect(pluginTiddler.fields.version).toBe("0.21.0");
+    expect(pluginTiddler.fields.version).toBe("0.21.1");
     expect(pluginTiddler.fields["plugin-type"]).toBe("plugin");
     expect(pluginTiddler.fields.list).toEqual(["readme", "doc/Help", "changelog", "LICENSE"]);
   });
@@ -109,6 +109,12 @@ describe("Projectify Plugin ($:/plugins/mblackman/projectify)", () => {
     expect(activeProjects).toContain("Book vacation trip|");
     expect(activeProjects).toContain("Reading list|");
     expect(activeProjects).not.toContain("Inbox|");
+    expect(activeProjects).not.toContain("Legacy website migration|");
+
+    const archivedProjects = renderWithGlobals(
+      "<$list filter=<<py-archived-projects>>><$text text=<<currentTiddler>>/>|</$list>"
+    );
+    expect(archivedProjects).toContain("Legacy website migration|");
 
     const openInboxTodos = renderWithGlobals(
       "<$list filter=<<py-open-todos>>><$text text=<<currentTiddler>>/>|</$list>",
@@ -1035,6 +1041,118 @@ describe("Projectify Plugin ($:/plugins/mblackman/projectify)", () => {
       $tw.wiki.deleteTiddler("DeleteCleanupProject");
       $tw.wiki.deleteTiddler("RecurringToRemove");
       $tw.wiki.deleteTiddler("DependentTask");
+    }
+  });
+
+  test("excludes tasks in archived projects (and archived sub-projects) from active dashboard views, notifications, and pickers", () => {
+    const yesterday = "20200101235959999";
+    const tomorrow = "20990101235959999";
+
+    $tw.wiki.addTiddler({ title: "ArchivedProjectAlpha", tags: ["Project", "done"] });
+    $tw.wiki.addTiddler({
+      title: "ArchivedUrgentTask",
+      tags: ["ArchivedProjectAlpha", "todo"],
+      priority: "3",
+      due: yesterday,
+      context: "@archivedctx",
+    });
+    $tw.wiki.addTiddler({
+      title: "ArchivedUpcomingTask",
+      tags: ["ArchivedProjectAlpha", "todo"],
+      priority: "2",
+      due: tomorrow,
+    });
+    $tw.wiki.addTiddler({
+      title: "ArchivedWaitingTask",
+      tags: ["ArchivedProjectAlpha", "todo"],
+      status: "waiting",
+    });
+    $tw.wiki.addTiddler({
+      title: "ArchivedSomedayTask",
+      tags: ["ArchivedProjectAlpha", "todo"],
+      status: "someday",
+    });
+    $tw.wiki.addTiddler({
+      title: "ArchivedDoneTask",
+      tags: ["ArchivedProjectAlpha", "todo", "done"],
+      completed: "20990101120000000",
+    });
+    $tw.wiki.addTiddler({
+      title: "SubProjectOfArchived",
+      tags: ["ArchivedProjectAlpha", "SubProject", "todo"],
+    });
+    $tw.wiki.addTiddler({
+      title: "NestedArchivedTask",
+      tags: ["SubProjectOfArchived", "todo"],
+      priority: "3",
+      due: yesterday,
+    });
+
+    try {
+      // 1. Matrix view must not show tasks from archived projects across any quadrant
+      const matrixHtml = renderWithGlobals("{{$:/plugins/mblackman/projectify/ui/dashboard/Matrix}}");
+      expect(matrixHtml).not.toContain("ArchivedUrgentTask");
+      expect(matrixHtml).not.toContain("ArchivedUpcomingTask");
+      expect(matrixHtml).not.toContain("ArchivedWaitingTask");
+      expect(matrixHtml).not.toContain("NestedArchivedTask");
+
+      // 2. Today & Upcoming views must not show overdue/scheduled tasks from archived projects
+      const todayHtml = renderWithGlobals("{{$:/plugins/mblackman/projectify/ui/dashboard/Today}}");
+      expect(todayHtml).not.toContain("ArchivedUrgentTask");
+      expect(todayHtml).not.toContain("NestedArchivedTask");
+
+      const upcomingHtml = renderWithGlobals("{{$:/plugins/mblackman/projectify/ui/dashboard/Upcoming}}");
+      expect(upcomingHtml).not.toContain("ArchivedUrgentTask");
+      expect(upcomingHtml).not.toContain("ArchivedUpcomingTask");
+      expect(upcomingHtml).not.toContain("NestedArchivedTask");
+
+      // 3. Review view (Waiting/Blocked, Someday, Logbook) must not show tasks from archived projects
+      const reviewHtml = renderWithGlobals("{{$:/plugins/mblackman/projectify/ui/dashboard/Review}}");
+      expect(reviewHtml).not.toContain("ArchivedWaitingTask");
+      expect(reviewHtml).not.toContain("ArchivedSomedayTask");
+      expect(reviewHtml).not.toContain("ArchivedDoneTask");
+
+      // 4. Filter / Everything view and context pills exclude archived project tasks
+      const filterHtml = renderWithGlobals("{{$:/plugins/mblackman/projectify/ui/Everything}}");
+      expect(filterHtml).not.toContain("ArchivedUrgentTask");
+      expect(filterHtml).not.toContain("NestedArchivedTask");
+
+      const contexts = renderWithGlobals("<$list filter=<<py-all-contexts>>><$text text=<<currentTiddler>>/>|</$list>");
+      expect(contexts).not.toContain("@archivedctx");
+
+      // 5. Notification rules exclude archived project tasks
+      const dueRule = $tw.wiki.getTiddler("$:/config/projectify/notifications/TodoDueRule");
+      const matchedDue = $tw.wiki.filterTiddlers(dueRule.fields.filter);
+      expect(matchedDue).not.toContain("ArchivedUrgentTask");
+      expect(matchedDue).not.toContain("ArchivedUpcomingTask");
+      expect(matchedDue).not.toContain("NestedArchivedTask");
+
+      // 6. Reschedule overdue widget does not mutate tasks in archived projects
+      const RescheduleWidget = $tw.modules.applyMethods("widget")["action-py-reschedule-overdue"];
+      const resched = new RescheduleWidget(
+        { type: "action-py-reschedule-overdue", attributes: {} },
+        { wiki: $tw.wiki }
+      );
+      resched.invokeAction();
+      expect($tw.wiki.getTiddler("ArchivedUrgentTask").fields.due).toBe(yesterday);
+      expect($tw.wiki.getTiddler("NestedArchivedTask").fields.due).toBe(yesterday);
+
+      // 7. Viewing the archived project tiddler directly still renders its tasks normally
+      const archivedProjectView = renderWithGlobals(
+        "{{||$:/plugins/mblackman/projectify/ui/project/Project}}",
+        "ArchivedProjectAlpha"
+      );
+      expect(archivedProjectView).toContain("ArchivedUrgentTask");
+      expect(archivedProjectView).toContain("This project is archived.");
+    } finally {
+      $tw.wiki.deleteTiddler("ArchivedProjectAlpha");
+      $tw.wiki.deleteTiddler("ArchivedUrgentTask");
+      $tw.wiki.deleteTiddler("ArchivedUpcomingTask");
+      $tw.wiki.deleteTiddler("ArchivedWaitingTask");
+      $tw.wiki.deleteTiddler("ArchivedSomedayTask");
+      $tw.wiki.deleteTiddler("ArchivedDoneTask");
+      $tw.wiki.deleteTiddler("SubProjectOfArchived");
+      $tw.wiki.deleteTiddler("NestedArchivedTask");
     }
   });
 });

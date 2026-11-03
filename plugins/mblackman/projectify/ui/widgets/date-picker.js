@@ -1111,6 +1111,8 @@ class ActionQuickAddTodoWidget extends Widget {
 	}
 }
 
+const ACTIVE_OPEN_TODOS_FILTER = "[all[tiddlers]tag[todo]!has[draft.of]!tag[done]] -[all[tiddlers]tag[Project]!has[draft.of]tag[done]tagging[]] -[all[tiddlers]tag[SubProject]!has[draft.of]tag[done]tagging[]] -[all[tiddlers]tag[Project]!has[draft.of]tag[done]tagging[]tag[SubProject]!has[draft.of]tagging[]] -[all[tiddlers]tag[SubProject]!has[draft.of]tag[done]tagging[]tag[SubProject]!has[draft.of]tagging[]] -[all[tiddlers]tag[Project]!has[draft.of]tag[done]tagging[]tag[SubProject]!has[draft.of]tagging[]tag[SubProject]!has[draft.of]tagging[]]";
+
 class ActionRescheduleOverdueWidget extends Widget {
 	render(parent, nextSibling) {
 		this.computeAttributes();
@@ -1118,7 +1120,7 @@ class ActionRescheduleOverdueWidget extends Widget {
 	}
 
 	execute() {
-		this.filterAttr = this.getAttribute("$filter", this.getAttribute("filter", "[all[tiddlers]!tag[done]tag[todo]!has[draft.of]!days:due[-1]]"));
+		this.filterAttr = this.getAttribute("$filter", this.getAttribute("filter", `${ACTIVE_OPEN_TODOS_FILTER} +[!days:due[-1]]`));
 	}
 
 	refresh(changedTiddlers) {
@@ -1397,7 +1399,9 @@ class QuickInputWidget extends Widget {
 			});
 
 			if(this.wiki.getTiddlerText("$:/config/projectify/EnableContexts", "yes") !== "no") {
-				const contexts = this.wiki.filterTiddlers("[{$:/config/projectify/DefaultContexts}enlist-input[]] [all[tiddlers]tag[todo]!has[draft.of]get[context]enlist-input[]] +[unique[]sort[title]]");
+				const activeTodoContexts = this.wiki.filterTiddlers(`${ACTIVE_OPEN_TODOS_FILTER} +[get[context]enlist-input[]unique[]]`);
+				const defaultContexts = this.wiki.filterTiddlers("[{$:/config/projectify/DefaultContexts}enlist-input[]]");
+				const contexts = Array.from(new Set(defaultContexts.concat(activeTodoContexts))).sort();
 				contexts.forEach(ctx => {
 					const cleanCtx = ctx.startsWith("@") ? ctx : `@${ctx}`;
 					if(!q || cleanCtx.slice(1).toLowerCase().includes(q)) {

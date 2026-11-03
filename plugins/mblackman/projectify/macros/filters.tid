@@ -21,6 +21,19 @@ type: text/vnd.tiddlywiki
 [function[py.descendant-todos],<root>tag[done]]
 \end
 
+\function py.archived-project-todos()
+[all[tiddlers]tag[Project]!has[draft.of]tag[done]tagging[]]
+[all[tiddlers]tag[SubProject]!has[draft.of]tag[done]tagging[]]
+[all[tiddlers]tag[Project]!has[draft.of]tag[done]tagging[]tag[SubProject]!has[draft.of]tagging[]]
+[all[tiddlers]tag[SubProject]!has[draft.of]tag[done]tagging[]tag[SubProject]!has[draft.of]tagging[]]
+[all[tiddlers]tag[Project]!has[draft.of]tag[done]tagging[]tag[SubProject]!has[draft.of]tagging[]tag[SubProject]!has[draft.of]tagging[]]
++[tag[todo]!has[draft.of]unique[]]
+\end
+
+\function py.active-open-todos()
+[all[tiddlers]tag[todo]!has[draft.of]!tag[done]] -[function[py.archived-project-todos]]
+\end
+
 \function py.open-blockers()
 [all[current]get[blocked-by]enlist-input[]is[tiddler]!tag[done]]
 \end
@@ -30,7 +43,7 @@ type: text/vnd.tiddlywiki
 \end
 
 \function py.blocking-todos()
-[all[current]listed[blocked-by]tag[todo]!has[draft.of]!tag[done]]
+[all[current]listed[blocked-by]tag[todo]!has[draft.of]!tag[done]] -[function[py.archived-project-todos]]
 \end
 
 \function py.is-not-future-scheduled()
@@ -38,7 +51,7 @@ type: text/vnd.tiddlywiki
 \end
 
 \function py.is-actionable-todo()
-[all[current]tag[todo]!has[draft.of]!tag[done]!status[waiting]!status[someday]]
+[all[current]tag[todo]!has[draft.of]!tag[done]!status[waiting]!status[someday]] -[function[py.archived-project-todos]]
 :filter[get[blocked-by]enlist-input[]is[tiddler]!tag[done]count[]match[0]]
 :filter[function[py.is-not-future-scheduled]]
 \end
@@ -64,11 +77,11 @@ type: text/vnd.tiddlywiki
 \end
 
 \procedure py-all-contexts()
-[all[tiddlers]tag[todo]!has[draft.of]get[context]enlist-input[] unique[]sort[title]]
+[function[py.active-open-todos]get[context]enlist-input[]unique[]sort[title]]
 \end
 
 \procedure py-has-scheduled-todos-in-projects()
-[all[tiddlers]tag[todo]!tag[done]!has[draft.of]has[due]limit[1]] [all[tiddlers]tag[todo]!tag[done]!has[draft.of]has[scheduled]limit[1]]
+[function[py.active-open-todos]has[due]limit[1]] [function[py.active-open-todos]has[scheduled]limit[1]]
 \end
 
 \procedure py-has-active-projects()
@@ -137,11 +150,11 @@ type: text/vnd.tiddlywiki
 \end
 
 \procedure py-has-filtered-todos()
-[all[tiddlers]subfilter<todoFilter>tag[todo]!has[draft.of]limit[1]]
+[all[tiddlers]subfilter<todoFilter>tag[todo]!has[draft.of]] -[function[py.archived-project-todos]] +[limit[1]]
 \end
 
 \procedure py-filtered-todos()
-[all[tiddlers]subfilter<todoFilter>tag[todo]!has[draft.of]sort[title]]
+[all[tiddlers]subfilter<todoFilter>tag[todo]!has[draft.of]] -[function[py.archived-project-todos]] +[sort[title]]
 \end
 
 \procedure py-open-todos()
@@ -153,34 +166,34 @@ type: text/vnd.tiddlywiki
 \end
 
 \procedure py-todos-due-today()
-[all[tiddlers]!tag[done]tag[todo]!has[draft.of]days:due[0]]
-[all[tiddlers]!tag[done]tag[todo]!has[draft.of]days:scheduled[0]]
-[all[tiddlers]!tag[done]tag[todo]!has[draft.of]!days:scheduled[-1]]
+[function[py.active-open-todos]days:due[0]]
+[function[py.active-open-todos]days:scheduled[0]]
+[function[py.active-open-todos]!days:scheduled[-1]]
 +[unique[]!nsort[priority]]
 \end
 
 \procedure py-todos-overdue()
-[all[tiddlers]!tag[done]tag[todo]!has[draft.of]!days:due[-1]sort[due]]
+[function[py.active-open-todos]!days:due[-1]sort[due]]
 \end
 
 \procedure py-todos-due-today-or-overdue()
-[all[tiddlers]days:due[0]] [all[tiddlers]!days:due[-1]] [all[tiddlers]days:scheduled[0]] [all[tiddlers]!days:scheduled[-1]] +[!has[draft.of]!tag[done]tag[todo]unique[]sort[due]]
+[all[tiddlers]days:due[0]] [all[tiddlers]!days:due[-1]] [all[tiddlers]days:scheduled[0]] [all[tiddlers]!days:scheduled[-1]] +[!has[draft.of]!tag[done]tag[todo]] -[function[py.archived-project-todos]] +[unique[]sort[due]]
 \end
 
 \procedure py-upcoming-due-dates()
-[all[tiddlers]tag[todo]!has[draft.of]!tag[done]has[due]sort[due]eachday[due]] -[!days:due[-1]]
+[function[py.active-open-todos]has[due]sort[due]eachday[due]] -[!days:due[-1]]
 \end
 
 \procedure py-todos-due-on()
-[all[tiddlers]!tag[done]tag[todo]!has[draft.of]sameday:due<day>!nsort[priority]]
+[function[py.active-open-todos]sameday:due<day>!nsort[priority]]
 \end
 
 \procedure py-has-overdue-todos()
-[all[tiddlers]!tag[done]tag[todo]!has[draft.of]!days:due[-1]limit[1]]
+[function[py.active-open-todos]!days:due[-1]limit[1]]
 \end
 
 \procedure py-has-todos-due-today-or-overdue()
-[all[tiddlers]days:due[0]] [all[tiddlers]!days:due[-1]] [all[tiddlers]days:scheduled[0]] [all[tiddlers]!days:scheduled[-1]] +[!has[draft.of]!tag[done]tag[todo]limit[1]]
+[all[tiddlers]days:due[0]] [all[tiddlers]!days:due[-1]] [all[tiddlers]days:scheduled[0]] [all[tiddlers]!days:scheduled[-1]] +[!has[draft.of]!tag[done]tag[todo]] -[function[py.archived-project-todos]] +[limit[1]]
 \end
 
 \procedure py-is-todo()
@@ -284,31 +297,31 @@ todo [all<actionTiddler>tags[]] -Inbox -[tag[Project]] -[tag[SubProject]] [<curr
 \end
 
 \procedure py-matrix-do-first()
-[all[tiddlers]tag[todo]!has[draft.of]!tag[done]] :filter[function[py.is-important-todo]] :filter[function[py.is-urgent-todo]] +[!nsort[priority]sort[due]]
+[function[py.active-open-todos]] :filter[function[py.is-important-todo]] :filter[function[py.is-urgent-todo]] +[!nsort[priority]sort[due]]
 \end
 
 \procedure py-matrix-schedule()
-[all[tiddlers]tag[todo]!has[draft.of]!tag[done]] :filter[function[py.is-important-todo]] -[subfilter<py-matrix-do-first>] +[!nsort[priority]sort[due]]
+[function[py.active-open-todos]] :filter[function[py.is-important-todo]] -[subfilter<py-matrix-do-first>] +[!nsort[priority]sort[due]]
 \end
 
 \procedure py-matrix-delegate()
-[all[tiddlers]tag[todo]!has[draft.of]!tag[done]!priority[3]!priority[2]] :filter[function[py.is-urgent-todo]] +[sort[due]]
+[function[py.active-open-todos]!priority[3]!priority[2]] :filter[function[py.is-urgent-todo]] +[sort[due]]
 \end
 
 \procedure py-matrix-backlog()
-[all[tiddlers]tag[todo]!has[draft.of]!tag[done]!priority[3]!priority[2]] -[subfilter<py-matrix-delegate>] +[!nsort[priority]sort[title]]
+[function[py.active-open-todos]!priority[3]!priority[2]] -[subfilter<py-matrix-delegate>] +[!nsort[priority]sort[title]]
 \end
 
 \procedure py-waiting-or-blocked-todos()
-[all[tiddlers]tag[todo]!has[draft.of]!tag[done]status[waiting]]
-[all[tiddlers]tag[todo]!has[draft.of]!tag[done]] :filter[get[blocked-by]enlist-input[]is[tiddler]!tag[done]limit[1]]
+[function[py.active-open-todos]status[waiting]]
+[function[py.active-open-todos]] :filter[get[blocked-by]enlist-input[]is[tiddler]!tag[done]limit[1]]
 +[unique[]sort[title]]
 \end
 
 \procedure py-someday-todos()
-[all[tiddlers]tag[todo]!has[draft.of]!tag[done]status[someday]sort[title]]
+[function[py.active-open-todos]status[someday]sort[title]]
 \end
 
 \procedure py-recently-completed-todos()
-[all[tiddlers]tag[todo]!has[draft.of]tag[done]] :sort:string:reverse[{!!completed}!is[blank]else{!!modified}] +[limit[50]]
+[all[tiddlers]tag[todo]!has[draft.of]tag[done]] -[function[py.archived-project-todos]] :sort:string:reverse[{!!completed}!is[blank]else{!!modified}] +[limit[50]]
 \end

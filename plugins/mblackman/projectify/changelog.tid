@@ -1,9 +1,17 @@
 caption: ChangeLog
 created: 20201208093546936
-modified: 20261029120000000
+modified: 20261102205200000
 tags:
 title: $:/plugins/mblackman/projectify/changelog
 type: text/vnd.tiddlywiki
+
+! Release 0.21.1
+
+!! Hide Archived Project Tasks from Active Views
+
+* ''Archived Project Task Filtering (`py.archived-project-todos` / `py.active-open-todos`)'':
+** Tasks belonging to archived projects (or archived/completed sub-projects) are now excluded across all active dashboard views and pickers: Matrix quadrants, Today / Overdue, Upcoming, Review (Waiting/Blocked, Someday, Logbook), Filter (`Everything`), `@context` filter bars and autocomplete suggestions, "Blocked by" dependency dropdowns, batch "Reschedule overdue", and background Web Push notification rules
+** Tasks inside an archived project remain visible when viewing the archived project tiddler directly
 
 ! Release 0.21.0
 

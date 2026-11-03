@@ -52,7 +52,7 @@ type: text/vnd.tiddlywiki
           <label class="py-label tc-popup-handle">{{$:/plugins/mblackman/projectify/images/lock}} <<lingo BlockedBy/Caption>></label>
           <$select field="blocked-by" default="" class="py-select-compact py-select-full tc-popup-handle">
             <option value="">—</option>
-            <$list filter="[all[tiddlers]tag[todo]!has[draft.of]!tag[done]!title<currentTiddler>sort[title]]" variable="blocker">
+            <$list filter="[function[py.active-open-todos]!title<currentTiddler>sort[title]]" variable="blocker">
               <option value={{{ [<blocker>format:titlelist[]] }}}><$text text={{{ [<blocker>get[caption]!is[blank]else<blocker>] }}}/></option>
             </$list>
           </$select>

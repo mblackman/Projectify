@@ -86,7 +86,7 @@ type: text/vnd.tiddlywiki
               </label>
               <$let
                 parentProj={{{ [all[current]tags[]tag[Project]limit[1]] [all[current]tags[]tag[SubProject]limit[1]] }}}
-                candidateFilter="[all[tiddlers]tag<parentProj>tag[todo]!has[draft.of]!tag[done]!title<currentTiddler>sort[title]] [all[tiddlers]tag[todo]!has[draft.of]!tag[done]!title<currentTiddler>sort[title]] +[unique[]]"
+                candidateFilter="[all[tiddlers]tag<parentProj>tag[todo]!has[draft.of]!tag[done]!title<currentTiddler>] -[function[py.archived-project-todos]] +[sort[title]] [function[py.active-open-todos]!title<currentTiddler>sort[title]] +[unique[]]"
               >
                 <$select field="blocked-by" default="" class="py-select-compact py-select-blocker tc-popup-handle">
                   <option value="">—</option>
